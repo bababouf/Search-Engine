@@ -115,17 +115,7 @@ public class DiskPositionalIndex implements Index{
     }
     @Override
     public List<String> getVocabulary() {
-        try{
-            RandomAccessFile onDiskIndex = new RandomAccessFile(pathToIndex, "r");
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        // open randomAccessFile
-        // Go through the file, reading each term
-        // Add each term to a List<String>
-        // return List<String>
-        return null;
+        SQLiteDB database = new SQLiteDB();
+        return database.retrieveVocabulary();
     }
 }

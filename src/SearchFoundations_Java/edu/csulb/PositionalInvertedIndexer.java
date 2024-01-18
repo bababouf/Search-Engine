@@ -2,6 +2,7 @@ package SearchFoundations_Java.edu.csulb;
 import SearchFoundations_Java.cecs429.documents.DirectoryCorpus;
 import SearchFoundations_Java.cecs429.documents.Document;
 import SearchFoundations_Java.cecs429.documents.DocumentCorpus;
+import SearchFoundations_Java.cecs429.indexing.DiskIndexWriter;
 import SearchFoundations_Java.cecs429.indexing.Index;
 import SearchFoundations_Java.cecs429.indexing.PositionalInvertedIndex;
 import SearchFoundations_Java.cecs429.indexing.Posting;
@@ -10,7 +11,9 @@ import SearchFoundations_Java.cecs429.queries.*;
 import SearchFoundations_Java.cecs429.text.NonBasicTokenProcessor;
 import opennlp.tools.stemmer.PorterStemmer;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
@@ -21,7 +24,7 @@ public class PositionalInvertedIndexer {
         Scanner readIn = new Scanner(System.in);
         Path absolutePath = readInDirectoryToIndex(readIn);
         DocumentCorpus corpus = DirectoryCorpus.loadJsonDirectory(absolutePath, ".json");
-        Index index = indexCorpus(corpus);
+        Index index = indexCorpus(corpus, absolutePath);
 
         String query = "";
         do {
@@ -164,31 +167,68 @@ public class PositionalInvertedIndexer {
     /**
      * A PositionalInvertedIndex is a hashmap that consists of all unique terms found in the corpus of documents.
      * The hashmap maps unique terms to a list of postings. Each posting contains the documentID and the positions (locations in the document) where the term is found.
+     * For example, the term "dog" might be mapped to many  documents. In each document, it might appear many times and thus have a list of positions per document.
+     * In addition, this function calls calculateAndWriteDocumentWeights for each document in order to write document weights.
+     * TODO eventually refactor
      */
 
-    public static PositionalInvertedIndex indexCorpus(DocumentCorpus corpus) {
+
+    public static PositionalInvertedIndex indexCorpus(DocumentCorpus corpus, Path absolutePath) throws IOException {
+
         System.out.println("Indexing...");
         NonBasicTokenProcessor processor = new NonBasicTokenProcessor();
         List<String> tokenList;
         PositionalInvertedIndex positionalIndex = new PositionalInvertedIndex();
 
-        for (Document d : corpus.getDocuments()) {
-            int num = 0;
+        DiskIndexWriter diskIndexWriter = new DiskIndexWriter();
+        double averageTokens = 0;
+        diskIndexWriter.clearFileContents(absolutePath);
+
+        for (Document document : corpus.getDocuments()) {
+            int documentTokens = 0;
+            int bytes = 0;
+            int position = 0;
+            int id = document.getId();
+
             Iterable<String> tokens = null;
-            EnglishTokenStream ETS = new EnglishTokenStream(d.getContent());
-            tokens = ETS.getTokens();
+            Map<String, Integer> termFrequency = new HashMap<>();
+            EnglishTokenStream ETS = new EnglishTokenStream(document.getContent());
+            tokens = ETS.getTokens(); // Text in the document is split by whitespace into iterable strings
 
             for (String term : tokens) {
-                tokenList = processor.processToken(term);
+                tokenList = processor.processToken(term); // Tokens are further processed
                 for (String token : tokenList) {
-                    positionalIndex.addTerm(token, d.getId(), num);
-                    num++;
+
+                    byte[] UTF16BYTES = term.getBytes(StandardCharsets.US_ASCII);
+                    bytes = bytes + UTF16BYTES.length;
+                    positionalIndex.addTerm(token, document.getId(), position); // Each term is added to the positional index
+                    position++; // Each term added increases position by one
+                    documentTokens++; // Calculating total terms in a document
+                    averageTokens = averageTokens + 1;
+
+                    Integer count = termFrequency.get(token);
+                    if (count == null) {
+                        termFrequency.put(token, 1);
+
+                    } else {
+                        termFrequency.put(token, count + 1);
+
+                    }
+
+
                 }
             }
-            positionalIndex.getVocabulary();
+
+            diskIndexWriter.calculateAndWriteDocumentWeights(termFrequency, absolutePath, id, documentTokens, bytes );
 
 
         }
+
+        averageTokens = averageTokens / corpus.getCorpusSize();
+        String pathToDocWeights = absolutePath.toString() + "/index/docWeights.bin";
+        diskIndexWriter.writeAverageTokensForCorpus(pathToDocWeights, averageTokens);
+
+
         System.out.println("Indexing Complete. \n");
 
         return positionalIndex;

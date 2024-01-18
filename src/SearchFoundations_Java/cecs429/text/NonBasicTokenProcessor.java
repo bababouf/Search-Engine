@@ -8,10 +8,14 @@ import java.util.*;
 import static java.lang.Character.isLetterOrDigit;
 
 /**
- * A BasicTokenProcessor creates terms from tokens by removing all non-alphanumeric characters from the token, and
- * converting it to all lowercase.
+ * This class offers further processing to tokens that are passed to its processToken function.
  */
 public class NonBasicTokenProcessor implements TokenProcessor {
+
+    /**
+     * This function will first check the token passed to it is hyphenated. If so, it will split on each hyphen (if more than one)
+     * and will create separate tokens for each. Each of these will then be passed to the processTokenHelper function.
+     */
     @Override
     public List<String> processToken(String token) {
         PorterStemmer stemmer = new PorterStemmer();
@@ -59,6 +63,12 @@ public class NonBasicTokenProcessor implements TokenProcessor {
 
     }
 
+    /**
+     * This function will remove non-alphanumeric characters from the beginning and end of each token passed to it.
+     * It will not, however, remove non-alphanumeric chars from the middle (199.111.1.1 will remain unchanged).
+     * Next, all apostrophes and quation marks are removed from anywhere in the token. The token is then converted to
+     * lowercase and stemmed using the PorterStemmer package.
+     */
     public String processTokenHelper(String token) {
         int index = 0;
 

@@ -14,12 +14,19 @@ public class PositionalInvertedIndex implements Index{
     private int mCorpusSize;
 
 
-
+    /**
+     * A positional inverted index maintains two variables: one is the hashmap of strings to their corresponding posting lists,
+     * and the other is the array of vocabulary terms.
+     */
     public PositionalInvertedIndex() {
 
         invertedIndex = new HashMap<String, List<Posting>>();
         mVocabulary = new ArrayList<String>();
     }
+
+    /**
+     * This function adds a term to the positional index.
+     */
     public void addTerm(String term, int documentId, int position) {
 
         List<Posting> postingListForTerm;
@@ -43,43 +50,43 @@ public class PositionalInvertedIndex implements Index{
             {
                 postingList = lastIndex.getPosition();
                 postingList.add(position);
-
                 postingListForTerm.set(postingListForTerm.size() - 1, lastIndex);
                 invertedIndex.put(term, postingListForTerm);
 
-                return;
             }
             else
             {
-
                 postingList.add(position);
                 Posting p = new Posting(documentId, postingList);
                 postingListForTerm.add(p);
                 invertedIndex.put(term, postingListForTerm);
+
             }
         }
 
 
-        return;
 
 
 
     }
 
+    /**
+     * Returns posting list for a single term
+     */
     @Override
     public List<Posting> getPostings(String term) {
 
         List<Posting> results = new ArrayList<>();
-        List<Posting> ayy = invertedIndex.get(term);
-        if(ayy == null)
+        List<Posting> postingsForTerm = invertedIndex.get(term);
+        if(postingsForTerm == null)
         {
             return results;
         }
         else
         {
-            for(Posting p : ayy)
+            for(Posting posting : postingsForTerm)
             {
-                results.add(p);
+                results.add(posting);
             }
         }
 
@@ -98,14 +105,14 @@ public class PositionalInvertedIndex implements Index{
     public Integer getVocabSize() throws IOException {
         return null;
     }
+
+    /**
+     * Returns the sorted vocabulary list of terms
+     */
     public List<String> getVocabulary() {
-        //Map<String, List<Posting>> theMap = new HashMap<>(invertedIndex);
-        //TreeMap<String, List<Posting>> sortedMap = new TreeMap<>(theMap);
 
         Collections.sort(mVocabulary);
-
         return mVocabulary;
-        //return Collections.unmodifiableList(mVocabulary);
     }
 
     @Override

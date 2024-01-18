@@ -1,16 +1,20 @@
 package SearchFoundations_Java.cecs429.database;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLiteDB {
 
     private static Connection conn;
     public SQLiteDB(){
         conn = connect();
-        //this.dropTable();
-        //this.createTable();
+
     }
 
+    /**
+     * Retrieves the long byte position for specific term in the DB
+     */
     public Long selectTerm(String term) {
         final String SQL = "SELECT term, byte_position FROM byte_positions WHERE term = ?";
         try (Connection con = this.connect();
@@ -29,6 +33,32 @@ public class SQLiteDB {
         }
         return null; // Return null if no result is found
     }
+
+    /**
+     * This function returns all of the rows for the term column in the byte_positions table (the
+     * entire list of vocabulary).
+     */
+    public List<String> retrieveVocabulary(){
+        List<String> vocabularyList = new ArrayList<>();
+        try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT term FROM byte_positions");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                String term = resultSet.getString("term");
+                vocabularyList.add(term);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle the exception according to your application's requirements
+        }
+
+        return vocabularyList;
+    }
+
+
+    /**
+     * Inserts term and long byte position (one row) into the DB
+     */
     public void insertTerm(String term, long bytePosition) {
         final String SQL = "INSERT or IGNORE INTO byte_positions VALUES(?,?)";
         try (PreparedStatement ps = conn.prepareStatement(SQL);) {
@@ -66,8 +96,6 @@ public class SQLiteDB {
                 " byte_position INTEGER, " +
                 " PRIMARY KEY ( term ))";
 
-        // This SQL Query is not "dynamic". Columns are static, so no need to use
-        // PreparedStatement.
         try (Statement statement = conn.createStatement();) {
             statement.executeUpdate(SQL);
             conn.commit();

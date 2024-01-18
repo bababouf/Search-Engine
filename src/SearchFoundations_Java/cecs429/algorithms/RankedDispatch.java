@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static SearchFoundations_Java.edu.csulb.DiskPositionalIndexerCopy.readInQuery;
+import static SearchFoundations_Java.edu.csulb.DiskPositionalIndexer.readInQuery;
 
 public class RankedDispatch {
 
