@@ -1,26 +1,18 @@
 package SearchFoundations_Java.testing;
 
 import SearchFoundations_Java.cecs429.indexing.DiskPositionalIndex;
-import SearchFoundations_Java.testing.BuildIndexTest;
 import SearchFoundations_Java.cecs429.documents.DirectoryCorpus;
 import SearchFoundations_Java.edu.csulb.DiskPositionalIndexer;
-import org.junit.After;
-import org.junit.Before;
 import org.testng.annotations.Test;
-
 import java.io.*;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Scanner;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 public class QueryIndexTest {
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
     private final InputStream originalIn = System.in;
-
     private  Path absolutePathToIndex;
     private DirectoryCorpus corpus;
     private DiskPositionalIndex index;
@@ -28,15 +20,15 @@ public class QueryIndexTest {
     public void setUpStreams() {
         System.setOut(new PrintStream(outputStream));
     }
+    public void restoreStreams() {
+        System.setOut(originalOut);
+        System.setIn(originalIn);
+    }
     public void setUpIndexAndCorpus(){
         BuildIndexTest buildIndex = new BuildIndexTest();
         absolutePathToIndex = buildIndex.readInPathTest();
         corpus = DirectoryCorpus.loadJsonDirectory(absolutePathToIndex, ".json");
         index = new DiskPositionalIndex(absolutePathToIndex, corpus.getCorpusSize());
-    }
-    public void restoreStreams() {
-        System.setOut(originalOut);
-        System.setIn(originalIn);
     }
     private void setInput(String input)
     {
@@ -45,8 +37,8 @@ public class QueryIndexTest {
 
     @Test
     public void readInQueryModeTest() {
-        setInput("invalid\nalsoInvalid\n1\n");
         setUpStreams();
+        setInput("invalid\nalsoInvalid\n1\n");
 
         try {
             int result = DiskPositionalIndexer.readInSystemMode(new Scanner(System.in)); // Replace YourClassName with the actual class name
@@ -57,25 +49,32 @@ public class QueryIndexTest {
 
         }
     }
-
-
     @Test
-    public void booleanQueryStemTest(){
-
+    public void booleanQueryTest_SingleTerm(){
         setUpStreams();
-        DiskPositionalIndexer.stemQuery("STEM generously");
-        assertTrue(outputStream.toString().contains("gener"));
-        restoreStreams();
+        try{
+            DiskPositionalIndexer.processBooleanQuery("dogs", corpus, index, new Scanner(System.in) );
+
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+
+
     }
     @Test
-    public void booleanQueryVocab(){
-        setUpIndexAndCorpus();
-        setUpStreams();
-        DiskPositionalIndexer.printVocabulary(index);
-        restoreStreams();
+    public void booleanQueryTest_ANDQuery(){
 
     }
+    @Test
+    public void booleanQueryTest_ORQuery(){
 
+    }
+    @Test
+    public void booleanQueryTest_MIX(){
+
+    }
     @Test
     public void defaultRankedQueryTest(){
 

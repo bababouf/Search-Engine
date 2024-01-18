@@ -17,7 +17,7 @@ public class DiskPositionalIndexer {
 
     /** Below is the driver for this program. The program operates in two modes. One of the modes will create an index
      * from a user-entered corpus directory (should be a corpus of all text files or all JSON files). The other mode will
-     * allow the user to query the directory. The program allows for two different types of queries, boolean and ranked. For
+     * allow the user to query the index. The program allows for two different types of queries, boolean and ranked. For
      * boolean queries, the program supports only normal disjunctive form (one of more AND queries joined with ORs). For ranked queries,
      * the user can choose one of four different algorithms: default (using frequencies of query terms), term frequency inverse document frequency, okapi bm25, or Waky.
      * More about these algorithms and the project as a whole can be found in the .readME.
@@ -47,7 +47,7 @@ public class DiskPositionalIndexer {
     }
 
     /**
-     * This function prompts the user to choose between 3 options; 1 to build the index, 2 to process queries over an
+     * This method prompts the user to choose between 3 options; 1 to build the index, 2 to process queries over an
      * existing index, and 3 to exit. Invalid inputs will again prompt the user.
      */
     public static int readInSystemMode(Scanner readIn) {
@@ -104,7 +104,7 @@ public class DiskPositionalIndexer {
             PositionalInvertedIndex index = PositionalInvertedIndexer.indexCorpus(corpus, absolutePath);
             DiskIndexWriter diskIndexWriter = new DiskIndexWriter();
             List<Long> bytePositions = diskIndexWriter.writeIndex(index, absolutePath);
-            diskIndexWriter.writeTermBytePositionsToDatabaseCopy(index, bytePositions);
+            diskIndexWriter.writeTermBytePositionsToDatabase(index, bytePositions);
 
         } catch (IOException | SQLException e) {
             e.printStackTrace(); // Handle or log the exception appropriately
@@ -201,6 +201,9 @@ public class DiskPositionalIndexer {
         return queryMode;
     }
 
+    /**
+     * Print function used to display results for the 4 different ranking algorithms.
+     */
     public static void printTop10Ranked(List<Entry> top10Results, DirectoryCorpus corpus) throws IOException {
         Scanner readIn = new Scanner(System.in);
         for (Entry top10Result : top10Results) {
@@ -239,10 +242,8 @@ public class DiskPositionalIndexer {
     /**
      * This function allows the user to continue to enter queries until they enter 'END' and the program exits. In addition to
      * boolean queries, the user can choose to stem a term or list off the first 100 vocabulary terms in the index.
-     * <p>
      * Note: The program allows AND/OR queries. NOT/AND NOT are not allowed since these aren't relevant for searching (imagine
      * searching "AND NOT Walruses") <-- Want to see everything but walruses?
-     * <p>
      * In addition to booleanQueries, phrase queries are allowed. "Fires in yosemite" will provide documents with this phrase.
      */
     public static void booleanRetrieval(DiskPositionalIndex index, DirectoryCorpus corpus, Scanner readIn) throws IOException {
@@ -265,6 +266,11 @@ public class DiskPositionalIndexer {
         endProgram(readIn);
     }
 
+    /**
+     * Uses a Porter Stemmer to get the stem of the term passed to the method. For example,
+     * generously -> gener
+     */
+
     public static void stemQuery(String query) {
         String termToStem = query.split(" ")[1];
         System.out.println("Term to Stem: " + termToStem);
@@ -273,12 +279,15 @@ public class DiskPositionalIndexer {
         System.out.println(termToStem + "--> " + stemmedTerm);
     }
 
+    /**
+     * Prints the first 1000 vocabulary terms in ascending order.
+     */
     public static void printVocabulary(DiskPositionalIndex index) {
         List<String> vocabulary = index.getVocabulary();
-        List<String> first100Vocab = vocabulary.subList(0, 1000);
-        System.out.println("First 100 terms (sorted): ");
+        List<String> first1000Vocab = vocabulary.subList(0, 1000);
+        System.out.println("First 1000 terms (sorted): ");
 
-        for (String term : first100Vocab) {
+        for (String term : first1000Vocab) {
             System.out.println(term);
         }
 
@@ -288,7 +297,6 @@ public class DiskPositionalIndexer {
     /**
      * This function will take a user query and provide resulting documents that satisfy the query. For all queries except for
      * phrase queries, positions aren't needed. That is, the position that the term shows up in a document isn't necessary.
-     * <p>
      * This is why getPostingsWithPositions is called when the query is determined to be a phrase query, and getPostings is called
      * for all other queries.
      */
@@ -342,6 +350,11 @@ public class DiskPositionalIndexer {
         }
     }
 
+    /**
+     * Prompts user to enter in 1, 2, 3, or 4 to choose the ranking algorithm that will be used
+     * for ranked queries. If the user enters 0 the program exits. All other inputs are rejects, prompting
+     * the user to try again.
+     */
     public static int readInAlgorithmMode(Scanner readIn) {
         int userChoice;
 
@@ -367,6 +380,10 @@ public class DiskPositionalIndexer {
         return userChoice;
 
     }
+
+    /**
+     * Prompts user to enter a query. Not checked.
+     */
 
     public static String readInQuery() {
 

@@ -11,7 +11,6 @@ import SearchFoundations_Java.cecs429.queries.*;
 import SearchFoundations_Java.cecs429.text.NonBasicTokenProcessor;
 import opennlp.tools.stemmer.PorterStemmer;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -20,13 +19,20 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class PositionalInvertedIndexer {
+
+    /**
+     * This program allows for an in-memory index to be created (positionalInvertedIndex) and queried. The program
+     * supports only normal disjunctive form (one of more AND queries joined with ORs) for the boolean queries. The user
+     * can also choose to "STEM term", which uses a Porter Stemmer to get the stem of a term. Ex: generously -> gener. In addition,
+     * the first 1000 vocabulary words can be printed in ascending alphabetical order.
+     */
     public static void main(String[] args) throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, SQLException {
         Scanner readIn = new Scanner(System.in);
         Path absolutePath = readInDirectoryToIndex(readIn);
         DocumentCorpus corpus = DirectoryCorpus.loadJsonDirectory(absolutePath, ".json");
         Index index = indexCorpus(corpus, absolutePath);
 
-        String query = "";
+        String query;
         do {
             query = readInQuery(readIn);
 
@@ -50,29 +56,28 @@ public class PositionalInvertedIndexer {
     public static Path readInDirectoryToIndex(Scanner readIn) {
         System.out.print("Enter corpus path: ");
         String path = readIn.nextLine();
-        Path absolutePath = Paths.get(path).toAbsolutePath();
-        return absolutePath;
+        return Paths.get(path).toAbsolutePath();
     }
 
     /**
      * Displays the various query forms that are accepted, and prompts user to enter a query.
      */
     public static String readInQuery(Scanner readIn) {
-        String query = "";
         System.out.print(
-                "Query Forms: \n" +
-                    "\tOR QUERY | Ex: 'Term1 + Term2 + ...'  \n" +
-                    "\tAND QUERY | Ex: 'Term1 Term2 ...' \n" +
-                    "\tPHRASE QUERY | Ex: \"Term1 term2 ...\" \n" +
-                    "\tCombinations of the above are accepted.\n\n" +
+                """
+                        Query Forms:\s
+                        \tOR QUERY | Ex: 'Term1 + Term2 + ...' \s
+                        \tAND QUERY | Ex: 'Term1 Term2 ...'\s
+                        \tPHRASE QUERY | Ex: "Term1 term2 ..."\s
+                        \tCombinations of the above are accepted.
 
-                "Special Commands: 'END', 'STEM', 'VOCAB' \n" +
-                    "\t'END' to terminate program. \n" +
-                    "\t'STEM ____' to stem a term. \n" +
-                    "\t'VOCAB' to list first 100 vocabulary terms.\n\n" +
-                "Choice: ");
-        query = readIn.nextLine();
-        return query;
+                        Special Commands: 'END', 'STEM', 'VOCAB'\s
+                        \t'END' to terminate program.\s
+                        \t'STEM ____' to stem a term.\s
+                        \t'VOCAB' to list first 100 vocabulary terms.
+
+                        Choice:\s""");
+        return readIn.nextLine();
     }
 
     /**
@@ -86,7 +91,6 @@ public class PositionalInvertedIndexer {
 
     /**
      * Uses PorterScanner to stem terms.
-     * @param query
      */
     public static void stemQuery(String query){
         String termToStem = query.split(" ")[1];
@@ -97,14 +101,13 @@ public class PositionalInvertedIndexer {
 
     /**
      * Prints the first 100 vocabulary terms.
-     * @param index
      */
     public static void printVocabulary(Index index){
         List<String> vocabulary = index.getVocabulary();
-        List<String> first100Vocab = vocabulary.subList(0, 1000);
+        List<String> first1000Vocab = vocabulary.subList(0, 1000);
         System.out.println("First 100 terms (sorted): ");
 
-        for (String term : first100Vocab) {
+        for (String term : first1000Vocab) {
             System.out.println(term);
         }
         System.out.println("Total vocabulary terms: " + vocabulary.size());
@@ -128,11 +131,10 @@ public class PositionalInvertedIndexer {
             System.out.println("\n Term not found in corpus \n");
         } else {
 
-            for (int i = 0; i < queryPostings.size(); i++) {
-                int documentID = queryPostings.get(i).getDocumentId();
-                Document d = corpus.getDocument(documentID);
-                System.out.println(d.getTitle() + " (ID " + d.getId() + ")");
-                StringBuilder textBuilder = new StringBuilder();
+            for (Posting queryPosting : queryPostings) {
+                int documentID = queryPosting.getDocumentId();
+                Document document = corpus.getDocument(documentID);
+                System.out.println(document.getTitle() + " (ID " + document.getId() + ")");
             }
             System.out.println("Query Postings Size: " + queryPostings.size());
             int documentToShow;
@@ -143,36 +145,34 @@ public class PositionalInvertedIndexer {
             Document documentShow = corpus.getDocument(documentToShow);
             Reader jsonReader = documentShow.getContent();
             StringBuilder textBuilder = new StringBuilder();
-            int a = 0;
+            int character;
             int count = 0;
 
-            while ((a = jsonReader.read()) != -1) {
-                textBuilder.append((char) a);
+            while ((character = jsonReader.read()) != -1) {
+                textBuilder.append((char) character);
                 count++;
 
                 if (count == 120) {
-                    String oi = textBuilder.toString();
-                    System.out.println(oi);
+                    String sequenceFromBody = textBuilder.toString();
+                    System.out.println(sequenceFromBody);
                     textBuilder.delete(0, textBuilder.length());
                     count = 0;
                 }
 
             }
-            String oi = textBuilder.toString();
-            System.out.println(oi);
+            String bodyOfDocument = textBuilder.toString();
+            System.out.println(bodyOfDocument);
 
         }
     }
 
     /**
-     * A PositionalInvertedIndex is a hashmap that consists of all unique terms found in the corpus of documents.
-     * The hashmap maps unique terms to a list of postings. Each posting contains the documentID and the positions (locations in the document) where the term is found.
-     * For example, the term "dog" might be mapped to many  documents. In each document, it might appear many times and thus have a list of positions per document.
-     * In addition, this function calls calculateAndWriteDocumentWeights for each document in order to write document weights.
-     * TODO eventually refactor
+     * A PositionalInvertedIndex is a hashmap that consists of all unique terms found in the corpus of documents. The hashmap
+     * maps unique terms to a list of postings. Each posting contains the documentID and the positions (locations in the document)
+     * where the term is found. For example, the term "dog" might be mapped to many  documents. In each document, it might appear
+     * many times and thus have a list of positions per document. In addition, this function calls calculateAndWriteDocumentWeights
+     * for each document in order to write document weights.
      */
-
-
     public static PositionalInvertedIndex indexCorpus(DocumentCorpus corpus, Path absolutePath) throws IOException {
 
         System.out.println("Indexing...");
@@ -190,7 +190,7 @@ public class PositionalInvertedIndexer {
             int position = 0;
             int id = document.getId();
 
-            Iterable<String> tokens = null;
+            Iterable<String> tokens;
             Map<String, Integer> termFrequency = new HashMap<>();
             EnglishTokenStream ETS = new EnglishTokenStream(document.getContent());
             tokens = ETS.getTokens(); // Text in the document is split by whitespace into iterable strings
@@ -214,23 +214,16 @@ public class PositionalInvertedIndexer {
                         termFrequency.put(token, count + 1);
 
                     }
-
-
                 }
             }
-
             diskIndexWriter.calculateAndWriteDocumentWeights(termFrequency, absolutePath, id, documentTokens, bytes );
-
 
         }
 
         averageTokens = averageTokens / corpus.getCorpusSize();
-        String pathToDocWeights = absolutePath.toString() + "/index/docWeights.bin";
+        String pathToDocWeights = absolutePath + "/index/docWeights.bin";
         diskIndexWriter.writeAverageTokensForCorpus(pathToDocWeights, averageTokens);
-
-
         System.out.println("Indexing Complete. \n");
-
         return positionalIndex;
 
 
