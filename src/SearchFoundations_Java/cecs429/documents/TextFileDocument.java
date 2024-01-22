@@ -14,6 +14,7 @@ public class TextFileDocument implements FileDocument {
 	private int mDocumentId;
 	private Path mFilePath;
 
+	private String URL;
 	private String title;
 	
 	/**
@@ -49,6 +50,11 @@ public class TextFileDocument implements FileDocument {
 	public String getTitle() {
 		 title = mFilePath.getFileName().toString();
 			return title;
+	}
+	@Override
+	public String getURL() {
+
+		return null;
 	}
 
 	public static FileDocument loadTextFileDocument(Path absolutePath, int documentId) {

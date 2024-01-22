@@ -75,32 +75,31 @@ public class DiskPositionalIndex implements Index{
     public List<Posting> getPostings(String term) throws IOException {
         SQLiteDB database = new SQLiteDB();
         Long byte_position = database.selectTerm(term);
-
-        RandomAccessFile onDiskIndex = new RandomAccessFile(pathToIndex, "r");
-        onDiskIndex.seek(byte_position);
-
-
-        Integer dft = onDiskIndex.readInt();
         List<Posting> postingList = new ArrayList<>();
 
-        Integer docID = 0;
-        for(int i = 0; i < dft; i++)
-        {
+        if (byte_position == null) {
+            return postingList;
+        } else {
 
 
-            docID = docID + onDiskIndex.readInt();
-            Integer tftd = onDiskIndex.readInt();
-            onDiskIndex.skipBytes(tftd * 4);
+            RandomAccessFile onDiskIndex = new RandomAccessFile(pathToIndex, "r");
+            onDiskIndex.seek(byte_position);
+            Integer dft = onDiskIndex.readInt();
+            Integer docID = 0;
 
-            Posting p = new Posting(docID, null);
-            p.setTFTD(tftd);
-            postingList.add(p);
+            for (int i = 0; i < dft; i++) {
+                docID = docID + onDiskIndex.readInt();
+                Integer tftd = onDiskIndex.readInt();
+                onDiskIndex.skipBytes(tftd * 4);
+                Posting p = new Posting(docID, null);
+                p.setTFTD(tftd);
+                postingList.add(p);
 
+            }
 
-
+            return postingList;
         }
 
-        return postingList;
     }
 
     @Override

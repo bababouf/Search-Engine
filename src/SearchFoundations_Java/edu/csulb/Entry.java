@@ -8,5 +8,8 @@ public class Entry {
         docID = id;
         Ad = accumulatorValue;
     }
+    public Integer getDocID(){
+        return docID;
+    }
 
 }

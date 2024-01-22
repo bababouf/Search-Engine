@@ -93,9 +93,9 @@ public class BuildIndexTest {
                             pathToDocumentWeights, "rw");
 
             documentWeights.seek(documentWeights.getFilePointer());
-            double[][] twoD_arr = new double[4][4];
+            double[][] twoD_arr = new double[5][4];
 
-            for(int i = 0; i <= 3; i++)
+            for(int i = 0; i <= 4; i++)
             {
                 twoD_arr[i][0] = documentWeights.readDouble(); // LD
                 twoD_arr[i][1] = documentWeights.readDouble(); // DocumentTokens
@@ -108,15 +108,17 @@ public class BuildIndexTest {
             double[] documentTwoWeights = {10.16, 88.0, 519.0, 1.35}; // Manually calculated from test2.json
             double[] documentThreeWeights = {10.21, 92.0, 521.0, 1.31}; // Manually calculated from test3.json
             double[] documentFourWeights = {11.30, 111.0, 627.0, 1.37}; // Manually calculated from test4.json
+            double[] documentFiveWeights = {10.60, 97.0, 505.0, 1.40}; // Manually calculated from test4.json
 
             assertArrayEquals(documentOneWeights, twoD_arr[0], .01);
             assertArrayEquals(documentTwoWeights, twoD_arr[1], .01);
             assertArrayEquals(documentThreeWeights, twoD_arr[2], .01);
             assertArrayEquals(documentFourWeights, twoD_arr[3], .01);
+            assertArrayEquals(documentFiveWeights, twoD_arr[4], .01);
 
             documentWeights.seek(documentWeights.length() - 8);
             double averageTokens = documentWeights.readDouble();
-            assertEquals(91, averageTokens, .01);
+            assertEquals(92.2, averageTokens, .01);
             documentWeights.seek(documentWeights.length());
             documentWeights.close();
 

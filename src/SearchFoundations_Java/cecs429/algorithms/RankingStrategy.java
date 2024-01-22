@@ -6,10 +6,14 @@ import SearchFoundations_Java.cecs429.queries.QueryComponent;
 import SearchFoundations_Java.edu.csulb.Entry;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RankingStrategy {
 
 
 
-    List<Entry> calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus);
+    Map<Integer, Double> calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus);
+
+
+    List<Entry> calculateAccumulatorValue(Map<Integer, Double> ADMap, DiskPositionalIndex onDiskIndex);
 }

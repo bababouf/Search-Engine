@@ -7,11 +7,15 @@ import SearchFoundations_Java.cecs429.documents.Document;
 import SearchFoundations_Java.cecs429.indexing.*;
 import SearchFoundations_Java.cecs429.queries.*;
 import opennlp.tools.stemmer.PorterStemmer;
+
+import java.awt.*;
 import java.io.*;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.List;
 
 public class DiskPositionalIndexer {
 
@@ -152,10 +156,27 @@ public class DiskPositionalIndexer {
                 RankedDispatch rankedAlgorithm = new RankedDispatch(DPIndex, corpus);
 
                 switch (choice) {
-                    case 1 -> top10Ranked = rankedAlgorithm.calculate(new DefaultRanked());
-                    case 2 -> top10Ranked = rankedAlgorithm.calculate(new TermFreqInvDocFreqRanked());
-                    case 3 -> top10Ranked = rankedAlgorithm.calculate(new OkapiRanked());
-                    case 4 -> top10Ranked = rankedAlgorithm.calculate(new WackyRanked());
+                    case 1 -> {
+                        DefaultRanked defaultRanked = new DefaultRanked();
+                        rankedAlgorithm.calculate(defaultRanked);
+                        top10Ranked = rankedAlgorithm.calculateAccumulatorValue(defaultRanked);
+                    }
+
+                    case 2 -> {
+                        TermFreqInvDocFreqRanked tfidfRanked = new TermFreqInvDocFreqRanked();
+                        rankedAlgorithm.calculate(tfidfRanked);
+                        top10Ranked = rankedAlgorithm.calculateAccumulatorValue(tfidfRanked);
+                    }
+                    case 3 -> {
+                        OkapiRanked okapiRanked = new OkapiRanked();
+                        rankedAlgorithm.calculate(okapiRanked);
+                        rankedAlgorithm.calculateAccumulatorValue(okapiRanked);
+                    }
+                    case 4 -> {
+                        WakyRanked wakyRanked = new WakyRanked();
+                        rankedAlgorithm.calculate(wakyRanked);
+                        rankedAlgorithm.calculateAccumulatorValue(wakyRanked);
+                    }
                 }
                 if (top10Ranked != null) {
                     printTop10Ranked(top10Ranked, corpus);
@@ -212,31 +233,43 @@ public class DiskPositionalIndexer {
             System.out.println("ADValue: " + top10Result.Ad);
         }
 
-        //start
         int documentToShow;
         System.out.print("Enter a documentID to show: ");
         documentToShow = readIn.nextInt();
         Document documentShow = corpus.getDocument(documentToShow);
+        String documentUrl = documentShow.getURL();
         Reader jsonReader = documentShow.getContent();
-        StringBuilder textBuilder = new StringBuilder();
-        int a;
-        int count = 0;
 
-        while ((a = jsonReader.read()) != -1) {
-            textBuilder.append((char) a);
-            count++;
-            if (count == 120) {
-                String oi = textBuilder.toString();
-                System.out.println(oi);
-                textBuilder.delete(0, textBuilder.length());
-                count = 0;
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            try {
+                Desktop.getDesktop().browse(new URI(documentUrl));
+            } catch (Exception e) {
+                System.out.println("Error opening the URL in the default browser.");
+                e.printStackTrace();
+            }
+        } else
+        {
+            System.out.println("Desktop browsing is not supported on this platform.");
+            StringBuilder textBuilder = new StringBuilder();
+
+
+            int character;
+            int count = 0;
+
+            while ((character = jsonReader.read()) != -1) {
+                textBuilder.append((char) character);
+                count++;
+                if (count == 120) {
+                    String sequence = textBuilder.toString();
+                    System.out.println(sequence);
+                    textBuilder.delete(0, textBuilder.length());
+                    count = 0;
+                }
             }
 
+            String documentContents = textBuilder.toString();
+            System.out.println(documentContents);
         }
-        String oi = textBuilder.toString();
-        System.out.println(oi);
-
-
     }
 
     /**
@@ -259,7 +292,8 @@ public class DiskPositionalIndexer {
                 printVocabulary(index);
 
             } else if (!query.contains("END")) {
-                processBooleanQuery(query, corpus, index, readIn); // Main function called to processBooleanQueries
+                List<Posting> queryPostings = processBooleanQuery(query, index); // Main function called to processBooleanQueries
+                printResults(corpus, queryPostings, readIn);
             }
 
         } while (!query.equals("END"));
@@ -300,17 +334,18 @@ public class DiskPositionalIndexer {
      * This is why getPostingsWithPositions is called when the query is determined to be a phrase query, and getPostings is called
      * for all other queries.
      */
-    public static void processBooleanQuery(String query, DirectoryCorpus corpus, DiskPositionalIndex index, Scanner readIn) throws IOException {
+    public static List<Posting> processBooleanQuery(String query, DiskPositionalIndex index) throws IOException {
         BooleanQueryParser booleanParser = new BooleanQueryParser();
         QueryComponent queryComponent = booleanParser.parseQuery(query);
-
+        List<Posting> queryPostings;
         if (queryComponent instanceof PhraseLiteral phraseLiteral) {
-            List<Posting> queryPostings = phraseLiteral.getPostingsWithPositions(index);
-            printResults(corpus, queryPostings, readIn);
+            queryPostings = phraseLiteral.getPostingsWithPositions(index);
+
         } else {
-            List<Posting> queryPostings = queryComponent.getPostings(index);
-            printResults(corpus, queryPostings, readIn);
+            queryPostings = queryComponent.getPostings(index);
+
         }
+        return queryPostings;
     }
 
     /**
@@ -322,31 +357,44 @@ public class DiskPositionalIndexer {
         } else {
             for (Posting queryPosting : queryPostings) {
                 int documentID = queryPosting.getDocumentId();
-                Document d = corpus.getDocument(documentID);
-                System.out.println(d.getTitle() + " (ID " + d.getId() + ")");
+                Document document = corpus.getDocument(documentID);
+                System.out.println(document.getTitle() + " (ID " + document.getId() + ")");
             }
             int documentToShow;
             System.out.print("Enter a documentID to show: ");
             documentToShow = readIn.nextInt();
             Document documentShow = corpus.getDocument(documentToShow);
+            String documentUrl = documentShow.getURL();
             Reader jsonReader = documentShow.getContent();
-            StringBuilder textBuilder = new StringBuilder();
-            int a;
-            int count = 0;
 
-            while ((a = jsonReader.read()) != -1) {
-                textBuilder.append((char) a);
-                count++;
-                if (count == 120) {
-                    String oi = textBuilder.toString();
-                    System.out.println(oi);
-                    textBuilder.delete(0, textBuilder.length());
-                    count = 0;
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                try {
+                    Desktop.getDesktop().browse(new URI(documentUrl));
+                } catch (Exception e) {
+                    System.out.println("Error opening the URL in the default browser.");
+                    e.printStackTrace();
                 }
+            } else
+            {
+                System.out.println("Desktop browsing is not supported on this platform.");
+                StringBuilder textBuilder = new StringBuilder();
+                int character;
+                int count = 0;
 
+                while ((character = jsonReader.read()) != -1) {
+                    textBuilder.append((char) character);
+                    count++;
+
+                    if (count == 120) {
+                        String sequence = textBuilder.toString();
+                        System.out.println(sequence);
+                        textBuilder.delete(0, textBuilder.length());
+                        count = 0;
+                    }
+                }
+                String documentContents = textBuilder.toString();
+                System.out.println(documentContents);
             }
-            String oi = textBuilder.toString();
-            System.out.println(oi);
         }
     }
 

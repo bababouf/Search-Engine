@@ -13,6 +13,7 @@ public class JSONFileDocument implements FileDocument{
     private int mDocumentId;
     private Path mFilePath;
     private String mTitle;
+    private String URL;
 
     /**
      * Constructs a JSONFileDocument with a given document ID representing the file at the given absoluteFilePath
@@ -46,11 +47,7 @@ public class JSONFileDocument implements FileDocument{
 
             return reader;
 
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (ParseException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -66,11 +63,22 @@ public class JSONFileDocument implements FileDocument{
             mTitle = title;
             return mTitle;
 
-        } catch (ParseException e) {
+        } catch (ParseException | IOException e) {
             throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        }
+    }
+    @Override
+    public String getURL() {
+        JSONParser parser = new JSONParser();
+        String path = mFilePath.toString();
+        try {
+            Object obj = parser.parse(new FileReader(path));
+            JSONObject jsonObject = (JSONObject)obj;
+            String url = (String)jsonObject.get("url");
+            URL = url;
+            return URL;
+
+        } catch (ParseException | IOException e) {
             throw new RuntimeException(e);
         }
     }

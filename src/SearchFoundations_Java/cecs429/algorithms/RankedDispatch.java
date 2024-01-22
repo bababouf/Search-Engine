@@ -16,11 +16,13 @@ public class RankedDispatch {
 
     private final DiskPositionalIndex onDiskIndex;
     private final DirectoryCorpus directoryCorpus;
+    private Map<Integer, Double> ADMap = new HashMap<>();
 
     public RankedDispatch(DiskPositionalIndex index, DirectoryCorpus corpus){
         onDiskIndex = index;
         directoryCorpus = corpus;
     }
+
 
     public List<QueryComponent> promptUser(){
         String query = "";
@@ -33,8 +35,12 @@ public class RankedDispatch {
         }while(query != "exit");
     }
 
-    public List<Entry> calculate(RankingStrategy strategy){
+    public void calculate(RankingStrategy strategy){
         List<QueryComponent> literals = promptUser();
-        return strategy.calculate(literals, onDiskIndex, directoryCorpus);
+        ADMap = strategy.calculate(literals, onDiskIndex, directoryCorpus);
+    }
+
+    public List<Entry> calculateAccumulatorValue(RankingStrategy strategy) {
+        return strategy.calculateAccumulatorValue(ADMap, onDiskIndex);
     }
 }

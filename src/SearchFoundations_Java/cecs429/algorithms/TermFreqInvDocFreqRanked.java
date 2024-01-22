@@ -1,18 +1,14 @@
 package SearchFoundations_Java.cecs429.algorithms;
-
 import SearchFoundations_Java.cecs429.documents.DirectoryCorpus;
 import SearchFoundations_Java.cecs429.indexing.DiskPositionalIndex;
 import SearchFoundations_Java.cecs429.indexing.Posting;
 import SearchFoundations_Java.cecs429.queries.QueryComponent;
 import SearchFoundations_Java.edu.csulb.Entry;
 import SearchFoundations_Java.edu.csulb.EntryComparator;
-
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
-
 public class TermFreqInvDocFreqRanked implements RankingStrategy{
-
 
     public List<Entry> calculateAccumulatorValue(Map<Integer, Double> ADMap, DiskPositionalIndex onDiskIndex) {
         try {
@@ -50,9 +46,8 @@ public class TermFreqInvDocFreqRanked implements RankingStrategy{
     }
 
     @Override
-    public List<Entry> calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus) {
+    public Map<Integer, Double> calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus) {
         double corpusSize = corpus.getCorpusSize();
-        // ADMAP maps docIDs to corresponding accumulator value
         Map<Integer, Double> ADMap = new HashMap<>();
 
         try {
@@ -81,7 +76,8 @@ public class TermFreqInvDocFreqRanked implements RankingStrategy{
         } catch (IOException e) {
             System.out.println("Shit not looking good");
         }
-        return calculateAccumulatorValue(ADMap, onDiskIndex);
+
+        return ADMap;
     }
 
 }

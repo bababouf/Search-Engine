@@ -1,18 +1,15 @@
 package SearchFoundations_Java.cecs429.algorithms;
-
 import SearchFoundations_Java.cecs429.documents.DirectoryCorpus;
 import SearchFoundations_Java.cecs429.indexing.DiskPositionalIndex;
 import SearchFoundations_Java.cecs429.indexing.Posting;
 import SearchFoundations_Java.cecs429.queries.QueryComponent;
 import SearchFoundations_Java.edu.csulb.Entry;
 import SearchFoundations_Java.edu.csulb.EntryComparator;
-
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
 
 public class OkapiRanked implements RankingStrategy{
-
 
     public List<Entry> calculateAccumulatorValue(Map<Integer, Double> ADMap, DiskPositionalIndex onDiskIndex) {
         try {
@@ -54,12 +51,10 @@ public class OkapiRanked implements RankingStrategy{
     }
 
     @Override
-    public List<Entry> calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus) {
+    public Map<Integer, Double>  calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus) {
 
         double corpusSize = corpus.getCorpusSize();
-        // ADMAP maps docIDs to corresponding accumulator value
         Map<Integer, Double> ADMap = new HashMap<>();
-
 
         try {
             RandomAccessFile documentWeights = new RandomAccessFile(onDiskIndex.pathToWeights, "r");
@@ -68,25 +63,21 @@ public class OkapiRanked implements RankingStrategy{
                 List<Posting> postingsForTerm = literal.getPostings(onDiskIndex);
                 int documentFrequency = postingsForTerm.size();
 
-                Double weightOfTermInQueryCalculation = (corpusSize - documentFrequency + .5) / documentFrequency + .5;
+                Double weightOfTermInQueryCalculation = (corpusSize - documentFrequency + .5) / (documentFrequency + .5);
 
                 Double weightOfTermInQuery = Math.max(.1, Math.log(weightOfTermInQueryCalculation));;
 
                 for (Posting posting : postingsForTerm) {
                     Integer id = posting.getDocumentId();
                     int termFrequencyOfTermInDocument = posting.getTFtd();
-
-
                     documentWeights.seek((32 * id) + 8);
                     double docLength = documentWeights.readDouble();
-
                     documentWeights.seek(documentWeights.length() - 32);
                     double avgTokensPerDoc = documentWeights.readDouble();
 
-                    Double weightOfTermInDocumentCalculation =
-                            (2.2 * termFrequencyOfTermInDocument)/(1.2 * (.25 + .75 * (docLength/avgTokensPerDoc)));
+                    Double weightOfTermInDocument =
+                            (2.2 * termFrequencyOfTermInDocument)/(1.2 * (.25 + .75 * (docLength/avgTokensPerDoc)) + posting.getTFtd());
 
-                    Double weightOfTermInDocument = (1 + (Math.log(posting.getTFtd())));
 
                     if (ADMap.get(id) == null) {
                         Double accumulatorValue = weightOfTermInDocument * weightOfTermInQuery;
@@ -106,7 +97,8 @@ public class OkapiRanked implements RankingStrategy{
         } catch (IOException e) {
             System.out.println("Shit not looking good");
         }
-        return calculateAccumulatorValue(ADMap, onDiskIndex);
+
+        return ADMap;
     }
 
 }
