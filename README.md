@@ -48,12 +48,44 @@ The last stage of the indexing process is to store the bytePositions within the 
 
 
 ## Querying the Index
+As stated above, running the *DiskPositionalIndex* driver will first prompt the user to select to either build or query an index.  
+
+  
+![](https://i.gyazo.com/82d1d6efbede43f9aaf5866699fc791e.png)  
+
+Selecting choice 2 will allow the user to query an index. The user will be prompted to select a mode for querying:  
+
+
+![](https://i.gyazo.com/8988043619d45852e693e4de8342fa7e.png)  
+
+And enter a valid corpus directory:  
+
+![](https://i.gyazo.com/87698dfae883724b711a521902de1a6c.png)  
+
+Once a valid directory is entered, the user will either be prompted to enter a query (if boolean query mode was selected) or to select a ranking scheme (if ranked query mode was selected).  
+
 
 ### Boolean Queries
+The program is able to process boolean queries that are in normal disjuntive form (one of more AND queries joined with ORs). Quotes around the query are used to indicate phrase queries, where the user is looking
+for specific phrases that appear in a document. 
+Below are some examples of what this looks like:  
+
+
+Single Term: dogs  
+
+*AND* Query: dogs cats  
+
+*OR* Query: dogs + cats  
+
+*Phrase* Query: "fires in yosemite" (needs quotes around query)  
+
+*Mixed* Query: dogs cats + elephants yaks turkeys
+
 ### Ranked Queries
+The search engine supports four different ranking schemes 
 1. Default
 2. TF-IDF
 3. Okapi BM25
 4. Waky
-
+### Querying Details
 ## Testing
