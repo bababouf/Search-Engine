@@ -1,14 +1,14 @@
 # Search Engine
 ![](https://i.gyazo.com/69e159c6d36ceb9455631a0359058b15.png)
 ## Overview
+//blurb about search engines blah blah boolean queries for law, ranked queries for google chrome blahhhh
+
 Written in Java, this search engine program has two main functionalities: building an in-memory index from a corpus of documents, and querying that index. The index allows for fast execution of queries, in exchange for additional time
 to do the indexing. If the documents the index is built on are static, the index only needs to be built once.
-## Driver Classes
+## Driver Class
 *src/SearchFoundations_Java/edu/csulb/DiskPositionalIndexer.java*  
 This driver class builds an on-disk index, and allows for boolean queries, as well as several ranking schemes for ranked queries. 
 
-*src/SearchFoundations_Java/edu/csulb/PositionalInvertedIndexer.java*  
-This driver class builds an in-memory index, and allows for boolean queries over it.
 ## Building the Index
 Running the *DiskPositionalIndex* driver will first prompt the user to select to either build or query an index.  
 
@@ -22,12 +22,31 @@ The corpus of documents that is in this respository (truncated to 1000 documents
 
 The relative path for this directory can be entered when prompted, as shown above. However, if another corpus is constructed (.JSON or .TXT files) it can be placed in the root of this project and will be indexed in the same manner.
 ### Indexing Details
-This subsection will discuss the essential classes involved with the indexing process, and give insight into what exactly is being done in this process.  
+The indexing process can be broken up into three main stages:  
+1. Creating the in-memory positional index
+2. Creating the on-disk index
+3. Creating SQLite database to store byte positions of terms
 
-Regardless of which driver class is ran (PositionalInvertedIndexer or DiskPositionalIndexer) an in-memory positional index will be created as the first step of the indexing process. The in-memory positional index that is created is simply a hashmap 
-of terms to their corresponding *posting* lists. Thus, for every unique term found in the corpus, a posting list will contain the document, as well as the positions in that document where the term is found. Some terms will contain long posting lists, as they 
-show up in many documents, whereas others may contain very short posting lists, as they only appear in few documents. The *indexCorpus* method found in the PositionalInvertedIndexer class
-is responsible for creating this in-memory positional index. 
+**_PositionalInvertedIndexer.indexCorpus()_**  
+
+The most important part of the indexing process is creating the in-memory index. The in-memory positional index that is created is simply a hashmap of terms to their corresponding *posting* lists. For every unique term found in the corpus,
+a posting list will contain the documentID, as well as positions (integers starting from 0 at the beginning of the document) where that term is found. Some terms will contain long posting lists, as they show up in many documents, whereas others may contain very short posting lists, as they only appear in few documents. The *indexCorpus* method found in the PositionalInvertedIndexer class is responsible for creating this in-memory positional index. Creating this index takes care of all the needs for boolean queries, but in order to achieve functionality for ranked queries, additional information must be taken from the documents during indexing time. To accomplish this, a binary file within the corpus directory is populated with this information (i.e *all-nps-sites-extracted/index/docWeights.bin*)  
+
+**_DiskIndexWriter.writeIndex()_**  
+
+Once the in-memory index is created, it is then moved to disk (i.e *all-nps-sites-extracted/index/postings.bin*). Each term is stored in the following manner:  
+  
+documentFrequency -> docID_First -> position1 -> position2 -> ... -> positionZ -> docID_Next -> position1 -> position2 -> ... -> positionZ  
+
+DocumentFrequency contains the number of documents the term appears in. This is followed by the first documentID, and the integer positions where the term is found in that specific document. Position 0 would correspond to the first term in a document.  This pattern continues for the rest of the documents that the term is found in.  
+
+**_SQLiteDB class_**  
+
+The last stage of the indexing process is to store the bytePositions within the on-disk index file (*postings.bin*) where each term starts. To do this efficiently, a local SQLite database consisting of two columns, one for the *string term* and one for the *long bytePosition* is used. 
+
+
+
+
 ## Querying the Index
 
 ### Boolean Queries
@@ -36,3 +55,5 @@ is responsible for creating this in-memory positional index.
 2. TF-IDF
 3. Okapi BM25
 4. Waky
+
+## Testing
