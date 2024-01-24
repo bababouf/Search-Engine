@@ -66,7 +66,7 @@ Once a valid directory is entered, the user will either be prompted to enter a q
 
 
 ### Boolean Queries
-The program is able to process boolean queries that are in normal disjuntive form (one of more AND queries joined with ORs). Quotes around the query are used to indicate phrase queries, where the user is looking
+The program is able to process boolean queries that are in normal disjunctive form (one of more AND queries joined with ORs). Quotes around the query are used to indicate phrase queries, where the user is looking
 for specific phrases that appear in a document. 
 Below are some examples of what this looks like:  
 
@@ -81,11 +81,28 @@ Single Term: dogs
 
 *Mixed* Query: dogs cats + elephants yaks turkeys
 
-### Ranked Queries
-The search engine supports four different ranking schemes 
+### Basic Ranked Retrieval  
+
+In ranked retrieval, the documents of a corpus are ranked based on their suspected relevance to a given query. A basic ranking scheme may look to term frequency as an indicator for relevant documents. For example if a user entered "dogs", intuitively, 
+it might make sense to rank the documents where dog appears frequently higher than those in which it doesn't. However, it soon becomes apparent that not all terms in the query are equal. If the query was instead "the dogs", a document with frequent use of "the" (and no mention of dogs) might rank higher than a document actually talking about dogs. Thus, for each of the schemes below, weights are given for both the terms in the query and the terms in each document.  
+
+In addition to these weights, the length of the document must be accounted for. Without an attempt to normalize document lengths, longer documents would almost always rank higher than shorter documents.
+
+
 1. Default
+   
+   ![](https://i.gyazo.com/eb608bfd40a7f0f1879603e38d58698d.png)  
+   
 2. TF-IDF
+   
+   ![](https://i.gyazo.com/f569b3ec39a67f492e2b1bb4541e82bf.png)  
 3. Okapi BM25
-4. Waky
+
+   ![](https://i.gyazo.com/6fbc53ea9cb1ee932c012e239e50f55b.png)
+   
+5. Waky
+   
+   ![](https://i.gyazo.com/1b5cba7ac18f70b414f53987528c9131.png)  
+   
 ### Querying Details
 ## Testing
