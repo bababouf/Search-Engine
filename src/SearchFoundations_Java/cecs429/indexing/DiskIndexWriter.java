@@ -1,6 +1,7 @@
 package SearchFoundations_Java.cecs429.indexing;
 
 import SearchFoundations_Java.cecs429.database.SQLiteDB;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
@@ -74,6 +75,7 @@ public class DiskIndexWriter {
     /**
      * This function connects to a local SQLite DB and inserts a row at a time, consisting of a term and its corresponding
      * long byte position.
+     *
      * @param termBytePositions A list of long byte positions written in ascending alphabetical order for each term
      */
     public void writeTermBytePositionsToDatabase(PositionalInvertedIndex PII, List<Long> termBytePositions) {
@@ -93,8 +95,7 @@ public class DiskIndexWriter {
               SQLite transactions are used, allowing 1000 terms to be commited to the DB at a time.
              */
             database.insertTerm(term, bytePosition);
-            if(count == 1000)
-            {
+            if (count == 1000) {
                 System.out.println("Commiting 1000 terms to DB");
                 count = 0;
                 database.commit();
@@ -116,7 +117,7 @@ public class DiskIndexWriter {
             RandomAccessFile documentWeights = new RandomAccessFile(pathToDocWeights, "rw");
             documentWeights.setLength(0);
             documentWeights.close();
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -141,7 +142,7 @@ public class DiskIndexWriter {
 
             for (String term : terms) {
                 int frequencyOfTerm = termFrequency.get(term);
-                averageTFTD =  averageTFTD + frequencyOfTerm;
+                averageTFTD = averageTFTD + frequencyOfTerm;
 
                 if (frequencyOfTerm >= 1) {
                     Double weightOfTermInDocument = (1 + (Math.log(frequencyOfTerm))); // Terms that appear more are given a higher weight
@@ -150,13 +151,13 @@ public class DiskIndexWriter {
                 }
             }
 
-            averageTFTD =  averageTFTD / (termFrequency.values().size());
+            averageTFTD = averageTFTD / (termFrequency.values().size());
             LD = Math.sqrt(LD);
             documentWeights.seek(32L * id);
             documentWeights.writeDouble(LD);
             documentWeights.writeDouble(documentTokens);
             documentWeights.writeDouble(bytes);
-            documentWeights.writeDouble( averageTFTD);
+            documentWeights.writeDouble(averageTFTD);
             documentWeights.seek(documentWeights.length());
             documentWeights.close();
 
@@ -169,7 +170,7 @@ public class DiskIndexWriter {
     /**
      * This function will write the average tokens per document for the corpus at the end of the docWeights.bin file
      */
-    public void writeAverageTokensForCorpus(String pathToDocWeights, double averageTokens){
+    public void writeAverageTokensForCorpus(String pathToDocWeights, double averageTokens) {
         try {
             RandomAccessFile documentWeights =
                     new RandomAccessFile(
@@ -179,7 +180,7 @@ public class DiskIndexWriter {
             documentWeights.writeDouble(averageTokens);
             documentWeights.seek(documentWeights.length());
             documentWeights.close();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

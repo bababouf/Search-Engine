@@ -1,4 +1,3 @@
-
 package SearchFoundations_Java.edu.csulb;
 
 import SearchFoundations_Java.cecs429.algorithms.*;
@@ -19,7 +18,8 @@ import java.util.List;
 
 public class DiskPositionalIndexer {
 
-    /** Below is the driver for this program. The program operates in two modes. One of the modes will create an index
+    /**
+     * Below is the driver for this program. The program operates in two modes. One of the modes will create an index
      * from a user-entered corpus directory (should be a corpus of all text files or all JSON files). The other mode will
      * allow the user to query the index. The program allows for two different types of queries, boolean and ranked. For
      * boolean queries, the program supports only normal disjunctive form (one of more AND queries joined with ORs). For ranked queries,
@@ -33,8 +33,8 @@ public class DiskPositionalIndexer {
 
         // User enters '1' to build an index from a directory
         if (userChoice == 1) {
-            Path absolutePath = readInPath(readIn);
-            buildOnDiskIndex(absolutePath);
+            Path absolutePathToCorpus = readInPath(readIn);
+            buildOnDiskIndex(absolutePathToCorpus);
 
             // User enters '2' to query an existing index
         } else if (userChoice == 2) {
@@ -52,7 +52,7 @@ public class DiskPositionalIndexer {
 
     /**
      * This method prompts the user to choose between 3 options; 1 to build the index, 2 to process queries over an
-     * existing index, and 3 to exit. Invalid inputs will again prompt the user.
+     * existing index, and 3 to exit. Invalid inputs will re-prompt the user.
      */
     public static int readInSystemMode(Scanner readIn) {
         int userChoice = 0;
@@ -102,12 +102,12 @@ public class DiskPositionalIndexer {
      * in that document). After being written to disk, a SQLite local database is created that holds the terms and the byte position
      * where they can be found. This makes for an efficient lookup during querying. Ex: "dog" begins at bytePosition 2000000
      */
-    public static void buildOnDiskIndex(Path absolutePath) {
+    public static void buildOnDiskIndex(Path absolutePathToCorpus) {
         try {
-            DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(absolutePath, ".json");
-            PositionalInvertedIndex index = PositionalInvertedIndexer.indexCorpus(corpus, absolutePath);
+            DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(absolutePathToCorpus, ".json");
+            PositionalInvertedIndex index = PositionalInvertedIndexer.indexCorpus(corpus, absolutePathToCorpus);
             DiskIndexWriter diskIndexWriter = new DiskIndexWriter();
-            List<Long> bytePositions = diskIndexWriter.writeIndex(index, absolutePath);
+            List<Long> bytePositions = diskIndexWriter.writeIndex(index, absolutePathToCorpus);
             diskIndexWriter.writeTermBytePositionsToDatabase(index, bytePositions);
 
         } catch (IOException | SQLException e) {
@@ -203,9 +203,9 @@ public class DiskPositionalIndexer {
         do {
             System.out.print("""
                     [1] Boolean Retrieval\s
-                    [2] Ranked Retrieval (Not functioning)
+                    [2] Ranked Retrieval\s
                     Choose Mode :\s""");
-            //readIn.nextLine();
+
 
             while (!readIn.hasNextInt()) {
                 System.out.println("Invalid input.");
@@ -223,7 +223,8 @@ public class DiskPositionalIndexer {
     }
 
     /**
-     * Print function used to display results for the 4 different ranking algorithms.
+     * Print function used to display results for the 4 different ranking algorithms. Once a documentID is entered, the NPS website
+     * will be pulled up in the user's default browser. If this cannot be done, the text will be printed to the user.
      */
     public static void printTop10Ranked(List<Entry> top10Results, DirectoryCorpus corpus) throws IOException {
         Scanner readIn = new Scanner(System.in);
@@ -247,8 +248,7 @@ public class DiskPositionalIndexer {
                 System.out.println("Error opening the URL in the default browser.");
                 e.printStackTrace();
             }
-        } else
-        {
+        } else {
             System.out.println("Desktop browsing is not supported on this platform.");
             StringBuilder textBuilder = new StringBuilder();
 
@@ -374,8 +374,7 @@ public class DiskPositionalIndexer {
                     System.out.println("Error opening the URL in the default browser.");
                     e.printStackTrace();
                 }
-            } else
-            {
+            } else {
                 System.out.println("Desktop browsing is not supported on this platform.");
                 StringBuilder textBuilder = new StringBuilder();
                 int character;

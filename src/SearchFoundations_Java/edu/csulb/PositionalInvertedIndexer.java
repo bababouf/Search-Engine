@@ -1,4 +1,5 @@
 package SearchFoundations_Java.edu.csulb;
+
 import SearchFoundations_Java.cecs429.documents.DirectoryCorpus;
 import SearchFoundations_Java.cecs429.documents.Document;
 import SearchFoundations_Java.cecs429.documents.DocumentCorpus;
@@ -10,6 +11,7 @@ import SearchFoundations_Java.cecs429.text.EnglishTokenStream;
 import SearchFoundations_Java.cecs429.queries.*;
 import SearchFoundations_Java.cecs429.text.NonBasicTokenProcessor;
 import opennlp.tools.stemmer.PorterStemmer;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -36,21 +38,22 @@ public class PositionalInvertedIndexer {
         do {
             query = readInQuery(readIn);
 
-             if (query.contains("STEM")) {
+            if (query.contains("STEM")) {
                 stemQuery(query);
 
             } else if (query.contains("VOCAB")) {
                 printVocabulary(index);
 
-            } else if(!query.contains("END")){
+            } else if (!query.contains("END")) {
                 processBooleanQuery(query, index, corpus);
             }
         } while (!query.equals("END"));
-            endProgram(readIn);
+        endProgram(readIn);
     }
 
     /**
      * Prompts user to enter the directory name that will be indexed
+     *
      * @param readIn Scanner is passed to avoid opening many System.in streams.
      */
     public static Path readInDirectoryToIndex(Scanner readIn) {
@@ -83,7 +86,7 @@ public class PositionalInvertedIndexer {
     /**
      * Closes the scanner and ends the program.
      */
-    public static void endProgram(Scanner readIn){
+    public static void endProgram(Scanner readIn) {
         System.out.println("Ending program.");
         readIn.close();
         System.exit(0);
@@ -92,7 +95,7 @@ public class PositionalInvertedIndexer {
     /**
      * Uses PorterScanner to stem terms.
      */
-    public static void stemQuery(String query){
+    public static void stemQuery(String query) {
         String termToStem = query.split(" ")[1];
         PorterStemmer stemmer = new PorterStemmer();
         String stemmedTerm = stemmer.stem(termToStem);
@@ -102,7 +105,7 @@ public class PositionalInvertedIndexer {
     /**
      * Prints the first 100 vocabulary terms.
      */
-    public static void printVocabulary(Index index){
+    public static void printVocabulary(Index index) {
         List<String> vocabulary = index.getVocabulary();
         List<String> first1000Vocab = vocabulary.subList(0, 1000);
         System.out.println("First 100 terms (sorted): ");
@@ -216,7 +219,7 @@ public class PositionalInvertedIndexer {
                     }
                 }
             }
-            diskIndexWriter.calculateAndWriteDocumentWeights(termFrequency, absolutePath, id, documentTokens, bytes );
+            diskIndexWriter.calculateAndWriteDocumentWeights(termFrequency, absolutePath, id, documentTokens, bytes);
 
         }
 
