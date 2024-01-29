@@ -104,3 +104,4 @@ In addition to these weights, the length of the document must be accounted for. 
    
    ![](https://i.gyazo.com/1b5cba7ac18f70b414f53987528c9131.png)  
    
+### Querying Details  
