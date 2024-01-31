@@ -5,13 +5,12 @@
 Written in Java, this search engine program has two main functionalities: building an in-memory index from a corpus of documents, and querying that index. The index allows for fast execution of queries, in exchange for additional time
 to do the indexing. If the documents the index is built on are static, the index only needs to be built once.
 ## Driver Class
-<<<<<<< HEAD
+
 *src/SearchEngineFoundation/edu/csulb/DiskPositionalIndexer.java*  
 This driver class builds an on-disk index, and allows for boolean queries, as well as several ranking schemes for ranked queries. 
-=======
+
 *src/SearchFoundations_Java/edu/csulb/DiskPositionalIndexer.java*  
 This driver class builds an on-disk index and allows for boolean and ranked queries. 
->>>>>>> 334a03f6642e3ed417d1d836d04550693bbe9c29
 
 ## Building the Index
 Running the *DiskPositionalIndex* driver will first prompt the user to select to either build or query an index.  
