@@ -5,13 +5,19 @@
 Written in Java, this search engine program has two main functionalities: building an in-memory index from a corpus of documents, and querying that index. The index allows for fast execution of queries, in exchange for additional time
 to do the indexing. If the documents the index is built on are static, the index only needs to be built once.
 ## Driver Class
-<<<<<<< HEAD
+
 *src/SearchEngineFoundation/edu/csulb/DiskPositionalIndexer.java*  
 This driver class builds an on-disk index, and allows for boolean queries, as well as several ranking schemes for ranked queries. 
-=======
-*src/SearchFoundations_Java/edu/csulb/DiskPositionalIndexer.java*  
-This driver class builds an on-disk index and allows for boolean and ranked queries. 
->>>>>>> 334a03f6642e3ed417d1d836d04550693bbe9c29
+
+## How To Run  
+1. Clone the repository to local filesystem: **_git clone https://github.com/bababouf/Search-Engine.git_**
+2. Navigate to the root of the cloned repository
+3. Use Maven command to build project: **_mvn clean install_**
+4. Run the driver class (if using an IDE, open project first and run the driver class mentioned above)
+
+Don't have Maven? Download it here: **_https://maven.apache.org/download.cgi_**  
+Linux and MacOS should choose the *tar.gz archive*, and windows should choose *zip archive*.  
+For installation instructions, follow: **_https://maven.apache.org/install.html_**
 
 ## Building the Index
 Running the *DiskPositionalIndex* driver will first prompt the user to select to either build or query an index.  
