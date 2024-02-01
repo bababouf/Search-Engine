@@ -31,16 +31,17 @@ public class PhraseLiteral implements QueryComponent {
 	}
 
 
-	// COMMENT EVENTUALLY / FIX TRASHCAN VAR NAMES
+	/**
+	 *
+	 */
 	@Override
 	public List<Posting> getPostings(Index index) throws IOException {
 
-		List<Posting> result = new ArrayList<>();
 		String firstTerm = mTerms.get(0);
 		List<Posting> firstTermPostings = index.getPostings(firstTerm);
 		String secondTerm = mTerms.get(1);
 		List<Posting> nextTermPostings = index.getPostings(secondTerm);
-		result = MergeLists(firstTermPostings, nextTermPostings, 1);
+		List<Posting> result = MergeLists(firstTermPostings, nextTermPostings, 1);
 
 		for(int i = 2; i < mTerms.size(); i++)
 		{
