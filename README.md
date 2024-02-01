@@ -13,7 +13,7 @@ to do the indexing. If the documents the index is built on are static, the index
 4. Run the driver class: (Open project in an IDE and run the driver class below)
 
 
-Driver Class: **src/SearchEngineFoundation/edu/csulb/DiskPositionalIndexer.java**  
+Driver Class: **src/SearchEngineFoundation/drivers/DiskPositionalIndexer.java**  
 
 Don't have Maven? Download it here: **https://maven.apache.org/download.cgi**  
 Linux and MacOS should choose the *tar.gz archive*, and windows should choose *zip archive*.  
@@ -113,3 +113,28 @@ In addition to these weights, the length of the document must be accounted for. 
    ![](https://i.gyazo.com/1b5cba7ac18f70b414f53987528c9131.png)  
    
 ### _Querying Details_  
+Depending on the mode selection that the user chooses, data will flow through one of two paths. Below the most important methods for each of the flows are named and described.
+
+**_Flow 1: Parsing and Processing Boolean Queries_**  
+The data flow for boolean queries involves first processing the query, which is done using the BooleanQueryParser.parseQuery() method. Depending on the components of the query, one of two functions will be called; getPostingsWithPositions() is only needed
+for phrase queries, while all other components do not need positions and simply use getPostings(). // Explain QueryComponent is the interface and each concrete class implements it's own getPostings() depending on blah. // Explain print
+
+**_Main Classes:_**  
+&emsp;**BooleanQueryParser.ParseQuery():**  
+&emsp;**QueryComponent.getPostings():**  
+&emsp;**QueryComponent.getPostingsWithPositions():**  
+&emsp;**DiskPositionalIndexer.printResults()**:  
+
+
+**_Flow 2: Parsing and Processing Ranked Queries_**  
+The data flow for ranked queries begins with the RankedQuery.parseQuery() method. // What does it do // Explain rankingstrategy interface class // Explain rankedispatch class // Explain how four different schemes/ concrete classes implement calculate. // Explain how 
+depending on which scheme the user chooses, the appropriate calculate method from one of the cocnrete classes is called
+  
+**_Main Classes:_**  
+&emsp;**RankedQueryParser.parseQuery()**:  
+&emsp;**RankingStrategy.calculate()**:  
+&emsp;:**RankedDispatch.calculate()**:  
+&emsp;:**DiskPositionalIndexer.printTop10Ranked()**:  
+
+
+### _Testing Details_
