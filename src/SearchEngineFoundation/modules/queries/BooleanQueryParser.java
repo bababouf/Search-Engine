@@ -1,7 +1,6 @@
 package SearchEngineFoundation.modules.queries;
 
 import opennlp.tools.stemmer.PorterStemmer;
-
 import java.util.ArrayList;
 import java.util.List;
 

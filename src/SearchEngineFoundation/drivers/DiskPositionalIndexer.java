@@ -149,10 +149,10 @@ public class DiskPositionalIndexer {
         if (queryMode == 1) {
             booleanRetrieval(DPIndex, corpus, readIn);
         } else {
-            List<Entry> top10Ranked = null;
+
             int choice;
             do {
-
+                List<Entry> top10Ranked = null;
                 choice = readInAlgorithmMode(readIn);
                 RankedDispatch rankedAlgorithm = new RankedDispatch(DPIndex, corpus);
 
@@ -231,8 +231,8 @@ public class DiskPositionalIndexer {
         Scanner readIn = new Scanner(System.in);
         for (Entry top10Result : top10Results) {
             Integer docID = top10Result.getDocID();
-            System.out.println("DocID: " + docID);
-            System.out.println("ADValue: " + top10Result.getAd());
+            Document document = corpus.getDocument(docID);
+            System.out.println(document.getTitle() + " (ID " + docID + ")");
         }
 
         int documentToShow;
@@ -420,11 +420,11 @@ public class DiskPositionalIndexer {
                 System.out.print("Choice: ");
             }
             userChoice = readIn.nextInt();
-            if (userChoice < 1 || userChoice > 3) {
+            if (userChoice < 0 || userChoice > 3) {
                 System.out.println("Invalid choice. ");
             }
 
-        } while (userChoice > 4 || userChoice < 1);
+        } while (userChoice > 4 || userChoice < 0);
         return userChoice;
 
     }
@@ -436,7 +436,7 @@ public class DiskPositionalIndexer {
     public static String readInQuery() {
 
         Scanner readIn = new Scanner(System.in);
-        System.out.print("Enter a query ('quit' to escape): ");
+        System.out.print("Enter a query ('END' to escape): ");
         String query = readIn.nextLine();
         System.out.print("You have entered: " + query + "\n");
         return query;
