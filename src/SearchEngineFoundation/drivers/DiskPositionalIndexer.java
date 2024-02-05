@@ -20,12 +20,12 @@ import java.util.List;
 public class DiskPositionalIndexer {
 
     /**
-     * Below is the driver for this program. The program operates in two modes. One of the modes will create an index
-     * from a user-entered corpus directory (should be a corpus of all text files or all JSON files). The other mode will
-     * allow the user to query the index. The program allows for two different types of queries, boolean and ranked. For
-     * boolean queries, the program supports only normal disjunctive form (one of more AND queries joined with ORs). For ranked queries,
-     * the user can choose one of four different algorithms: default (using frequencies of query terms), term frequency inverse document frequency, okapi bm25, or Waky.
-     * More about these algorithms and the project as a whole can be found in the .readME.
+     * The program operates in two modes. One of the modes will create an index from a user-input corpus directory
+     * (should be a corpus of all text files or all JSON files). The other mode will allow the user to query the index.
+     * The program allows for two different types of queries, boolean and ranked. For boolean queries, the program supports
+     * only normal disjunctive form (one of more AND queries joined with ORs). For ranked queries, the user can choose one
+     * of four different algorithms: default (using frequencies of query terms), term frequency inverse document frequency,
+     * okapi bm25, or Waky. More about these algorithms and the project as a whole can be found in the .readME.
      */
     public static void main(String[] args) throws SQLException, IOException {
 
@@ -53,7 +53,7 @@ public class DiskPositionalIndexer {
 
     /**
      * This method prompts the user to choose between 3 options; 1 to build the index, 2 to process queries over an
-     * existing index, and 3 to exit. Invalid inputs will re-prompt the user.
+     * existing index, and 3 to exit. Invalid inputs will prompt the user to enter a valid option.
      */
     public static int readInSystemMode(Scanner readIn) {
         int userChoice = 0;
@@ -106,10 +106,10 @@ public class DiskPositionalIndexer {
     public static void buildOnDiskIndex(Path absolutePathToCorpus) {
         try {
             DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(absolutePathToCorpus, ".json");
-            PositionalInvertedIndex index = PositionalInvertedIndexer.indexCorpus(corpus, absolutePathToCorpus);
+            PositionalInvertedIndex index = PositionalInvertedIndexer.indexCorpus(corpus, absolutePathToCorpus); // Creates positionalInvertedIndex
             DiskIndexWriter diskIndexWriter = new DiskIndexWriter();
             List<Long> bytePositions = diskIndexWriter.writeIndex(index, absolutePathToCorpus);
-            diskIndexWriter.writeTermBytePositionsToDatabase(index, bytePositions);
+            diskIndexWriter.writeTermBytePositionsToDatabase(index, bytePositions); // Write byte positions to SQLite DB
 
         } catch (IOException | SQLException e) {
             e.printStackTrace(); // Handle or log the exception appropriately
@@ -153,7 +153,7 @@ public class DiskPositionalIndexer {
             int choice;
             do {
                 List<Entry> top10Ranked = null;
-                choice = readInAlgorithmMode(readIn);
+                choice = readInAlgorithmMode(readIn); // User chooses which ranking scheme
                 RankedDispatch rankedAlgorithm = new RankedDispatch(DPIndex, corpus);
 
                 switch (choice) {
@@ -197,7 +197,8 @@ public class DiskPositionalIndexer {
     }
 
     /**
-     * This function prompts the user to choose between 2 options; 1 to enter booleanRetrieval mode, and 2 for rankedRetrieval. Invalid inputs will again prompt the user.
+     * This function prompts the user to choose between 2 options; 1 to enter booleanRetrieval mode, and 2 for rankedRetrieval.
+     * Invalid inputs will again prompt the user.
      */
     public static int readInQueryMode(Scanner readIn) {
         int queryMode;
@@ -206,7 +207,6 @@ public class DiskPositionalIndexer {
                     [1] Boolean Retrieval\s
                     [2] Ranked Retrieval\s
                     Choose Mode :\s""");
-
 
             while (!readIn.hasNextInt()) {
                 System.out.println("Invalid input.");
