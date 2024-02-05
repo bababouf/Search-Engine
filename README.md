@@ -116,7 +116,7 @@ In addition to these weights, the length of the document must be accounted for. 
 Depending on the mode selection that the user chooses, data will flow through one of two paths. Below the most important methods for each of the flows are named and described.
 
 **_Flow 1: Parsing and Processing Boolean Queries_**  
-The data flow for boolean queries involves first processing the query, which is done using the BooleanQueryParser.parseQuery() method. This method will always return a list of QueryComponents. A QueryComponent is an interface
+The data flow for boolean queries first starts with processing the query, which is done using the BooleanQueryParser.parseQuery() method. This method will always return a list of QueryComponents. A QueryComponent is an interface
 class that several other classes implement; for example, if a phrase is entered by the user, the parseQuery() method will return a list comprised of one PhraseLiteral component. However, this list returned by parseQuery() can include several
 different QueryComponents (ANDQuery, ORQuery, Literal). Depending on the components of the query, one of two functions will be called; getPostingsWithPositions() is only neededfor phrase queries, while all other components do not need positions 
 and simply use getPostings(). The final list returned will hold the appropriate postings that were merged. Below are the main classes responsible for handling/processing boolean queries:
@@ -129,7 +129,7 @@ and simply use getPostings(). The final list returned will hold the appropriate 
 
 
 **_Flow 2: Parsing and Processing Ranked Queries_**  
-The data flow for ranked queries begins with the RankedQuery.parseQuery() method. The parseQuery() method does not deal with QueryComponents in the same way the boolean parser does. Instead, it creates a TermLiteral for each of the space-separated terms. 
+The data flow for ranked queries begins with the RankedQuery.parseQuery() method. The parseQuery() method does not deal with QueryComponents in the same way the boolean parser does. Instead, it creates a TermLiteral for each of the space-separated terms in the query. 
 Regardless of the ranking scheme used, each of the terms in the query will be given a weight. In addition, when getPostings() is called on each of the literals, documents where the term is found are given a weight. The weight for each term and each document that 
 term is found in are multiplied together, and this result is known as the accumulator value. If a document contains multiple terms found in the query, the accumulator value will continue to grow. For example, assume the query is "fires in yosemite". Each of the literals ("fires", "in", "yosemite") will be given a weight. Again, each ranking scheme will handle this differently, but for the most part, terms that show up in the majority of documents (a, the, be, I) will be given a lower weight than terms which are infrequent. 
 The program will proceed to go term by term in the query and find the documents where it appears. If "fires" appears in document 1 (docID = 1), the weight for that term in the document (given by the specific ranking scheme) and the weight for that term in the query will be multiplied, creating the accumulator value for that document. Additional query terms found in document 1 will grow this value (give it a higher ranking). Once all query terms and documents are traversed, the documents with the highest accumulator values will be returned.  
