@@ -144,4 +144,16 @@ As mentioned above, there are four different ranking schemes, each with their ow
 &emsp;**DiskPositionalIndexer.printTop10Ranked()**  
 
 
-### _Testing Details_
+### _Testing Details_  
+The testing module (**src/SearchEngineFoundation/tests**) contains unit tests for the most important methods invovled in the project. The BuildIndexTest class contains tests that ensure the index is properly built, and the QueryIndexTest contains tests 
+to ensure boolean and ranked queries are properly calculated and the result is as expected.  
+
+**_src/SearchEngineFoundation/tests/BuildIndexTest.java_**  
+
+This class contains tests that ensure the path entered is properly read in, and that the system mode rejects input that assumes the wrong format. The most important test, however, is the buildIndexAndTestDocumentWeights() test. This ensure that for each of the 5 test
+documents, the weights that are being calculated are as expected. For this test, weights for each of the documents were manually calculated and checked against the weights returned by the method being tested.  
+
+**_src/SearchEngineFoundation/tests/QueryIndexTest.java_**  
+
+This class contains unit tests for both boolean and ranked queries. For boolean queries, unit tests have been created for all different types of queries that the user might enter: single term queries, ANDQuery, ORQuery, a mix of AND/OR, and a test for terms not found in the corpus. For each of the ranking schemes, unit tests have been created for single terms, multiple terms, and common terms.  
+
