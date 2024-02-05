@@ -116,25 +116,44 @@ In addition to these weights, the length of the document must be accounted for. 
 Depending on the mode selection that the user chooses, data will flow through one of two paths. Below the most important methods for each of the flows are named and described.
 
 **_Flow 1: Parsing and Processing Boolean Queries_**  
-The data flow for boolean queries involves first processing the query, which is done using the BooleanQueryParser.parseQuery() method. Depending on the components of the query, one of two functions will be called; getPostingsWithPositions() is only needed
-for phrase queries, while all other components do not need positions and simply use getPostings(). // Explain QueryComponent is the interface and each concrete class implements it's own getPostings() depending on blah. // Explain print
+The data flow for boolean queries involves first processing the query, which is done using the BooleanQueryParser.parseQuery() method. This method will always return a list of QueryComponents. A QueryComponent is an interface
+class that several other classes implement; for example, if a phrase is entered by the user, the parseQuery() method will return a list comprised of one PhraseLiteral component. However, this list returned by parseQuery() can include several
+different QueryComponents (ANDQuery, ORQuery, Literal). Depending on the components of the query, one of two functions will be called; getPostingsWithPositions() is only neededfor phrase queries, while all other components do not need positions 
+and simply use getPostings(). The final list returned will hold the appropriate postings that were merged. Below are the main classes responsible for handling/processing boolean queries:
 
 **_Main Classes:_**  
-&emsp;**BooleanQueryParser.ParseQuery():**  
-&emsp;**QueryComponent.getPostings():**  
-&emsp;**QueryComponent.getPostingsWithPositions():**  
-&emsp;**DiskPositionalIndexer.printResults()**:  
+&emsp;**BooleanQueryParser.ParseQuery()**  
+&emsp;**QueryComponent.getPostings()**  
+&emsp;**QueryComponent.getPostingsWithPositions()**  
+&emsp;**DiskPositionalIndexer.printResults()**  
 
 
 **_Flow 2: Parsing and Processing Ranked Queries_**  
-The data flow for ranked queries begins with the RankedQuery.parseQuery() method. // What does it do // Explain rankingstrategy interface class // Explain rankedispatch class // Explain how four different schemes/ concrete classes implement calculate. // Explain how 
-depending on which scheme the user chooses, the appropriate calculate method from one of the cocnrete classes is called
+The data flow for ranked queries begins with the RankedQuery.parseQuery() method. The parseQuery() method does not deal with QueryComponents in the same way the boolean parser does. Instead, it creates a TermLiteral for each of the space-separated terms. 
+Regardless of the ranking scheme used, each of the terms in the query will be given a weight. In addition, when getPostings() is called on each of the literals, documents where the term is found are given a weight. The weight for each term and each document that 
+term is found in are multiplied together, and this result is known as the accumulator value. If a document contains multiple terms found in the query, the accumulator value will continue to grow. For example, assume the query is "fires in yosemite". Each of the literals ("fires", "in", "yosemite") will be given a weight. Again, each ranking scheme will handle this differently, but for the most part, terms that show up in the majority of documents (a, the, be, I) will be given a lower weight than terms which are infrequent. 
+The program will proceed to go term by term in the query and find the documents where it appears. If "fires" appears in document 1 (docID = 1), the weight for that term in the document (given by the specific ranking scheme) and the weight for that term in the query will be multiplied, creating the accumulator value for that document. Additional query terms found in document 1 will grow this value (give it a higher ranking). Once all query terms and documents are traversed, the documents with the highest accumulator values will be returned.  
+
+  
+As mentioned above, there are four different ranking schemes, each with their own unique way of calculating the weight of a term in the query, and the weight of a term in a document. In addition, several of the schemes differ in how the length of the document is taken into account. The user is able to select the ranking scheme that will be used, and depending on this selection, the proper calculate method must be called. To do this, RankingStrategy is an interface class that contains the two methods calculate() and calculateAccumulatorValue(). Calculate(), as explained, will calculate the weights for the query term and the term in each document. CalculateAccumulatorValue() will account for the length of the document, and return the highest ranking documents. Each of the ranking schemes are derived from the RankingStrategy class, and have their own calculate() and calculateAccumulatorValue() methods. A RankedDispatch class is used to call the calculate method from the proper derived class. 
   
 **_Main Classes:_**  
-&emsp;**RankedQueryParser.parseQuery()**:  
-&emsp;**RankingStrategy.calculate()**:  
-&emsp;:**RankedDispatch.calculate()**:  
-&emsp;:**DiskPositionalIndexer.printTop10Ranked()**:  
+&emsp;**RankedQueryParser.parseQuery()**  
+&emsp;**RankingStrategy.calculate()**  
+&emsp;**RankedDispatch.calculate()**  
+&emsp;**DiskPositionalIndexer.printTop10Ranked()**  
 
 
-### _Testing Details_
+### _Testing Details_  
+The testing module (**src/SearchEngineFoundation/tests**) contains unit tests for the most important methods invovled in the project. The BuildIndexTest class contains tests that ensure the index is properly built, and the QueryIndexTest contains tests 
+to ensure boolean and ranked queries are properly calculated and the result is as expected.  
+
+**_src/SearchEngineFoundation/tests/BuildIndexTest.java_**  
+
+This class contains tests that ensure the path entered is properly read in, and that the system mode rejects input that assumes the wrong format. The most important test, however, is the buildIndexAndTestDocumentWeights() test. This ensure that for each of the 5 test
+documents, the weights that are being calculated are as expected. For this test, weights for each of the documents were manually calculated and checked against the weights returned by the method being tested.  
+
+**_src/SearchEngineFoundation/tests/QueryIndexTest.java_**  
+
+This class contains unit tests for both boolean and ranked queries. For boolean queries, unit tests have been created for all different types of queries that the user might enter: single term queries, ANDQuery, ORQuery, a mix of AND/OR, and a test for terms not found in the corpus. For each of the ranking schemes, unit tests have been created for single terms, multiple terms, and common terms.  
+
