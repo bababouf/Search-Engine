@@ -7,13 +7,18 @@ import java.util.List;
 
 public class RankedQueryParser {
 
+    /**
+     * This class is used for parsing ranked queries. The query is split by spaces, and further processed using
+     * the NonBasicTokenProcessor. Each literal found is added to a list of query components and returned.
+     */
     public List<QueryComponent> parseQuery(String query) {
 
         List<QueryComponent> subqueryLiterals = new ArrayList<>();
         NonBasicTokenProcessor processor = new NonBasicTokenProcessor();
-        query = query.toLowerCase();
-        String[] arrayOfUnstemmedTerms = query.split(" ");
+        String lowerCaseQuery = query.toLowerCase();
+        String[] arrayOfUnstemmedTerms = lowerCaseQuery.split(" ");
         List<String> processedTokens;
+
         for (String term : arrayOfUnstemmedTerms) {
             processedTokens = processor.processToken(term);
             for(String token: processedTokens){
