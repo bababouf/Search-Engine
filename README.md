@@ -11,7 +11,8 @@ to do the indexing. If the documents the index is built on are static, the index
 1. Clone the repository to local filesystem: **git clone https://github.com/bababouf/Search-Engine.git**
 2. Navigate to the root of the cloned repository
 3. Use Maven command to build project: **mvn clean install**
-4. Run the driver class: (Open project in an IDE and run the driver class below)
+4. Once the full corpus is downloaded from the google drive link above, unzip the file and replace the "all-nps-sites-extracted" partial corpus with the full one
+5. Run the driver class: (Open project in an IDE and run the driver class below)
 
 
 Driver Class: **src/SearchEngineFoundation/drivers/DiskPositionalIndexer.java**  
