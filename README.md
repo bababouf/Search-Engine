@@ -6,6 +6,7 @@ Written in Java, this search engine program has two main functionalities: buildi
 to do the indexing. If the documents the index is built on are static, the index only needs to be built once.
 
 ## _How To Run_  
+**Due to size restrictions, Github only allowed part of "all-nps-sites-extracted" corpus to be uploaded. The full corpus can be downloaded here: https://drive.google.com/file/d/12OQfhkPfKQlFVVnWSR3ozbQfRni51dlH/view?usp=sharing**
 
 1. Clone the repository to local filesystem: **git clone https://github.com/bababouf/Search-Engine.git**
 2. Navigate to the root of the cloned repository
