@@ -1,0 +1,171 @@
+body{
+    padding: 0;
+    margin: 0;
+    font-family: Roboto, 'Open Sans', system-ui;
+    height: 100%;
+    line-height: 2rem;
+    font-size: 1.1rem;
+}
+
+h1{
+    color:wheat;
+    text-align: center;
+    font-weight: 900;
+    font-size: 3rem;
+    
+    
+}
+
+h2{
+    color: wheat;
+    text-align: center;
+    font-weight: 600;
+    font-size: 2.5rem;
+    font-style: italic;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: darkslategray;
+    margin: 25px;
+}
+
+h3{
+    color:lightslategrey;
+    text-align: center;
+    font-weight: 500;
+    font-size: 2rem;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: darkslategray;
+    margin: 20px;
+    
+}
+/**
+button{
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    color: white;
+    background-color: lightslategray;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 4px 8px;
+    letter-spacing: 2px;
+    display: inline-block;
+    min-height: 28px;
+    font-weight: 700;
+    
+}  
+**/
+button:hover{
+    box-shadow: 0 0 10px darkslategray;
+}
+.backbutton-container{
+    display: flex;
+    justify-content: center;
+}
+button{
+    
+    display: inline-block;
+    outline: none;
+    cursor: pointer;
+    font-size: .8rem;
+    border-radius: 500px;
+    transition-property: background-color,border-color,color,box-shadow,filter;
+    transition-duration: .2s;
+    border: 1px solid transparent;
+    letter-spacing: 2px;
+    min-width: 160px;
+    white-space: normal;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
+    color: lightslategray;
+    box-shadow: inset 0 0 0 2px lightslategrey;
+    background-color: transparent;
+    height: 25px;
+    margin-bottom: 50px;
+}
+
+button:hover{
+    color: #fff;
+    background-color: lightslategray;
+}
+
+#back-button
+{
+    display: none;
+}
+
+.hero-container{
+    margin: 1.1, 0;
+    padding-top: 75px;
+    padding-bottom: 50px;
+    background-image: url(/assets/images/barberry.jpg);
+    background-size: cover;
+    background-attachment: center;
+    background-position: fixed;
+    
+}
+
+.navbar{
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    padding-right: 50px;
+}
+.overview{
+    margin: 0rem 10rem;
+    text-align: center;
+}
+
+.corpus-selection{
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+}
+
+.card{
+    text-align: center;
+    height: 280px;
+    width: 300px;
+    
+}
+
+li, a{
+    text-decoration: none;
+    list-style: none;
+    list-style-type: none;
+    color: wheat;
+    font-weight: 500;
+    font-size: 1rem;
+}
+li a:hover{
+    top: -0.16em;
+    transition: padding .5s, top .35s, box-shadow .4s;
+    box-shadow: 0 0.4rem 0 -0.2rem lightslategray;
+}
+.input {
+    padding: 10px;
+    width: 80px;
+    height: 80px;
+    border: 4px solid darkslategrey;
+    border-radius: 50px;
+    box-sizing: border-box;
+    font-size: 26px;
+    color: wheat;
+    outline: none;
+    transition: .5s;
+}
+.box:hover input{
+    width: 350px;
+
+    background: lightslategray;
+    border-radius: 10px;
+}
+.search-div{
+    display : 'flex';
+    justify-content: 'center';
+    padding : '2rem';
+}
+
+
+  
