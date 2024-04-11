@@ -9,12 +9,13 @@ export const displayBooleanRetrievalMode = () => {
         In addition, phrase queries can be entered by enclosing the query in double quotes. Below examples of acceptable form are shown.</p>
     `;
     
-    instructions.style.margin = '0rem 10rem';
-    instructions.style.textAlign = 'center';
+    instructions.classList.add('overview');
     const mainElement = document.querySelector('main');
     mainElement.insertBefore(instructions, mainElement.firstChild);
+
     const instructionsDiv = document.createElement('div');
-    instructionsDiv.classList.add('instructions-div');
+    instructionsDiv.classList.add('card-container');
+
     instructionsDiv.innerHTML = `
     <div class="card">
         <h3> AND Query </h3>
@@ -42,9 +43,6 @@ export const displayBooleanRetrievalMode = () => {
     </div>
     `;
     
-    instructionsDiv.style.display = 'flex';
-    instructionsDiv.style.justifyContent = 'center';
-   
     mainElement.appendChild(instructionsDiv);
     displayBackButton();
 }

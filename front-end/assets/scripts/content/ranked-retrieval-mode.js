@@ -14,12 +14,13 @@ export const displayRankedRetrievalMode = () => {
         building off of the above basic ranking algorithm. Below are the different ranking algorithms that can be selected. </p>
     `;
     
-    instructions.style.margin = '0rem 10rem';
-    instructions.style.textAlign = 'center';
+    instructions.classList.add('overview');
     const mainElement = document.querySelector('main');
     mainElement.insertBefore(instructions, mainElement.firstChild);
+
     const instructionsDiv = document.createElement('div');
-    instructionsDiv.classList.add('instructions-div');
+    instructionsDiv.classList.add('card-container');
+
     instructionsDiv.innerHTML = `
     <div class="card">
         <h3> Default </h3>
@@ -41,9 +42,6 @@ export const displayRankedRetrievalMode = () => {
     </div>
     `;
 
-    instructionsDiv.style.display = 'flex';
-    instructionsDiv.style.justifyContent = 'center';
-   
     mainElement.appendChild(instructionsDiv);
     displayBackButton();
 }

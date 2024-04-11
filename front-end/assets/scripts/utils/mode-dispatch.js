@@ -1,7 +1,7 @@
-import {hideMainElements} from './toggle-main-elements';
-import {displaySearchbar} from '../display/searchbar';
-import {displayBooleanRetrievalMode} from '../display/boolean-retrieval-mode';
-import {displayRankedRetrievalMode} from '../display/ranked-retrieval-mode';
+import {hideMainElements} from './hide-main-elements';
+import {displaySearchbar} from '../content/searchbar';
+import {displayBooleanRetrievalMode} from '../content/boolean-retrieval-mode';
+import {displayRankedRetrievalMode} from '../content/ranked-retrieval-mode';
 import { verifyBooleanQuery } from './verify-boolean-query';
 
 export const modeDispatch = (event) => {
