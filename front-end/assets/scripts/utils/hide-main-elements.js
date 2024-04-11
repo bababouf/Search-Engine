@@ -6,10 +6,3 @@ export const hideMainElements = () => {
         children[i].style.display = 'none';
     }
 }
-
-export const displayMainElements = () => {
-
-
-   
-
-}

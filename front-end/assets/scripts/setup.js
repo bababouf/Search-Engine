@@ -1,6 +1,6 @@
 import { displayQueryModes } from "./display/query-modes";
 import { displayUploadDirectory } from "./display/upload-directory";
-import { hideMainElements } from "./utils/toggle-main-elements";
+import { hideMainElements } from "./utils/hide-main-elements";
 import { displayBackButton } from "./display/back-button";
 
 let initialMainContent;
@@ -18,18 +18,18 @@ const mainElement = document.querySelector('main');
 
     mainElement.addEventListener("click", (event) => {
         const target = event.target;
-        if (target.matches(".corpus-selection-button")) {
+        if (target.matches(".directory-selection-button")) {
             hideMainElements(); 
             
-            if (target.id === 'default-corpus-button') {
+            if (target.id === 'default-directory-button') {
                 displayQueryModes(event);
                 displayBackButton();
-            } else if (target.id === 'upload-corpus-button') {
+            } else if (target.id === 'upload-directory-button') {
                 displayUploadDirectory(event);
                 displayBackButton();
             }
 
-        } else if (target.id === 'back-button') {
+        } else if (target.classList.contains('back-button')) {
             const mainElement = document.querySelector('main');
             mainElement.innerHTML = initialMainContent;
         }

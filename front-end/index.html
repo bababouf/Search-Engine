@@ -9,13 +9,13 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     </head>
     <body>
-        <div class="hero-container">
+        <header class="hero-container">
             <h1>Search Engine</h1>
             <ul class="navbar">
-                <li><a href="">Home</a></li>
-                <li><a href="">Documentation</a></li>
+                <li><a href=""> Home </a></li>
+                <li><a href=""> Documentation </a></li>
             </ul> 
-        </div>
+        </header>
         <main>
             <div class="overview">
                 <h2>Overview </h2>
@@ -26,20 +26,20 @@
                 <p>The option of using a default corpus of national park service documents (30,000 scraped from NPS.org websites) can be selected below instead of uploading a corpus. </p> 
             </div>
                 <h2>Get Started </h2>
-                <div class="corpus-selection">
+                <div class="card-container">
                     <div class="card">
                         <h3>Default Directory</h3>
                         <p>Choosing this option will use a default directory (built from scraping national park webpages). This allows for testing the various query modes the program has to offer.</p>
-                        <button class ="corpus-selection-button" id="default-corpus-button" type="submit"> Go! </button>  
+                        <button class ="directory-selection-button" id="default-directory-button" type="submit"> Go! </button>  
                     </div>
                     <div class="card">
                         <h3>Upload Directory</h3>
                         <p>Choosing this option allows for a directory of .TXT or .JSON files to be uploaded. Note there is a limit to the size of this folder! </p>
-                        <button class ="corpus-selection-button" id="upload-corpus-button" type="submit"> Go! </button>  
+                        <button class ="directory-selection-button" id="upload-directory-button" type="submit"> Go! </button>  
                     </div>
             </div>
-            <div class="backbutton-container">
-                <button id="back-button">Back to home</button>
+            <div class="back-button-container">
+                <button class="back-button">Back to home</button>
             </div>
             
         </main>
