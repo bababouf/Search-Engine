@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="EN-us">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href ="/front-end/assets/css/styles.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+        <title>Search-engine</title>
+    </head>
+    <body>
+        <header class="hero-container">
+            <h1>Search Engine</h1>
+            <ul class="navbar">
+                <li><a href=""> Home </a></li>
+                <li><a href=""> Documentation </a></li>
+            </ul>
+        </header>
+        <main>
+            <div class="overview">
+                <h2>Overview </h2>
+                <p>Written in Java, this search engine will take a corpus of documents (corpus must be all .JSON or all .TXT files) and create an index. The creation of the index
+                    frontloads the processing time so that the latency between a query and response is kept low. Once the index is created, one of two modes can be selected: boolean retrieval
+                     mode or ranked retrieval mode. More information regarding each of these modes can be found upon their selection.
+                </p>
+                <p>The option of using a default corpus of national park service documents (30,000 scraped from NPS.org websites) can be selected below instead of uploading a corpus. </p>
+            </div>
+                <h2>Get Started </h2>
+                <div class="card-container">
+                    <div class="card">
+                        <h3>Default Directory</h3>
+                        <p>Choosing this option will use a default directory (built from scraping national park webpages). This allows for testing the various query modes the program has to offer.</p>
+                        <button class ="directory-selection-button" id="default-directory-button" type="submit"> Go! </button>
+                    </div>
+                    <div class="card">
+                        <h3>Upload Directory</h3>
+                        <p>Choosing this option allows for a directory of .TXT or .JSON files to be uploaded. Note there is a limit to the size of this folder! </p>
+                        <button class ="directory-selection-button" id="upload-directory-button" type="submit"> Go! </button>
+                    </div>
+            </div>
+            <div class="back-button-container">
+                <button class="back-button">Back to home</button>
+            </div>
+
+        </main>
+        <script type="module" src="/front-end/assets/scripts/setup.js"></script>
+    </body>
+</html>
+
+
