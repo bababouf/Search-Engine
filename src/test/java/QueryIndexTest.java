@@ -1,13 +1,13 @@
-import SearchEngineFoundation.modules.ranking_schemes.DefaultRanked;
-import SearchEngineFoundation.modules.ranking_schemes.OkapiRanked;
-import SearchEngineFoundation.modules.ranking_schemes.TermFreqInvDocFreqRanked;
-import SearchEngineFoundation.modules.ranking_schemes.WakyRanked;
-import SearchEngineFoundation.modules.indexing.DiskPositionalIndex;
-import SearchEngineFoundation.modules.documents.DirectoryCorpus;
-import SearchEngineFoundation.modules.indexing.Posting;
-import SearchEngineFoundation.modules.queries.QueryComponent;
-import SearchEngineFoundation.modules.queries.RankedQueryParser;
-import SearchEngineFoundation.drivers.DiskPositionalIndexer;
+import modules.ranking_schemes.DefaultRanked;
+import modules.ranking_schemes.OkapiRanked;
+import modules.ranking_schemes.TermFreqInvDocFreqRanked;
+import modules.ranking_schemes.WakyRanked;
+import modules.indexing.DiskPositionalIndex;
+import modules.documents.DirectoryCorpus;
+import modules.indexing.Posting;
+import modules.queries.QueryComponent;
+import modules.queries.RankedQueryParser;
+import drivers.DiskPositionalIndexer;
 import org.junit.Test;
 
 import java.io.*;
