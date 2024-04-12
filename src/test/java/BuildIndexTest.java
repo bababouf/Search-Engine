@@ -1,4 +1,4 @@
-import SearchEngineFoundation.drivers.DiskPositionalIndexer;
+import drivers.DiskPositionalIndexer;
 import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.nio.file.Path;

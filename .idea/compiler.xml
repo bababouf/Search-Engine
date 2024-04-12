@@ -10,8 +10,5 @@
         <module name="SearchEngine" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="SETproject" target="18" />
-    </bytecodeTargetLevel>
   </component>
 </project>
