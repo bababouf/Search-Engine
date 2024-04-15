@@ -19,7 +19,7 @@ public interface QueryComponent {
      */
     List<Posting> getPostings(Index index) throws IOException;
 
-    default List<Posting> getPostingsWithPositions(Index index) throws IOException {
+    default List<Posting> getPostingsWithPositions(Index index) throws IOException, ClassNotFoundException {
         // Provide a default implementation here
         return Collections.emptyList();
     }

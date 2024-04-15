@@ -9,7 +9,7 @@ export const modeDispatch = (event) => {
 
    
     hideMainElements();
-    displaySearchbar();
+    displaySearchbar(event.currentTarget.id);
     
     if(event.currentTarget.id === 'boolean-button')
     {

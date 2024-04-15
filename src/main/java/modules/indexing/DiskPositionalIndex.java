@@ -1,6 +1,7 @@
 package modules.indexing;
 
-import modules.database.SQLiteDB;
+import drivers.DiskPositionalIndexer;
+import modules.database.MySQLDB;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -15,7 +16,13 @@ public class DiskPositionalIndex implements Index{
     public int corpusSize;
     public String pathToAvgDocLength;
 
-
+    public DiskPositionalIndex(Path path)
+    {
+        String pathString = path.toAbsolutePath().toString();
+        pathToWeights = pathString + "/index/docWeights.bin";
+        pathToIndex = pathString + "/index/postings.bin";
+        pathToAvgDocLength = pathString + "/index/docLengthAvg.bin";
+    }
     public DiskPositionalIndex(Path path, int sizeOfCorpus)
     {
         String pathString = path.toAbsolutePath().toString();
@@ -36,7 +43,7 @@ public class DiskPositionalIndex implements Index{
 
     @Override
     public List<Posting> getPostingsWithPositions(String term) throws IOException {
-        SQLiteDB database = new SQLiteDB();
+        MySQLDB database = new MySQLDB();
         Long byte_position = database.selectTerm(term);
         RandomAccessFile onDiskIndex = new RandomAccessFile(pathToIndex, "r");
         onDiskIndex.seek(byte_position);
@@ -73,15 +80,15 @@ public class DiskPositionalIndex implements Index{
     }
 
     @Override
-    public List<Posting> getPostings(String term) throws IOException {
-        SQLiteDB database = new SQLiteDB();
+    public List<Posting> getPostings(String term) throws IOException{
+        MySQLDB database = new MySQLDB();
         Long byte_position = database.selectTerm(term);
+        System.out.println(byte_position);
         List<Posting> postingList = new ArrayList<>();
 
         if (byte_position == null) {
             return postingList;
         } else {
-
 
             RandomAccessFile onDiskIndex = new RandomAccessFile(pathToIndex, "r");
             onDiskIndex.seek(byte_position);
@@ -90,6 +97,7 @@ public class DiskPositionalIndex implements Index{
 
             for (int i = 0; i < dft; i++) {
                 docID = docID + onDiskIndex.readInt();
+                System.out.println("Docid: " + docID);
                 Integer tftd = onDiskIndex.readInt();
                 onDiskIndex.skipBytes(tftd * 4);
                 Posting p = new Posting(docID, null);
@@ -115,7 +123,7 @@ public class DiskPositionalIndex implements Index{
     }
     @Override
     public List<String> getVocabulary() {
-        SQLiteDB database = new SQLiteDB();
+        MySQLDB database = new MySQLDB();
         return database.retrieveVocabulary();
     }
 }
