@@ -32,7 +32,7 @@ public class PositionalInvertedIndexer {
      * can also choose to "STEM term", which uses a Porter Stemmer to get the stem of a term. Ex: generously -> gener. In addition,
      * the first 1000 vocabulary words can be printed in ascending alphabetical order.
      */
-    public static void main(String[] args) throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, SQLException {
+    public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, SQLException {
         Scanner readIn = new Scanner(System.in);
         Path absolutePath = readInDirectoryToIndex(readIn);
         DocumentCorpus corpus = DirectoryCorpus.loadJsonDirectory(absolutePath, ".json");

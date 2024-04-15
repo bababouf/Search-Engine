@@ -287,7 +287,7 @@ public class DiskPositionalIndexer {
      * searching "AND NOT Walruses") <-- Want to see everything but walruses?
      * In addition to booleanQueries, phrase queries are allowed. "Fires in yosemite" will provide documents with this phrase.
      */
-    public static void booleanRetrieval(DiskPositionalIndex index, DirectoryCorpus corpus, Scanner readIn) throws IOException {
+    public static void booleanRetrieval(DiskPositionalIndex index, DirectoryCorpus corpus, Scanner readIn) throws IOException{
 
         String query;
         do {
@@ -342,16 +342,16 @@ public class DiskPositionalIndexer {
      * This is why getPostingsWithPositions is called when the query is determined to be a phrase query, and getPostings is called
      * for all other queries.
      */
-    public static List<Posting> processBooleanQuery(String query, DiskPositionalIndex index) throws IOException {
+    public static List<Posting> processBooleanQuery(String query, DiskPositionalIndex index) throws IOException{
         BooleanQueryParser booleanParser = new BooleanQueryParser();
         QueryComponent queryComponent = booleanParser.parseQuery(query);
         List<Posting> queryPostings;
         if (queryComponent instanceof PhraseLiteral phraseLiteral) {
+
             queryPostings = phraseLiteral.getPostingsWithPositions(index);
 
         } else {
             queryPostings = queryComponent.getPostings(index);
-
         }
         return queryPostings;
     }

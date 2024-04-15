@@ -6,7 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
-@WebServlet(name = "helloServlet", value = "/home")
+@WebServlet(name = "HomepageServlet", value = "/home")
 public class HomepageServlet extends HttpServlet {
     private String message;
 

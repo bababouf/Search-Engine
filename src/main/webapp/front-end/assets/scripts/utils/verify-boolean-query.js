@@ -1,11 +1,22 @@
-export const verifyBooleanQuery = (event) => {
+export const verifyBooleanQuery = (event, buttonId) => {
     event.preventDefault();
+    console.log(buttonId);
+    let endpoint = '';
+    if(buttonId === 'boolean-button')
+    {
+        endpoint = '/booleansearch';
+    }
+    else if(buttonId === 'ranked-button')
+    {
+        endpoint = '/rankedsearch';
+    }
     const value = document.querySelector('#query');
     console.log(value.value);
 
-    fetch('/search', {
+    fetch(`/search${endpoint}`, {
         method: 'POST',
-        body: JSON.stringify({query: value.value})
+        body: JSON.stringify(
+            {query: value.value, mode: buttonId})
     })
         .then(response => {
             if (!response.ok) {
