@@ -1,8 +1,8 @@
 import {hideMainElements} from './hide-main-elements.js';
-import {displaySearchbar} from '../content/searchbar.js';
-import {displayBooleanRetrievalMode} from '../content/boolean-retrieval-mode.js';
-import {displayRankedRetrievalMode} from '../content/ranked-retrieval-mode.js';
-import {displayBackButton} from "../content/back-button.js";
+import {displaySearchbar} from './searchbar.js';
+import {displayBooleanRetrievalMode} from './boolean-retrieval-mode.js';
+import {displayRankedRetrievalMode} from './ranked-retrieval-mode.js';
+import {displayBackButton} from "./back-button.js";
 
 
 export const modeDispatch = (event) => {

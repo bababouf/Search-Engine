@@ -1,4 +1,4 @@
-import { verifyBooleanQuery } from "../utils/verify-boolean-query.js";
+import { verifyBooleanQuery } from "./verify-boolean-query.js";
 
 export const displaySearchbar = (buttonId) => {
 
