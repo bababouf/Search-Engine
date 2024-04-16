@@ -1,4 +1,5 @@
-import {hideMainElements} from "./hide-main-elements.js";
+import {hideMainElements} from "../utils/hideMainElements.js";
+import {displayBackButton} from "./appendBackButtonToMain.js";
 
 export const displayBooleanQueryResults = (response) => {
     hideMainElements();
@@ -32,6 +33,15 @@ export const displayBooleanQueryResults = (response) => {
 
 
     });
+
+    if(count === 0)
+    {
+
+        const message = document.createElement('h3');
+        message.textContent = 'No results';
+        resultsDiv.appendChild(message);
+
+    }
 
     const mainElement = document.querySelector('main');
     mainElement.appendChild(resultsDiv);

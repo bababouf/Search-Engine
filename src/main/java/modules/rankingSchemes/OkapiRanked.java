@@ -1,4 +1,4 @@
-package modules.ranking_schemes;
+package modules.rankingSchemes;
 
 import modules.documents.DirectoryCorpus;
 import modules.indexing.DiskPositionalIndex;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
 
-public class WakyRanked implements RankingStrategy{
+public class OkapiRanked implements RankingStrategy{
 
     /**
      * This method obtains the finals accumulator values for each document by dividing their previous values
@@ -60,27 +60,35 @@ public class WakyRanked implements RankingStrategy{
     /**
      * This method will calculate an accumulator value for each document and store the result in a hashmap (mapping
      * docID to accumulatorValue). This is done for each literal (term) in the query, and each document that is found in the posting list for
-     * that term. The equations for wacky ranked are found in the readME file.
+     * that term. The equations for okapi bm25 are found in the readME file.
      */
     @Override
-    public Map<Integer, Double> calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus) {
+    public Map<Integer, Double>  calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus) {
+
         double corpusSize = corpus.getCorpusSize();
-        // ADMAP maps docIDs to corresponding accumulator value
         Map<Integer, Double> ADMap = new HashMap<>();
 
         try {
+            RandomAccessFile documentWeights = new RandomAccessFile(onDiskIndex.pathToWeights, "r");
+
             for (QueryComponent literal : literals) {
                 List<Posting> postingsForTerm = literal.getPostings(onDiskIndex);
                 int documentFrequency = postingsForTerm.size();
-                Double weightOfTermInQuery = Math.max(0, Math.log(
-                        (corpusSize - documentFrequency)/documentFrequency));
+
+                Double weightOfTermInQueryCalculation = (corpusSize - documentFrequency + .5) / (documentFrequency + .5);
+
+                Double weightOfTermInQuery = Math.max(.1, Math.log(weightOfTermInQueryCalculation));;
 
                 for (Posting posting : postingsForTerm) {
                     Integer id = posting.getDocumentId();
-                    RandomAccessFile docWeights = new RandomAccessFile(onDiskIndex.pathToWeights, "r");
-                    docWeights.seek((32 * id) + 24);
-                    Double avgTFTD = docWeights.readDouble();
-                    Double weightOfTermInDocument = (1 + Math.log(posting.getTFtd()))/(1 + Math.log(avgTFTD));
+                    int termFrequencyOfTermInDocument = posting.getTFtd();
+                    documentWeights.seek((32 * id) + 8);
+                    double docLength = documentWeights.readDouble();
+                    documentWeights.seek(documentWeights.length() - 32);
+                    double avgTokensPerDoc = documentWeights.readDouble();
+
+                    Double weightOfTermInDocument =
+                            (2.2 * termFrequencyOfTermInDocument)/(1.2 * (.25 + .75 * (docLength/avgTokensPerDoc)) + posting.getTFtd());
 
 
                     if (ADMap.get(id) == null) {
@@ -96,12 +104,13 @@ public class WakyRanked implements RankingStrategy{
                 }
             }
 
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         return ADMap;
     }
-
 
 }

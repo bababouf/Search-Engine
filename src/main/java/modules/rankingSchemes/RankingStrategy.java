@@ -1,4 +1,4 @@
-package modules.ranking_schemes;
+package modules.rankingSchemes;
 
 import modules.documents.DirectoryCorpus;
 import modules.indexing.DiskPositionalIndex;

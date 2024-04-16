@@ -1,8 +1,8 @@
-import { displayQueryModes } from "./query-modes.js";
-import { displayUploadDirectory } from "./upload-directory.js";
-import { hideMainElements } from "./hide-main-elements.js";
+import { displayQueryModes } from "./content/displayQueryModes.js";
+import { displayUploadDirectory } from "./content/displayUploadDirectory.js";
+import { hideMainElements } from "./utils/hideMainElements.js";
 
-import {displayBackButton} from "./back-button.js";
+import {displayBackButton} from "./content/appendBackButtonToMain.js";
 let initialMainContent;
 
 const captureInitialMainContent = () => {
@@ -22,7 +22,7 @@ const mainElement = document.querySelector('main');
             hideMainElements(); 
             
             if (target.id === 'default-directory-button') {
-                console.log('hi');
+                // Async GET /search/booleansearch
                 displayQueryModes(event);
                 displayBackButton();
             } else if (target.id === 'upload-directory-button') {

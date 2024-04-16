@@ -1,4 +1,4 @@
-import {modeDispatch} from "./mode-dispatch.js";
+import {queryModeDispatch} from "../utils/queryModeDispatch.js";
 
 export const displayQueryModes = (event) => {
     const modesDiv = document.createElement('div');
@@ -22,6 +22,6 @@ export const displayQueryModes = (event) => {
     
     const modeButtons = document.querySelectorAll(".mode-button");
     modeButtons.forEach(button => {
-        button.addEventListener("click", modeDispatch);
+        button.addEventListener("click", queryModeDispatch);
     });
 }

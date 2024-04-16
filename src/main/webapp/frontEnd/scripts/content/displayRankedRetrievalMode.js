@@ -1,4 +1,4 @@
-import { displayBackButton } from "./back-button.js";
+import { displayBackButton } from "./appendBackButtonToMain.js";
 
 export const displayRankedRetrievalMode = () => {
     const instructions = document.createElement('div');
@@ -26,19 +26,23 @@ export const displayRankedRetrievalMode = () => {
         <h3> Default </h3>
         <p> Returns documents containing each of the query terms being AND'd. </p>
         <p> Example: dogs cats birds </p>
+        <button class="ranked-button"> Go! </button>
   
     </div>
     <div class="card">
         <h3> TFIDF </h3>
         <p>TFIDF, known as term frequency-inverse document frequency, will blah blah</p>
+        <button class="ranked-button"> Go! </button>
     </div>
     <div class="card">
         <h3> Okapi BM25 </h3>
         <p> Terms can be AND'd together, and these groups can then be OR'd. </p> 
+        <button class="ranked-button"> Go! </button>
     </div>
     <div class="card">
         <h3> Wacky </h3>
         <p> Returns documents that contain the queried phrase. </p>
+        <button class="ranked-button"> Go! </button>
     </div>
     `;
 
