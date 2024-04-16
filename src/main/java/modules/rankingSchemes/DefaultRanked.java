@@ -1,4 +1,4 @@
-package modules.ranking_schemes;
+package modules.rankingSchemes;
 
 import modules.documents.DirectoryCorpus;
 import modules.indexing.DiskPositionalIndex;
@@ -10,15 +10,15 @@ import modules.queries.QueryComponent;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
-
-public class OkapiRanked implements RankingStrategy{
+public class DefaultRanked implements RankingStrategy{
 
     /**
      * This method obtains the finals accumulator values for each document by dividing their previous values
      * by LD. The equation for LD can be found in the readME. Once the final AD value is found, a priority queue to sort
      * the highest ranking documents is used.
      */
-    public List<Entry> calculateAccumulatorValue(Map<Integer, Double> ADMap, DiskPositionalIndex onDiskIndex) {
+    public List<Entry> calculateAccumulatorValue(Map<Integer, Double> ADMap, DiskPositionalIndex onDiskIndex){
+
         try {
             RandomAccessFile documentWeights = new RandomAccessFile(onDiskIndex.pathToWeights, "r");
             PriorityQueue<Entry> descendingAccumulators = new PriorityQueue<>(new EntryComparator());
@@ -60,36 +60,22 @@ public class OkapiRanked implements RankingStrategy{
     /**
      * This method will calculate an accumulator value for each document and store the result in a hashmap (mapping
      * docID to accumulatorValue). This is done for each literal (term) in the query, and each document that is found in the posting list for
-     * that term. The equations for okapi bm25 are found in the readME file.
+     * that term. The equations for default ranked are found in the readME file.
      */
-    @Override
-    public Map<Integer, Double>  calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus) {
+    public Map<Integer, Double> calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus) {
 
         double corpusSize = corpus.getCorpusSize();
         Map<Integer, Double> ADMap = new HashMap<>();
 
         try {
-            RandomAccessFile documentWeights = new RandomAccessFile(onDiskIndex.pathToWeights, "r");
-
             for (QueryComponent literal : literals) {
                 List<Posting> postingsForTerm = literal.getPostings(onDiskIndex);
                 int documentFrequency = postingsForTerm.size();
-
-                Double weightOfTermInQueryCalculation = (corpusSize - documentFrequency + .5) / (documentFrequency + .5);
-
-                Double weightOfTermInQuery = Math.max(.1, Math.log(weightOfTermInQueryCalculation));;
+                Double weightOfTermInQuery = Math.log(1 + (corpusSize / documentFrequency));
 
                 for (Posting posting : postingsForTerm) {
                     Integer id = posting.getDocumentId();
-                    int termFrequencyOfTermInDocument = posting.getTFtd();
-                    documentWeights.seek((32 * id) + 8);
-                    double docLength = documentWeights.readDouble();
-                    documentWeights.seek(documentWeights.length() - 32);
-                    double avgTokensPerDoc = documentWeights.readDouble();
-
-                    Double weightOfTermInDocument =
-                            (2.2 * termFrequencyOfTermInDocument)/(1.2 * (.25 + .75 * (docLength/avgTokensPerDoc)) + posting.getTFtd());
-
+                    Double weightOfTermInDocument = (1 + (Math.log(posting.getTFtd())));
 
                     if (ADMap.get(id) == null) {
                         Double accumulatorValue = weightOfTermInDocument * weightOfTermInQuery;
@@ -104,13 +90,12 @@ public class OkapiRanked implements RankingStrategy{
                 }
             }
 
-
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         return ADMap;
     }
+
 
 }

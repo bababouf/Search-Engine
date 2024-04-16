@@ -10,8 +10,7 @@ import modules.misc.Entry;
 import modules.queries.BooleanQueryParser;
 import modules.queries.PhraseLiteral;
 import modules.queries.QueryComponent;
-import modules.ranking_schemes.*;
-import modules.ranking_schemes.*;
+import modules.rankingSchemes.*;
 import opennlp.tools.stemmer.PorterStemmer;
 
 import java.awt.*;

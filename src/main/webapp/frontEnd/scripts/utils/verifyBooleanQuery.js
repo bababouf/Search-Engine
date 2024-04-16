@@ -1,4 +1,4 @@
-import {displayBooleanQueryResults} from "./boolean-query-results.js";
+import {displayBooleanQueryResults} from "../content/displayBooleanQueryResults.js";
 
 export const verifyBooleanQuery = (event, buttonId) => {
     event.preventDefault();

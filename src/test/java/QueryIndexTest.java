@@ -1,7 +1,7 @@
-import modules.ranking_schemes.DefaultRanked;
-import modules.ranking_schemes.OkapiRanked;
-import modules.ranking_schemes.TermFreqInvDocFreqRanked;
-import modules.ranking_schemes.WakyRanked;
+import modules.rankingSchemes.DefaultRanked;
+import modules.rankingSchemes.OkapiRanked;
+import modules.rankingSchemes.TermFreqInvDocFreqRanked;
+import modules.rankingSchemes.WakyRanked;
 import modules.indexing.DiskPositionalIndex;
 import modules.documents.DirectoryCorpus;
 import modules.indexing.Posting;

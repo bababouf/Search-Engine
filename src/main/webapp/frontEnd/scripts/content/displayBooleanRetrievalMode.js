@@ -1,4 +1,4 @@
-import { displayBackButton } from "./back-button.js";
+import { displayBackButton } from "./appendBackButtonToMain.js";
 
 export const displayBooleanRetrievalMode = () => {
 

@@ -15,7 +15,7 @@ public class HomepageServlet extends HttpServlet {
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        getServletContext().getRequestDispatcher("/front-end/index.html").forward(request, response);
+        getServletContext().getRequestDispatcher("/frontEnd/index.html").forward(request, response);
     }
 
     public void destroy() {

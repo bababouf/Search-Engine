@@ -1,6 +1,6 @@
-import { verifyBooleanQuery } from "./verify-boolean-query.js";
+import { verifyBooleanQuery } from "../utils/verifyBooleanQuery.js";
 
-export const displaySearchbar = (buttonId) => {
+export const appendSearchbarToMain = (buttonId) => {
 
     console.log(buttonId);
     const searchDiv = document.createElement('div');
