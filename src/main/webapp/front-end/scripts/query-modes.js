@@ -1,4 +1,4 @@
-import {modeDispatch} from "../utils/mode-dispatch.js";
+import {modeDispatch} from "./mode-dispatch.js";
 
 export const displayQueryModes = (event) => {
     const modesDiv = document.createElement('div');

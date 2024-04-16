@@ -1,3 +1,5 @@
+import {displayBooleanQueryResults} from "./boolean-query-results.js";
+
 export const verifyBooleanQuery = (event, buttonId) => {
     event.preventDefault();
     console.log(buttonId);
@@ -25,8 +27,8 @@ export const verifyBooleanQuery = (event, buttonId) => {
             return response.text();
         })
         .then(responseText => {
-            // Handle the response from the servlet
-            console.log('Response from servlet:', responseText);
+
+            displayBooleanQueryResults(responseText);
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);

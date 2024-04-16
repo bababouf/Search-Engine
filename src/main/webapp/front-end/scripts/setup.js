@@ -1,8 +1,8 @@
-import { displayQueryModes } from "./content/query-modes.js";
-import { displayUploadDirectory } from "./content/upload-directory.js";
-import { hideMainElements } from "./utils/hide-main-elements.js";
+import { displayQueryModes } from "./query-modes.js";
+import { displayUploadDirectory } from "./upload-directory.js";
+import { hideMainElements } from "./hide-main-elements.js";
 
-import {displayBackButton} from "./content/back-button.js";
+import {displayBackButton} from "./back-button.js";
 let initialMainContent;
 
 const captureInitialMainContent = () => {
