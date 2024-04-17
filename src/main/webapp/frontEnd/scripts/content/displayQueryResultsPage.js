@@ -1,14 +1,13 @@
 import {hideMainElements} from "../utils/hideMainElements.js";
-import {displayBackButton} from "./appendBackButtonToMain.js";
 
-export const displayBooleanQueryResults = (response) => {
+
+export const displayQueryResultsPage = (response) => {
     hideMainElements();
 
     const listOfPages = JSON.parse(response);
     const resultsDiv = document.createElement('div');
     resultsDiv.classList.add('card-container');
     resultsDiv.style.flexWrap = 'wrap';
-
 
     let count = 0;
     listOfPages.forEach(result => {
@@ -34,7 +33,7 @@ export const displayBooleanQueryResults = (response) => {
 
     });
 
-    if(count === 0)
+    if(count === 0 )
     {
 
         const message = document.createElement('h3');

@@ -36,7 +36,7 @@ public class BooleanSearchServlet extends HttpServlet {
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+        System.out.println("IM IN THE BOOLEAN SERVLET!!!!");
         BufferedReader reader = request.getReader();
         JsonObject jsonBody = ServletUtilities.parseRequestBody(reader);
         String query = jsonBody.get("query").getAsString();

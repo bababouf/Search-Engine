@@ -42,8 +42,11 @@ public class RankedDispatch {
     /**
      * Depending on which ranking scheme is passed (strategy), the appropriate calculate method will be called.
      */
-    public void calculate(RankingStrategy strategy){
-        List<QueryComponent> literals = promptUser();
+    public void calculate(RankingStrategy strategy, String query){
+        //List<QueryComponent> literals = promptUser();
+
+        RankedQueryParser rankedParser = new RankedQueryParser();
+        List<QueryComponent> literals = rankedParser.parseQuery(query);
         ADMap = strategy.calculate(literals, onDiskIndex, directoryCorpus);
     }
 

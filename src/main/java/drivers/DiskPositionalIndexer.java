@@ -44,14 +44,15 @@ public class DiskPositionalIndexer {
             buildOnDiskIndex(absolutePathToCorpus);
 
             // User enters '2' to query an existing index
-        } else if (userChoice == 2) {
+        } /*else if (userChoice == 2) {
             int queryMode = readInQueryMode(readIn);
             Path absolutePathToIndex = checkForValidIndex(readIn); // Cannot pass this point without a valid index to query from
             DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(absolutePathToIndex, ".json");
             DiskPositionalIndex index = new DiskPositionalIndex(absolutePathToIndex, corpus.getCorpusSize());
 
             queryDispatch(queryMode, index, corpus, readIn);
-        } else {
+
+        } */else {
             endProgram(readIn);
         }
 
@@ -150,6 +151,7 @@ public class DiskPositionalIndexer {
      * program will process queries in booleanRetrieval mode. Otherwise, the user will pick from one of four different
      * rankedRetrieval modes (default, TFIDF, okapi, and wacky).
      */
+    /*
     public static void queryDispatch(int queryMode, DiskPositionalIndex DPIndex, DirectoryCorpus corpus, Scanner readIn) throws IOException {
         //Boolean query
         if (queryMode == 1) {
@@ -159,24 +161,24 @@ public class DiskPositionalIndexer {
             int choice;
             do {
                 List<Entry> top10Ranked = null;
-                choice = readInAlgorithmMode(readIn); // User chooses which ranking scheme
-                RankedDispatch rankedAlgorithm = new RankedDispatch(DPIndex, corpus);
+                        choice = readInAlgorithmMode(readIn); // User chooses which ranking scheme
+                        RankedDispatch rankedAlgorithm = new RankedDispatch(DPIndex, corpus);
 
-                switch (choice) {
-                    case 1 -> {
-                        DefaultRanked defaultRanked = new DefaultRanked();
-                        rankedAlgorithm.calculate(defaultRanked);
-                        top10Ranked = rankedAlgorithm.calculateAccumulatorValue(defaultRanked);
-                    }
+                        switch (choice) {
+                            case 1 -> {
+                                DefaultRanked defaultRanked = new DefaultRanked();
+                                rankedAlgorithm.calculate(defaultRanked, );
+                                top10Ranked = rankedAlgorithm.calculateAccumulatorValue(defaultRanked);
+                            }
 
-                    case 2 -> {
-                        TermFreqInvDocFreqRanked tfidfRanked = new TermFreqInvDocFreqRanked();
-                        rankedAlgorithm.calculate(tfidfRanked);
-                        top10Ranked = rankedAlgorithm.calculateAccumulatorValue(tfidfRanked);
-                    }
-                    case 3 -> {
-                        OkapiRanked okapiRanked = new OkapiRanked();
-                        rankedAlgorithm.calculate(okapiRanked);
+                            case 2 -> {
+                                TermFreqInvDocFreqRanked tfidfRanked = new TermFreqInvDocFreqRanked();
+                                rankedAlgorithm.calculate(tfidfRanked);
+                                top10Ranked = rankedAlgorithm.calculateAccumulatorValue(tfidfRanked);
+                            }
+                            case 3 -> {
+                                OkapiRanked okapiRanked = new OkapiRanked();
+                                rankedAlgorithm.calculate(okapiRanked);
                         rankedAlgorithm.calculateAccumulatorValue(okapiRanked);
                     }
                     case 4 -> {
@@ -195,7 +197,7 @@ public class DiskPositionalIndexer {
 
     }
 
-
+*/
     public static void endProgram(Scanner readIn) {
         System.out.println("Ending program.");
         readIn.close();

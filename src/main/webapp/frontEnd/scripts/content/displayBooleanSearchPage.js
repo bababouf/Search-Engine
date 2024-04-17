@@ -1,0 +1,74 @@
+import { createBackButton } from "./createBackButton.js";
+import {createSearchBar} from "./createSearchBar.js";
+import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
+
+export const displayBooleanSearchPage = (buttonId) => {
+
+    const mainElement = document.querySelector('main');
+    const instructions = displayBooleanInstructions();
+    const queryFormats = displayAcceptableQueryFormats();
+    const searchBar = createSearchBar();
+    const backButton = createBackButton();
+
+    mainElement.insertBefore(instructions, mainElement.firstChild);
+    mainElement.appendChild(searchBar);
+    mainElement.appendChild(queryFormats);
+    mainElement.appendChild(backButton);
+    createEventListener(buttonId);
+
+}
+
+const displayBooleanInstructions = () => {
+    const instructions = document.createElement('div');
+    instructions.classList.add('overview');
+
+    instructions.innerHTML = `
+        <h2>Instructions</h2>
+        <p> The program accepts boolean queries that are in disjunctive normal form (DNF), also described as an OR of ANDS. 
+        In addition, phrase queries can be entered by enclosing the query in double quotes. Below examples of acceptable form are shown.</p>
+    `;
+
+    return instructions;
+}
+
+const displayAcceptableQueryFormats = () => {
+    const queryFormats = document.createElement('div');
+    queryFormats.classList.add('card-container');
+
+    queryFormats.innerHTML = `
+    <div class="card">
+        <h3> AND Query </h3>
+        <p> Returns documents containing each of the query terms being AND'd. </p>
+        <p> Example: dogs cats birds </p>
+  
+    </div>
+    <div class="card">
+        <h3> OR Query </h3>
+        <p> Returns documents containing at least one of the terms being OR'd. </p>
+        <p> Example: dogs + cats + birds </p>
+         
+    </div>
+    <div class="card">
+        <h3> OR of ANDs </h3>
+        <p> Terms can be AND'd together, and these groups can then be OR'd. </p>
+        <p> Example: dogs cats + birds walruses
+         
+    </div>
+    <div class="card">
+        <h3> Phrase Query </h3>
+        <p> Returns documents that contain the queried phrase. </p>
+        <p> Example: "fires in yosemite" </p>
+        
+    </div>
+    `;
+
+    return queryFormats;
+}
+
+const createEventListener = (buttonId) => {
+    const form = document.querySelector('#search-form');
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        verifyQueryDispatch(event, buttonId);
+    });
+}

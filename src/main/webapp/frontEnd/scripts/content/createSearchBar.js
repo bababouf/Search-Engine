@@ -1,10 +1,9 @@
-import { verifyBooleanQuery } from "../utils/verifyBooleanQuery.js";
 
-export const appendSearchbarToMain = (buttonId) => {
+export const createSearchBar = () => {
 
-    console.log(buttonId);
     const searchDiv = document.createElement('div');
     searchDiv.classList.add('search-div');
+
     searchDiv.innerHTML = `
     <div class="box">
         <form id ="search-form" name="search">
@@ -16,11 +15,7 @@ export const appendSearchbarToMain = (buttonId) => {
     </div>
 
     `;
-    
-    const mainElement = document.querySelector('main');
-    mainElement.appendChild(searchDiv);
-    const form = document.querySelector('#search-form');
-    form.addEventListener('submit', (event) => {
-        verifyBooleanQuery(event, buttonId);
-    });
+
+    return searchDiv;
 }
+
