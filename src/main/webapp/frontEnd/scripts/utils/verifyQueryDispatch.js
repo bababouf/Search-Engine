@@ -4,21 +4,17 @@ export const verifyQueryDispatch = (buttonId, rankedMode = null) => {
 
     let endpoint = '';
 
-    if(buttonId === 'boolean-button')
-    {
+    if (buttonId === 'boolean-button') {
         endpoint = '/booleansearch';
-    }
-    else if(buttonId === 'ranked-button')
-    {
+    } else if (buttonId === 'ranked-button') {
         endpoint = '/rankedsearch';
     }
 
-    verifyQuery(endpoint, rankedMode);
+    sendToServlet(endpoint, rankedMode, buttonId)
 }
 
-const verifyQuery = (endpoint, rankedMode) => {
+const sendToServlet = (endpoint, rankedMode, buttonId) => {
     const value = document.querySelector('#query');
-    console.log(value.value);
 
     fetch(`/search${endpoint}`, {
         method: 'POST',
@@ -32,7 +28,7 @@ const verifyQuery = (endpoint, rankedMode) => {
             return response.text();
         })
         .then(responseText => {
-            displayQueryResultsPage(responseText);
+            displayQueryResultsPage(responseText, buttonId);
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);

@@ -23,21 +23,13 @@ import java.util.List;
 @WebServlet(name = "RankedSearchServlet", value = "/search/rankedsearch")
 public class RankedSearchServlet extends HttpServlet {
 
-    private DirectoryCorpus corpus;
     private final Path defaultPath = Paths.get("C:/Users/agreg/IdeaProjects/search-engine/all-nps-sites-extracted");
 
-
-    public void doGet(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("Im in the ranked servlet ooooooooooooooaaaaaaaass");
-    }
-
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("IM IN THE RANKED SERVLET!!!!");
-        BufferedReader reader = request.getReader();
-        JsonObject jsonBody = ServletUtilities.parseRequestBody(reader);
+
+        JsonObject jsonBody = ServletUtilities.parseRequestBody(request);
         String query = jsonBody.get("query").getAsString();
         String mode = jsonBody.get("mode").getAsString();
-        System.out.println("Mode: " + mode);
 
         List<Page> results = rankedModeDispatch(mode, query);
         Gson gson = new Gson();
@@ -51,11 +43,9 @@ public class RankedSearchServlet extends HttpServlet {
 
     public List<Page> rankedModeDispatch(String mode, String query) {
         List<Entry> top10Ranked = null;
-        Path path = defaultPath;
 
-        DiskPositionalIndex index = new DiskPositionalIndex(path);
-        DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(path, ".json");
-
+        DiskPositionalIndex index = new DiskPositionalIndex(defaultPath);
+        DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(defaultPath, ".json");
         RankedDispatch rankedAlgorithm = new RankedDispatch(index, corpus);
 
         switch (mode) {
@@ -82,19 +72,14 @@ public class RankedSearchServlet extends HttpServlet {
             }
         }
         if (top10Ranked != null) {
-            System.out.println("first step");
             List<Page> pages = new ArrayList<>();
-            System.out.println("top10rankedsize: " + top10Ranked.size());
             for (Entry top10Result : top10Ranked) {
-                System.out.println("In the for loop");
                 Integer docID = top10Result.getDocID();
-                System.out.println("Docid: " + docID);
                 Document document = corpus.getDocument(docID);
                 Page page = new Page();
                 page.title = document.getTitle();
                 page.url = document.getURL();
                 pages.add(page);
-                System.out.println("End of for loop");
             }
             return pages;
         }

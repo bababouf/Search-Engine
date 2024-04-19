@@ -23,27 +23,15 @@ import modules.queries.QueryComponent;
 @WebServlet(name = "BooleanSearchServlet", value = "/search/booleansearch")
 public class BooleanSearchServlet extends HttpServlet {
 
-    private DirectoryCorpus corpus;
     private final Path defaultPath = Paths.get("C:/Users/agreg/IdeaProjects/search-engine/all-nps-sites-extracted");
 
-    public void init() {
-
-    }
-
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("Hello");
-
-    }
-
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("IM IN THE BOOLEAN SERVLET!!!!");
-        BufferedReader reader = request.getReader();
-        JsonObject jsonBody = ServletUtilities.parseRequestBody(reader);
-        String query = jsonBody.get("query").getAsString();
-        Path path = defaultPath;
 
-        DiskPositionalIndex index = new DiskPositionalIndex(path);
-        DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(path, ".json");
+        JsonObject jsonBody = ServletUtilities.parseRequestBody(request);
+        String query = jsonBody.get("query").getAsString();
+
+        DiskPositionalIndex index = new DiskPositionalIndex(defaultPath);
+        DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(defaultPath, ".json");
         corpus.getDocuments();
 
         List<Posting> queryPostings = processBooleanQuery(query, index);

@@ -1,4 +1,3 @@
-
 export const createSearchBar = () => {
 
     const searchDiv = document.createElement('div');

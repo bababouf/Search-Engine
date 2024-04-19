@@ -1,27 +1,21 @@
-import {queryModeDispatch} from "../utils/queryModeDispatch.js";
-import {hideMainElements} from "../utils/hideMainElements.js";
+import {removeMainElements} from "../utils/removeMainElements.js";
 import {createBackButton} from "./createBackButton.js";
+import {displayBooleanSearchPage} from "./displayBooleanSearchPage.js";
+import {displayRankedSearchPage} from "./displayRankedSearchPage.js";
 
 
-export const displayQueryModesPage = (event) => {
-
-    hideMainElements();
+export const displayQueryModesPage = () => {
+    removeMainElements();
     const mainElement = document.querySelector('main');
-    const modesDiv = displayQueryModes();
-    mainElement.appendChild(modesDiv);
-
-    const modeButtons = document.querySelectorAll(".mode-button");
-    modeButtons.forEach(button => {
-        button.addEventListener("click", queryModeDispatch);
-    });
-
+    const modesDiv = createQueryModes();
     const backButton = createBackButton();
+
+    mainElement.appendChild(modesDiv);
     mainElement.appendChild(backButton);
-
-
+    attachModeButtonListeners();
 }
 
-const displayQueryModes = () => {
+const createQueryModes = () => {
     const modesDiv = document.createElement('div');
     modesDiv.classList.add('card-container');
 
@@ -39,4 +33,23 @@ const displayQueryModes = () => {
     `;
 
     return modesDiv;
+}
+
+const attachModeButtonListeners = () => {
+    const modeButtons = document.querySelectorAll(".mode-button");
+    modeButtons.forEach(button => {
+        button.addEventListener("click", queryModeDispatch);
+    });
+}
+
+const queryModeDispatch = (event) => {
+
+    const buttonId = event.currentTarget.id;
+
+    if (buttonId === 'boolean-button') {
+        displayBooleanSearchPage(buttonId);
+    } else if (event.currentTarget.id === 'ranked-button') {
+        displayRankedSearchPage(buttonId);
+    }
+
 }

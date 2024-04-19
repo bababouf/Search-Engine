@@ -1,12 +1,14 @@
-import { createBackButton } from "./createBackButton.js";
+import {createBackButton} from "./createBackButton.js";
 import {createSearchBar} from "./createSearchBar.js";
 import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
+import {removeMainElements} from "../utils/removeMainElements.js";
+
 
 export const displayBooleanSearchPage = (buttonId) => {
-
+    removeMainElements();
     const mainElement = document.querySelector('main');
-    const instructions = displayBooleanInstructions();
-    const queryFormats = displayAcceptableQueryFormats();
+    const instructions = createBooleanInstructions();
+    const queryFormats = createAcceptableQueryFormats();
     const searchBar = createSearchBar();
     const backButton = createBackButton();
 
@@ -14,11 +16,12 @@ export const displayBooleanSearchPage = (buttonId) => {
     mainElement.appendChild(searchBar);
     mainElement.appendChild(queryFormats);
     mainElement.appendChild(backButton);
-    createEventListener(buttonId);
+
+    attachQuerySubmitListener(buttonId);
 
 }
 
-const displayBooleanInstructions = () => {
+const createBooleanInstructions = () => {
     const instructions = document.createElement('div');
     instructions.classList.add('overview');
 
@@ -31,7 +34,7 @@ const displayBooleanInstructions = () => {
     return instructions;
 }
 
-const displayAcceptableQueryFormats = () => {
+const createAcceptableQueryFormats = () => {
     const queryFormats = document.createElement('div');
     queryFormats.classList.add('card-container');
 
@@ -65,10 +68,10 @@ const displayAcceptableQueryFormats = () => {
     return queryFormats;
 }
 
-const createEventListener = (buttonId) => {
+const attachQuerySubmitListener = (buttonId) => {
     const form = document.querySelector('#search-form');
     form.addEventListener('submit', (event) => {
         event.preventDefault();
-        verifyQueryDispatch(event, buttonId);
+        verifyQueryDispatch(buttonId);
     });
 }

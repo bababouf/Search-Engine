@@ -2,11 +2,9 @@ export const createBackButton = () => {
 
     const backButtonContainer = document.createElement('div');
     backButtonContainer.classList.add('back-button-container');
-    const backButton = document.createElement('button');
-    backButton.classList.add('back-button');
-    backButton.textContent = 'Back to Home';
-    backButtonContainer.appendChild(backButton);
-
+    backButtonContainer.innerHTML = `
+    <button class ="back-to-home-button"> Back to Home </button>
+    `;
     return backButtonContainer;
 
 }
