@@ -1,36 +1,26 @@
 import {createBackButton} from "./createBackButton.js";
-import {hideMainElements} from "../utils/hideMainElements.js";
+import {removeMainElements} from "../utils/removeMainElements.js";
 import {createSearchBar} from "./createSearchBar.js";
 import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
 
-
 let rankedMode = null;
 export const displayRankedSearchPage = (buttonId) => {
+    removeMainElements();
+    const instructions = createRankedInstructions();
     const mainElement = document.querySelector('main');
-    const instructions = displayRankedInstructions();
     mainElement.insertBefore(instructions, mainElement.firstChild);
 
     const nextButton = document.querySelector('#next-button');
-
     nextButton.addEventListener('click', () => {
-
-        hideMainElements();
-        const rankedModes = displayRankedModes();
-        const searchBar = createSearchBar();
-        const backButton = createBackButton();
-        mainElement.appendChild(rankedModes);
-        mainElement.appendChild(searchBar);
-        mainElement.appendChild(backButton);
-        createModeSelectListener();
-        createQuerySubmitListener(buttonId);
-
+        handleNextButtonClicked(buttonId);
     });
 
 }
 
-const displayRankedInstructions = () => {
+const createRankedInstructions = () => {
     const instructions = document.createElement('div');
     instructions.classList.add('overview');
+
     instructions.innerHTML = `
         <h2>Instructions</h2>
         <p> Ranked queries do not have a specific form as they treat each query as a "bag of words". As a brief introduction, consider
@@ -49,7 +39,19 @@ const displayRankedInstructions = () => {
     return instructions;
 }
 
-const displayRankedModes = () => {
+const handleNextButtonClicked = (buttonId) => {
+    removeMainElements();
+    const mainElement = document.querySelector('main');
+    const rankedModes = createRankedModes();
+    const searchBar = createSearchBar();
+    const backButton = createBackButton();
+    mainElement.appendChild(rankedModes);
+    mainElement.appendChild(searchBar);
+    mainElement.appendChild(backButton);
+    toggleModeSelection();
+    createQuerySubmitListener(buttonId);
+}
+const createRankedModes = () => {
 
     const rankedModes = document.createElement('div');
     rankedModes.classList.add('card-container');
@@ -82,35 +84,38 @@ const displayRankedModes = () => {
     return rankedModes;
 }
 
-const createQuerySubmitListener = (buttonId) => {
-    const form = document.querySelector('#search-form');
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        if(rankedMode === null)
-        {
-            const errorMsg = document.createElement('p');
-            errorMsg.textContent = 'Please select a ranked mode before submitting a query. ';
-            errorMsg.style.color = '#880808';
-            const searchbar = document.querySelector('.search-div');
-            const box = document.querySelector('.box');
-            searchbar.insertBefore(errorMsg, box);
-        }
-        else
-        {
-            verifyQueryDispatch(buttonId, rankedMode);
-        }
-
-    });
-}
-
-const createModeSelectListener = () => {
+const toggleModeSelection = () => {
     const rankModeButtons = document.querySelectorAll('.ranked-button');
     rankModeButtons.forEach(button => {
         button.addEventListener('click', (event) => {
             document.querySelector?.(".active")?.classList?.remove('active');
             event.currentTarget.classList.add('active');
-            console.log(event.currentTarget.id);
             rankedMode = event.currentTarget.id;
         })
     })
 }
+
+const createQuerySubmitListener = (buttonId) => {
+    const form = document.querySelector('#search-form');
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (rankedMode === null) {
+            createErrorMessage();
+
+        } else {
+            verifyQueryDispatch(buttonId, rankedMode);
+            rankedMode = null;
+        }
+
+    });
+}
+
+const createErrorMessage = () => {
+    const errorMsg = document.createElement('p');
+    errorMsg.textContent = 'Please select a ranked mode before submitting a query. ';
+    errorMsg.style.color = '#880808';
+    const searchbar = document.querySelector('.search-div');
+    const box = document.querySelector('.box');
+    searchbar.insertBefore(errorMsg, box);
+}
+

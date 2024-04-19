@@ -1,13 +1,14 @@
-import {hideMainElements} from "../utils/hideMainElements.js";
+import {removeMainElements} from "../utils/removeMainElements.js";
 import {createBackButton} from "./createBackButton.js";
 
 
 export const displayUploadDirectoryPage = () => {
-    hideMainElements();
+    removeMainElements();
     const mainElement = document.querySelector('main');
     const uploadDirectory = displayUploadDirectory();
-    mainElement.appendChild(uploadDirectory);
     const backButton = createBackButton();
+
+    mainElement.appendChild(uploadDirectory);
     mainElement.appendChild(backButton);
 
 }
