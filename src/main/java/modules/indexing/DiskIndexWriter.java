@@ -27,7 +27,7 @@ public class DiskIndexWriter {
     public List<Long> writeIndex(PositionalInvertedIndex PII, Path onDiskIndex) throws IOException, SQLException {
 
         String onDisk = onDiskIndex.toString() + "/index/postings.bin";
-
+        System.out.println("Ondisk path: " + onDisk);
         List<Long> termBytePositions = null;
         try {
             RandomAccessFile onDiskFile =
@@ -108,7 +108,7 @@ public class DiskIndexWriter {
 
         }
         database.commit();
-
+        System.out.println("wee here?");
     }
 
     /**

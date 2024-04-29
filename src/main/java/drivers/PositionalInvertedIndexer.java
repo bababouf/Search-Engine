@@ -13,6 +13,7 @@ import modules.text.EnglishTokenStream;
 import modules.text.NonBasicTokenProcessor;
 import opennlp.tools.stemmer.PorterStemmer;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -183,12 +184,20 @@ public class PositionalInvertedIndexer {
     public static PositionalInvertedIndex indexCorpus(DocumentCorpus corpus, Path absolutePath) throws IOException {
 
         System.out.println("Indexing...");
+        File theDir = new File(absolutePath + "/index");
+        if (!theDir.exists()){
+            theDir.mkdirs();
+        }
+
+
         NonBasicTokenProcessor processor = new NonBasicTokenProcessor();
         List<String> tokenList;
         PositionalInvertedIndex positionalIndex = new PositionalInvertedIndex();
 
         DiskIndexWriter diskIndexWriter = new DiskIndexWriter();
         double averageTokens = 0;
+
+
         diskIndexWriter.clearFileContents(absolutePath);
 
         for (Document document : corpus.getDocuments()) {
