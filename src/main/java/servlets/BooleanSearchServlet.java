@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import modules.documents.DirectoryCorpus;
 import modules.documents.Document;

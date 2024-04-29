@@ -1,4 +1,5 @@
 import {removeMainElements} from "../utils/removeMainElements.js";
+import {displayQueryModesPage} from "./displayQueryModesPage.js";
 
 export const displayFilenamesPage = (files) => {
     removeMainElements();
@@ -86,7 +87,7 @@ const sendToServlet = (formData) => {
             return response.text();
         })
         .then(responseText => {
-            console.log("Holaaaa");
+            displayQueryModesPage();
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
