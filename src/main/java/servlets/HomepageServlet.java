@@ -16,16 +16,15 @@ public class HomepageServlet extends HttpServlet {
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        System.out.println("In The Homepage Servlet.");
         getServletContext().getRequestDispatcher("/frontEnd/index.html").forward(request, response);
-
-        ServletContext context = getServletContext();
-
-        // Set a global variable
-        context.setAttribute("directory", "default");
-
+        setDefaultPath();
     }
 
-    public void destroy() {
+    public void setDefaultPath() {
+        ServletContext context = getServletContext();
+        context.setAttribute("directory", "default");
+        context.setAttribute("path", "C://Users//agreg//Desktop//Copy of Project//search-engine//all-nps-sites-extracted");
     }
 
 }
