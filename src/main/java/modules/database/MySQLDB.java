@@ -7,15 +7,24 @@ import java.util.List;
 public class MySQLDB {
 
     private static Connection conn;
+    public String directory;
 
-    public MySQLDB() {
+    public MySQLDB(boolean defaultDir) {
+
+        if(defaultDir == true)
+        {
+            directory = "/default_directory";
+        }
+        else{
+            directory = "/uploaded_directory";
+        }
         conn = connect();
         System.out.println("Connected to MySQL database.");
     }
 
     private Connection connect() {
 
-        String URL = "jdbc:mysql://localhost:3306/searchengine";
+        String URL = "jdbc:mysql://localhost:3306" + directory;
         String username = "root";
         String password = "admin";
         Connection conn = null;

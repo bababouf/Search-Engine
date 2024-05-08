@@ -3,9 +3,15 @@ package servlets;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import modules.documents.DirectoryCorpus;
+import modules.indexing.DiskPositionalIndex;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 
 public class ServletUtilities {
@@ -39,5 +45,25 @@ public class ServletUtilities {
         return JsonParser.parseString(requestBody.toString()).getAsJsonObject();
     }
 
+    public static void sendResultsToBrowser(String results, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        out.println(results);
+        out.flush();
+    }
+    public static String getProjectRootDir(String servletContextDir) {
+        String currentDir = servletContextDir;
+        while (currentDir != null && !new File(currentDir + File.separator + "pom.xml").exists()) {
+            currentDir = new File(currentDir).getParent();
+        }
+        return currentDir;
+    }
+    public static String getFileName(Part part) {
+        String filename = part.getSubmittedFileName();
+        System.out.println(filename);
+        String[] parts = filename.split("/");
+        return parts[parts.length - 1];
+
+    }
 
 }

@@ -25,26 +25,24 @@ import modules.queries.QueryComponent;
 public class BooleanSearchServlet extends HttpServlet {
 
     private final Path defaultPath = Paths.get("C://Users//agreg//Desktop//Copy of Project//search-engine//all-nps-sites-extracted");
+    private DiskPositionalIndex index;
+    private DirectoryCorpus corpus;
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        System.out.println("In The Boolean Servlet.");
         JsonObject jsonBody = ServletUtilities.parseRequestBody(request);
         String query = jsonBody.get("query").getAsString();
-        DiskPositionalIndex index = new DiskPositionalIndex(defaultPath);
-        DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(defaultPath, ".json");
-        corpus.getDocuments();
+        setupIndexAndCorpus();
         List<Posting> queryPostings = processBooleanQuery(query, index);
-        List <Page> pages = setupResults(queryPostings, corpus);
-        Gson gson = new Gson();
-        String json = gson.toJson(pages);
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        out.println(json);
-        out.flush();
-
+        String results = setupResults(queryPostings, corpus);
+        ServletUtilities.sendResultsToBrowser(results, response);
     }
 
+    public void setupIndexAndCorpus(){
+        index = new DiskPositionalIndex(defaultPath, true);
+        corpus = DirectoryCorpus.loadJsonDirectory(defaultPath, ".json");
+        corpus.getDocuments();
+    }
     public List<Posting> processBooleanQuery(String query, DiskPositionalIndex index) throws IOException {
         BooleanQueryParser booleanParser = new BooleanQueryParser();
         QueryComponent queryComponent = booleanParser.parseQuery(query);
@@ -59,7 +57,7 @@ public class BooleanSearchServlet extends HttpServlet {
         return queryPostings;
     }
 
-    public List<Page> setupResults(List<Posting> queryPostings, DirectoryCorpus corpus){
+    public String setupResults(List<Posting> queryPostings, DirectoryCorpus corpus){
         List<Page> pages = new ArrayList<>();
         for (Posting queryPosting : queryPostings)
         {
@@ -70,7 +68,8 @@ public class BooleanSearchServlet extends HttpServlet {
             page.url = document.getURL();
             pages.add(page);
         }
-        return pages;
+        Gson gson = new Gson();
+        return gson.toJson(pages);
     }
 
     public static class Page {
