@@ -81,10 +81,10 @@ public class DiskIndexWriter {
      *
      * @param termBytePositions A list of long byte positions written in ascending alphabetical order for each term
      */
-    public void writeTermBytePositionsToDatabase(PositionalInvertedIndex PII, List<Long> termBytePositions) {
+    public void writeTermBytePositionsToDatabase(PositionalInvertedIndex PII, List<Long> termBytePositions, boolean defaultDir) {
         List<String> vocabulary = PII.getVocabulary(); // Ascending alphabetical order
         System.out.println("Writing term byte positions to database.");
-        MySQLDB database = new MySQLDB(); // This connects to the DB (hardcoded to sample.db at project root location)
+        MySQLDB database = new MySQLDB(defaultDir); // This connects to the DB (hardcoded to sample.db at project root location)
         database.dropTable(); // If the program is run multiple times this ensures the DB doesn't grow infinitely
         database.createTable();
         int count = 0;

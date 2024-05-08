@@ -65,7 +65,7 @@ public class DiskPositionalIndexerCopy {
             PositionalInvertedIndex index = PositionalInvertedIndexer.indexCorpus(corpus, absolutePathToCorpus); // Creates positionalInvertedIndex
             DiskIndexWriter diskIndexWriter = new DiskIndexWriter();
             List<Long> bytePositions = diskIndexWriter.writeIndex(index, absolutePathToCorpus);
-            diskIndexWriter.writeTermBytePositionsToDatabase(index, bytePositions); // Write byte positions to SQLite DB
+            diskIndexWriter.writeTermBytePositionsToDatabase(index, bytePositions, true); // Write byte positions to SQLite DB
 
         } catch (IOException | SQLException e) {
             e.printStackTrace(); // Handle or log the exception appropriately

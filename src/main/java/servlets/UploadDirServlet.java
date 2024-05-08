@@ -64,20 +64,14 @@ public class UploadDirServlet extends HttpServlet {
     the directory where the pom.xml file is. The pom.xml file is in the project root.
    */
 
-    private String getProjectRootDir() {
-        String currentDir = getServletContext().getRealPath("/");
-        while (currentDir != null && !new File(currentDir + File.separator + "pom.xml").exists()) {
-            currentDir = new File(currentDir).getParent();
-        }
-        return currentDir;
-    }
-
     /*
      This method gets the absolute path to the project root directory, and creates a directory
      within it to hold the uploaded files.
      */
     private void createDirectoryForUploadedFiles(){
-        String projectRoot = getProjectRootDir();
+        String servletContextDir = getServletContext().getRealPath("/");
+
+        String projectRoot = ServletUtilities.getProjectRootDir(servletContextDir);
         uploadedDirectoryPath = projectRoot + File.separator + "uploaded-dir";
         File uploadDir = new File(uploadedDirectoryPath);
 
@@ -100,7 +94,7 @@ public class UploadDirServlet extends HttpServlet {
 
         // Each part represents one uploaded file.
         for (Part part : request.getParts()) {
-            String fileName = getFileName(part);
+            String fileName = ServletUtilities.getFileName(part);
             if (fileName != null && !fileName.isEmpty()) {
 
                 String filePath = uploadedDirectoryPath + File.separator + fileName;
@@ -120,19 +114,11 @@ public class UploadDirServlet extends HttpServlet {
             PositionalInvertedIndex index = PositionalInvertedIndexer.indexCorpus(corpus, Path.of(uploadDirPath)); // Creates positionalInvertedIndex
             DiskIndexWriter diskIndexWriter = new DiskIndexWriter();
             List<Long> bytePositions = diskIndexWriter.writeIndex(index, Path.of(uploadDirPath));
-            diskIndexWriter.writeTermBytePositionsToDatabase(index, bytePositions); // Write byte positions to SQLite DB
+            diskIndexWriter.writeTermBytePositionsToDatabase(index, bytePositions, false); // Write byte positions to SQLite DB
         } catch (IOException | SQLException e) {
             e.printStackTrace(); // Handle or log the exception appropriately
         }
 
     }
-    private String getFileName(Part part) {
-        String filename = part.getSubmittedFileName();
-        System.out.println(filename);
-        String[] parts = filename.split("/");
-        return parts[parts.length - 1];
-
-    }
-
 
 }

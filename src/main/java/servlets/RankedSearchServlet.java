@@ -23,28 +23,21 @@ import java.util.List;
 @WebServlet(name = "RankedSearchServlet", value = "/search/rankedsearch")
 public class RankedSearchServlet extends HttpServlet {
 
-    private final Path defaultPath = Paths.get("C:/Users/agreg/IdeaProjects/search-engine/all-nps-sites-extracted");
+    private final Path defaultPath = Paths.get("C://Users//agreg//Desktop//Copy of Project//search-engine//all-nps-sites-extracted");
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         JsonObject jsonBody = ServletUtilities.parseRequestBody(request);
         String query = jsonBody.get("query").getAsString();
         String mode = jsonBody.get("mode").getAsString();
-
-        List<Page> results = rankedModeDispatch(mode, query);
-        Gson gson = new Gson();
-        String json = gson.toJson(results);
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        out.println(json);
-        out.flush();
-
+        String results = rankedModeDispatch(mode, query);
+        ServletUtilities.sendResultsToBrowser(results, response);
     }
 
-    public List<Page> rankedModeDispatch(String mode, String query) {
+    public String rankedModeDispatch(String mode, String query) {
         List<Entry> top10Ranked = null;
 
-        DiskPositionalIndex index = new DiskPositionalIndex(defaultPath);
+        DiskPositionalIndex index = new DiskPositionalIndex(defaultPath, true);
         DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(defaultPath, ".json");
         RankedDispatch rankedAlgorithm = new RankedDispatch(index, corpus);
 
@@ -81,7 +74,8 @@ public class RankedSearchServlet extends HttpServlet {
                 page.url = document.getURL();
                 pages.add(page);
             }
-            return pages;
+            Gson gson = new Gson();
+            return gson.toJson(pages);
         }
         else {
             return null;
