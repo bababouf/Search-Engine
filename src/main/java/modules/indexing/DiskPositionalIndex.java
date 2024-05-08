@@ -83,7 +83,7 @@ public class DiskPositionalIndex implements Index{
     public List<Posting> getPostings(String term) throws IOException{
         MySQLDB database = new MySQLDB();
         Long byte_position = database.selectTerm(term);
-        System.out.println(byte_position);
+
         List<Posting> postingList = new ArrayList<>();
 
         if (byte_position == null) {
@@ -91,13 +91,16 @@ public class DiskPositionalIndex implements Index{
         } else {
 
             RandomAccessFile onDiskIndex = new RandomAccessFile(pathToIndex, "r");
+
             onDiskIndex.seek(byte_position);
+
             Integer dft = onDiskIndex.readInt();
+
             Integer docID = 0;
 
             for (int i = 0; i < dft; i++) {
                 docID = docID + onDiskIndex.readInt();
-                System.out.println("Docid: " + docID);
+
                 Integer tftd = onDiskIndex.readInt();
                 onDiskIndex.skipBytes(tftd * 4);
                 Posting p = new Posting(docID, null);

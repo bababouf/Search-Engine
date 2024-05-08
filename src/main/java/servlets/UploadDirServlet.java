@@ -47,11 +47,11 @@ public class UploadDirServlet extends HttpServlet {
 
 
         createIndex(uploadedDirectoryPath);
-        System.out.println("we did it");
         ServletContext context = getServletContext();
 
         // Set a global variable
         context.setAttribute("directory", "uploaded");
+        context.setAttribute("path", uploadedDirectoryPath);
 
     }
     /*
@@ -101,7 +101,6 @@ public class UploadDirServlet extends HttpServlet {
         // Each part represents one uploaded file.
         for (Part part : request.getParts()) {
             String fileName = getFileName(part);
-            System.out.println("Filename is: " + fileName);
             if (fileName != null && !fileName.isEmpty()) {
 
                 String filePath = uploadedDirectoryPath + File.separator + fileName;

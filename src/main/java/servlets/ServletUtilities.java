@@ -34,7 +34,6 @@ public class ServletUtilities {
         StringBuilder requestBody = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
-            System.out.println(line);
             requestBody.append(line);
         }
         return JsonParser.parseString(requestBody.toString()).getAsJsonObject();

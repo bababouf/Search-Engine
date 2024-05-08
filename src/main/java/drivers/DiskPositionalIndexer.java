@@ -100,6 +100,7 @@ public class DiskPositionalIndexer {
         String pathString = readIn.next();
         Path path = Paths.get(pathString);
         path = path.toAbsolutePath();
+        System.out.println("Absolute path from read in: " + path);
         return path;
     }
 

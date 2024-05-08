@@ -14,7 +14,7 @@ public class MySQLDB {
     }
 
     private Connection connect() {
-        System.out.println("Connecting to MySQL database...");
+
         String URL = "jdbc:mysql://localhost:3306/searchengine";
         String username = "root";
         String password = "admin";
@@ -30,6 +30,7 @@ public class MySQLDB {
     }
 
     public Long selectTerm(String term) {
+
         final String SQL = "SELECT term, byte_position FROM byte_positions WHERE term = ?";
         try (PreparedStatement c = conn.prepareStatement(SQL)) {
             c.setString(1, term);
