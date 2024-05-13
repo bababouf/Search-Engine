@@ -15,22 +15,16 @@ public class DiskPositionalIndex implements Index{
     public String pathToWeights;
     public int corpusSize;
     public String pathToAvgDocLength;
-    public boolean defaultDirectory;
+    public String thePath;
+
 
     public DiskPositionalIndex(Path path)
     {
         String pathString = path.toAbsolutePath().toString();
+        thePath = pathString;
         pathToWeights = pathString + "/index/docWeights.bin";
         pathToIndex = pathString + "/index/postings.bin";
         pathToAvgDocLength = pathString + "/index/docLengthAvg.bin";
-    }
-    public DiskPositionalIndex(Path path, boolean usingDefaultDirectory)
-    {
-        String pathString = path.toAbsolutePath().toString();
-        pathToWeights = pathString + "/index/docWeights.bin";
-        pathToIndex = pathString + "/index/postings.bin";
-        pathToAvgDocLength = pathString + "/index/docLengthAvg.bin";
-        defaultDirectory = usingDefaultDirectory;
     }
     public DiskPositionalIndex(Path path, int sizeOfCorpus)
     {
@@ -52,7 +46,7 @@ public class DiskPositionalIndex implements Index{
 
     @Override
     public List<Posting> getPostingsWithPositions(String term) throws IOException {
-        MySQLDB database = new MySQLDB(defaultDirectory);
+        MySQLDB database = new MySQLDB(thePath);
         Long byte_position = database.selectTerm(term);
         RandomAccessFile onDiskIndex = new RandomAccessFile(pathToIndex, "r");
         onDiskIndex.seek(byte_position);
@@ -90,7 +84,7 @@ public class DiskPositionalIndex implements Index{
 
     @Override
     public List<Posting> getPostings(String term) throws IOException{
-        MySQLDB database = new MySQLDB(defaultDirectory);
+        MySQLDB database = new MySQLDB(thePath);
         Long byte_position = database.selectTerm(term);
 
         List<Posting> postingList = new ArrayList<>();
@@ -135,7 +129,7 @@ public class DiskPositionalIndex implements Index{
     }
     @Override
     public List<String> getVocabulary() {
-        MySQLDB database = new MySQLDB(defaultDirectory);
+        MySQLDB database = new MySQLDB(thePath);
         return database.retrieveVocabulary();
     }
 }

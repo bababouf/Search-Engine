@@ -3,7 +3,7 @@ import {createSearchBar} from "./createSearchBar.js";
 import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
 import {removeMainElements} from "../utils/removeMainElements.js";
 
-
+// Creates a "page" containing instructions for boolean retrieval, acceptable query formats, a search bar (with a submit button), and a back button
 export const displayBooleanSearchPage = (buttonId) => {
     removeMainElements();
     const mainElement = document.querySelector('main');
@@ -21,6 +21,7 @@ export const displayBooleanSearchPage = (buttonId) => {
 
 }
 
+// Creates the HTML for the boolean retrieval instructions
 const createBooleanInstructions = () => {
     const instructions = document.createElement('div');
     instructions.classList.add('overview');
@@ -34,6 +35,7 @@ const createBooleanInstructions = () => {
     return instructions;
 }
 
+// Creates HTML for the accepted query formats
 const createAcceptableQueryFormats = () => {
     const queryFormats = document.createElement('div');
     queryFormats.classList.add('card-container');
@@ -68,6 +70,7 @@ const createAcceptableQueryFormats = () => {
     return queryFormats;
 }
 
+// Creates listener for submitting a query
 const attachQuerySubmitListener = (buttonId) => {
     const form = document.querySelector('#search-form');
     form.addEventListener('submit', (event) => {

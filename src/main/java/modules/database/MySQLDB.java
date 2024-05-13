@@ -9,9 +9,9 @@ public class MySQLDB {
     private static Connection conn;
     public String directory;
 
-    public MySQLDB(boolean defaultDir) {
+    public MySQLDB(String thePath) {
 
-        if(defaultDir == true)
+        if(thePath.endsWith("all-nps-sites-extracted"))
         {
             directory = "/default_directory";
         }

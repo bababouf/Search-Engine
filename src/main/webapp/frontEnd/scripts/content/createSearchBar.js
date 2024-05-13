@@ -1,3 +1,4 @@
+// Creates HTML for a search bar (and submit button)
 export const createSearchBar = () => {
 
     const searchDiv = document.createElement('div');
