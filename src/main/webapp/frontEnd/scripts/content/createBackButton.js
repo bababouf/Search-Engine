@@ -1,3 +1,4 @@
+// Creates HTML for a back button
 export const createBackButton = () => {
 
     const backButtonContainer = document.createElement('div');

@@ -24,25 +24,33 @@ import modules.queries.QueryComponent;
 @WebServlet(name = "BooleanSearchServlet", value = "/search/booleansearch")
 public class BooleanSearchServlet extends HttpServlet {
 
-    private final Path defaultPath = Paths.get("C://Users//agreg//Desktop//Copy of Project//search-engine//all-nps-sites-extracted");
-    private DiskPositionalIndex index;
-    private DirectoryCorpus corpus;
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        JsonObject jsonBody = ServletUtilities.parseRequestBody(request);
-        String query = jsonBody.get("query").getAsString();
-        setupIndexAndCorpus();
+        System.out.println("in bollean servlet");
+        String query = getQuery(request);
+        DiskPositionalIndex index = createDiskPositionalIndex();
+        DirectoryCorpus corpus = createCorpus();
         List<Posting> queryPostings = processBooleanQuery(query, index);
+        System.out.println("Query Postings: " + queryPostings.size());
         String results = setupResults(queryPostings, corpus);
         ServletUtilities.sendResultsToBrowser(results, response);
     }
 
-    public void setupIndexAndCorpus(){
-        index = new DiskPositionalIndex(defaultPath, true);
-        corpus = DirectoryCorpus.loadJsonDirectory(defaultPath, ".json");
-        corpus.getDocuments();
+    public String getQuery(HttpServletRequest request) throws IOException {
+        JsonObject jsonBody = ServletUtilities.parseRequestBody(request);
+        return jsonBody.get("query").getAsString();
     }
+    public DiskPositionalIndex createDiskPositionalIndex() {
+        Path defaultPath = getDefaultPath();
+        return new DiskPositionalIndex(defaultPath);
+    }
+    public DirectoryCorpus createCorpus() {
+        Path defaultPath = getDefaultPath();
+        DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(defaultPath, ".json");
+        corpus.getDocuments();
+        return corpus;
+    }
+
     public List<Posting> processBooleanQuery(String query, DiskPositionalIndex index) throws IOException {
         BooleanQueryParser booleanParser = new BooleanQueryParser();
         QueryComponent queryComponent = booleanParser.parseQuery(query);
@@ -57,10 +65,17 @@ public class BooleanSearchServlet extends HttpServlet {
         return queryPostings;
     }
 
-    public String setupResults(List<Posting> queryPostings, DirectoryCorpus corpus){
+    public Path getDefaultPath(){
+        ServletContext context = getServletContext();
+        String path = (String) context.getAttribute("path");
+        System.out.println(path);
+        return Paths.get(path);
+    }
+
+
+    public String setupResults(List<Posting> queryPostings, DirectoryCorpus corpus) {
         List<Page> pages = new ArrayList<>();
-        for (Posting queryPosting : queryPostings)
-        {
+        for (Posting queryPosting : queryPostings) {
             int documentID = queryPosting.getDocumentId();
             Document document = corpus.getDocument(documentID);
             Page page = new Page();

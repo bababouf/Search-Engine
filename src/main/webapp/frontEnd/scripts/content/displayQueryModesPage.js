@@ -3,7 +3,7 @@ import {createBackButton} from "./createBackButton.js";
 import {displayBooleanSearchPage} from "./displayBooleanSearchPage.js";
 import {displayRankedSearchPage} from "./displayRankedSearchPage.js";
 
-
+// Displays a "page" containing the query modes (boolean and ranked) and a back button
 export const displayQueryModesPage = () => {
     removeMainElements();
     const mainElement = document.querySelector('main');
@@ -15,6 +15,7 @@ export const displayQueryModesPage = () => {
     attachModeButtonListeners();
 }
 
+// Creates the HTML for the boolean and ranked method selection
 const createQueryModes = () => {
     const modesDiv = document.createElement('div');
     modesDiv.classList.add('card-container');
@@ -35,6 +36,7 @@ const createQueryModes = () => {
     return modesDiv;
 }
 
+// Creates listeners to each of the method buttons
 const attachModeButtonListeners = () => {
     const modeButtons = document.querySelectorAll(".mode-button");
     modeButtons.forEach(button => {
@@ -42,6 +44,7 @@ const attachModeButtonListeners = () => {
     });
 }
 
+// Depending on which query mode is selected, the proper method will be dispatched to handle the work
 const queryModeDispatch = (event) => {
 
     const buttonId = event.currentTarget.id;

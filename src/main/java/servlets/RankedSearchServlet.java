@@ -37,7 +37,7 @@ public class RankedSearchServlet extends HttpServlet {
     public String rankedModeDispatch(String mode, String query) {
         List<Entry> top10Ranked = null;
 
-        DiskPositionalIndex index = new DiskPositionalIndex(defaultPath, true);
+        DiskPositionalIndex index = new DiskPositionalIndex(defaultPath);
         DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(defaultPath, ".json");
         RankedDispatch rankedAlgorithm = new RankedDispatch(index, corpus);
 
@@ -76,8 +76,7 @@ public class RankedSearchServlet extends HttpServlet {
             }
             Gson gson = new Gson();
             return gson.toJson(pages);
-        }
-        else {
+        } else {
             return null;
         }
     }

@@ -51,6 +51,7 @@ public class ServletUtilities {
         out.println(results);
         out.flush();
     }
+
     public static String getProjectRootDir(String servletContextDir) {
         String currentDir = servletContextDir;
         while (currentDir != null && !new File(currentDir + File.separator + "pom.xml").exists()) {
@@ -58,6 +59,9 @@ public class ServletUtilities {
         }
         return currentDir;
     }
+
+
+
     public static String getFileName(Part part) {
         String filename = part.getSubmittedFileName();
         System.out.println(filename);

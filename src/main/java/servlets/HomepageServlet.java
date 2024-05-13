@@ -9,22 +9,26 @@ import jakarta.servlet.annotation.*;
 
 @WebServlet(name = "HomepageServlet", value = "/home")
 public class HomepageServlet extends HttpServlet {
-    private String message;
 
-    public void init() {
-        message = "Hello World!";
+    @Override
+    public void init() throws ServletException {
+        System.out.println("hola");
     }
-
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        System.out.println("In The Homepage Servlet.");
+        System.out.println("In the homepage!!!!");
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
         getServletContext().getRequestDispatcher("/frontEnd/index.html").forward(request, response);
         setDefaultPath();
     }
 
     public void setDefaultPath() {
         ServletContext context = getServletContext();
-        context.setAttribute("directory", "default");
-        context.setAttribute("path", "C://Users//agreg//Desktop//Copy of Project//search-engine//all-nps-sites-extracted");
+        String servletContextDir = context.getRealPath("/");
+        String projectRoot = ServletUtilities.getProjectRootDir(servletContextDir);
+        String defaultDirectoryPath = projectRoot + File.separator + "all-nps-sites-extracted";
+        context.setAttribute("path", defaultDirectoryPath);
     }
 
 }

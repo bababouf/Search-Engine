@@ -1,13 +1,10 @@
 package servlets;
 
 import java.io.*;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
-
 
 import drivers.PositionalInvertedIndexer;
 import jakarta.servlet.ServletContext;
@@ -36,22 +33,17 @@ and file contents, and the ability to perform actions like saving the uploaded f
 @MultipartConfig
 @WebServlet(name = "UploadDirServletServlet", value = "/upload")
 public class UploadDirServlet extends HttpServlet {
-    //private static final long serialVersionUID = 1L;
 
     private String uploadedDirectoryPath = "";
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        createDirectoryForUploadedFiles();
+        createUploadDirectory();
         handleUploadingFiles(request);
-
-
         createIndex(uploadedDirectoryPath);
-        ServletContext context = getServletContext();
 
-        // Set a global variable
-        context.setAttribute("directory", "uploaded");
-        context.setAttribute("path", uploadedDirectoryPath);
+        setUploadDirectoryPath();
+
 
     }
     /*
@@ -68,9 +60,8 @@ public class UploadDirServlet extends HttpServlet {
      This method gets the absolute path to the project root directory, and creates a directory
      within it to hold the uploaded files.
      */
-    private void createDirectoryForUploadedFiles(){
+    private void createUploadDirectory() {
         String servletContextDir = getServletContext().getRealPath("/");
-
         String projectRoot = ServletUtilities.getProjectRootDir(servletContextDir);
         uploadedDirectoryPath = projectRoot + File.separator + "uploaded-dir";
         File uploadDir = new File(uploadedDirectoryPath);
@@ -85,6 +76,7 @@ public class UploadDirServlet extends HttpServlet {
             System.out.println("Directory already exists.");
         }
     }
+
     /*
      In HTTP, when a form contains <input type="file"> elements and the form is submitted with
      enctype="multipart/form-data", the request is sent as a multipart request, and each file
@@ -108,17 +100,25 @@ public class UploadDirServlet extends HttpServlet {
             }
         }
     }
+
     private void createIndex(String uploadDirPath) throws IOException {
         try {
             DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(Path.of(uploadDirPath), ".json");
             PositionalInvertedIndex index = PositionalInvertedIndexer.indexCorpus(corpus, Path.of(uploadDirPath)); // Creates positionalInvertedIndex
             DiskIndexWriter diskIndexWriter = new DiskIndexWriter();
             List<Long> bytePositions = diskIndexWriter.writeIndex(index, Path.of(uploadDirPath));
-            diskIndexWriter.writeTermBytePositionsToDatabase(index, bytePositions, false); // Write byte positions to SQLite DB
+            diskIndexWriter.writeTermBytePositionsToDatabase(index, bytePositions, uploadDirPath); // Write byte positions to SQLite DB
         } catch (IOException | SQLException e) {
             e.printStackTrace(); // Handle or log the exception appropriately
         }
 
+    }
+    private void setUploadDirectoryPath(){
+        ServletContext context = getServletContext();
+
+        // Set a global variable
+        context.setAttribute("directory", "uploaded");
+        context.setAttribute("path", uploadedDirectoryPath);
     }
 
 }

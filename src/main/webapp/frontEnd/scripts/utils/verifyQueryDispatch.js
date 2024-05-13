@@ -1,18 +1,24 @@
 import {displayQueryResultsPage} from "../content/displayQueryResultsPage.js";
 
+
 export const verifyQueryDispatch = (buttonId, rankedMode = null) => {
 
-    let endpoint = '';
+    let endpoint = setEndpoint(buttonId);
+    sendToServlet(endpoint, rankedMode, buttonId)
+}
 
+// Depending on which retrieval mode was selected, the proper endpoint is set
+const setEndpoint = (buttonID) => {
+    let endpoint = '';
     if (buttonId === 'boolean-button') {
         endpoint = '/booleansearch';
     } else if (buttonId === 'ranked-button') {
         endpoint = '/rankedsearch';
     }
-
-    sendToServlet(endpoint, rankedMode, buttonId)
+    return endpoint;
 }
 
+// This method sends the query and mode to the servlet for processing
 const sendToServlet = (endpoint, rankedMode, buttonId) => {
     const value = document.querySelector('#query');
 

@@ -1,10 +1,11 @@
 import {removeMainElements} from "../utils/removeMainElements.js";
 import {displayQueryModesPage} from "./displayQueryModesPage.js";
 
+// Displays a "page" containing the uploaded directory's filenames and a next button
 export const displayFilenamesPage = (files) => {
     removeMainElements();
     const mainElement = document.querySelector('main');
-    const fileNames = listFilenames(files);
+    const fileNames = createFilenamesList(files);
     const nextButton = createNextButton();
 
     mainElement.appendChild(fileNames);
@@ -12,11 +13,12 @@ export const displayFilenamesPage = (files) => {
 
     nextButton.addEventListener('click', () => {
         const formData = convertToFormData(files);
-        handleUploadedDir(formData);
+        handleUploadedDirectory(formData);
     })
 }
 
-const listFilenames = (files) => {
+// Creates HTML for listing the filenames in the uploaded directory
+const createFilenamesList = (files) => {
     const container = document.createElement('div');
     container.classList.add('flex-column');
     const header = document.createElement('h3');
@@ -34,6 +36,7 @@ const listFilenames = (files) => {
 
 }
 
+// Creates a next button to proceed to indexing the uploaded directory
 const createNextButton = () => {
     const nextButtonContainer = document.createElement('div');
     nextButtonContainer.classList.add('flex-column');
@@ -46,6 +49,7 @@ const createNextButton = () => {
     return nextButtonContainer;
 }
 
+// Converting to form data allows for easy/fast transfer of files to servlet
 const convertToFormData = (files) => {
     const formData = new FormData();
     for (let i = 0; i < files.length; i++) {
@@ -54,12 +58,14 @@ const convertToFormData = (files) => {
     return formData;
 }
 
-const handleUploadedDir = (formData) => {
+// This method is called when the next button is clicked
+const handleUploadedDirectory = (formData) => {
     removeMainElements();
     createLoadingSpinner();
     sendToServlet(formData);
 }
 
+// Creates a spinning "loading" spinner that is displayed while the uploaded dir is indexed
 const createLoadingSpinner = () => {
     removeMainElements();
     const loadingDiv = document.createElement('div');
@@ -73,6 +79,7 @@ const createLoadingSpinner = () => {
 
 }
 
+// Sends the files (converted to form data) to the servlet
 const sendToServlet = (formData) => {
     const value = document.querySelector('#query');
 
