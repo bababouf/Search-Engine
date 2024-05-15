@@ -34,6 +34,10 @@ public class RankedSearchServlet extends HttpServlet {
         ServletUtilities.sendResultsToBrowser(results, response);
     }
 
+    /*
+    This method takes two strings as parameters: mode and query. A switch statement dispatches the work of
+    ranking and returning the top 10 documents to various methods depending on the mode passed.
+     */
     public String rankedModeDispatch(String mode, String query) {
         List<Entry> top10Ranked = null;
 

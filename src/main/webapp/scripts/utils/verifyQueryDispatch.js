@@ -8,7 +8,7 @@ export const verifyQueryDispatch = (buttonId, rankedMode = null) => {
 }
 
 // Depending on which retrieval mode was selected, the proper endpoint is set
-const setEndpoint = (buttonID) => {
+const setEndpoint = (buttonId) => {
     let endpoint = '';
     if (buttonId === 'boolean-button') {
         endpoint = '/booleansearch';
