@@ -1,4 +1,5 @@
 import {removeMainElements} from "../utils/removeMainElements.js";
+import {appendBackToSearchButton} from "../utils/appendBackToSearchButton.js";
 
 
 export const displayQueryResultsPage = (response, buttonId) => {
@@ -21,8 +22,8 @@ export const displayQueryResultsPage = (response, buttonId) => {
 
     mainElement.appendChild(numberOfResultsMsg);
     mainElement.appendChild(resultsDiv);
-    const backButtonContainer = createBackToSearchButton(buttonId);
-    mainElement.appendChild(backButtonContainer);
+
+    appendBackToSearchButton(buttonId);
 }
 
 const handleNoResults = () => {
@@ -55,17 +56,5 @@ const displayResults = (listOfResults) => {
 
     return resultsDiv;
 
-}
-
-const createBackToSearchButton = (buttonId) => {
-    const backButtonContainer = document.createElement('div');
-    backButtonContainer.classList.add('back-button-container');
-    backButtonContainer.style.display = 'block';
-    const backButton = document.createElement('button');
-    backButton.classList.add('back-button');
-    backButton.id = `${buttonId}`;
-    backButton.textContent = 'Back to Search';
-    backButtonContainer.appendChild(backButton);
-    return backButtonContainer;
 }
 

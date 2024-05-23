@@ -1,26 +1,29 @@
 import {removeMainElements} from "../utils/removeMainElements.js";
-import {createBackButton} from "./createBackButton.js";
+import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
 import {displayBooleanSearchPage} from "./displayBooleanSearchPage.js";
-import {displayRankedSearchPage} from "./displayRankedSearchPage.js";
+import {displayRankedSearchPageInstructions} from "./displayRankedSearchPage.js";
 
 // Displays a "page" containing the query modes (boolean and ranked) and a back button
 export const displayQueryModesPage = () => {
     removeMainElements();
     const mainElement = document.querySelector('main');
     const modesDiv = createQueryModes();
-    const backButton = createBackButton();
 
     mainElement.appendChild(modesDiv);
-    mainElement.appendChild(backButton);
+    appendBackToHomeButton();
+
     attachModeButtonListeners();
 }
 
 // Creates the HTML for the boolean and ranked method selection
 const createQueryModes = () => {
     const modesDiv = document.createElement('div');
-    modesDiv.classList.add('card-container');
 
     modesDiv.innerHTML = `
+    <h2>Select Query Mode</h2>
+    
+    
+    <div class = "querymodes-container">
     <div class="card">
         <h3> Boolean Retrieval Mode </h3>
         <p> Configures the program to handle boolean queries. </p>
@@ -30,6 +33,7 @@ const createQueryModes = () => {
         <h3> Ranked Retrieval Mode </h3>
         <p> Configures the program to handle ranked requests. </p>
         <button class = "mode-button" id="ranked-button"> Go! </button>  
+    </div>
     </div>
     `;
 
@@ -52,7 +56,7 @@ const queryModeDispatch = (event) => {
     if (buttonId === 'boolean-button') {
         displayBooleanSearchPage(buttonId);
     } else if (event.currentTarget.id === 'ranked-button') {
-        displayRankedSearchPage(buttonId);
+        displayRankedSearchPageInstructions(buttonId);
     }
 
 }

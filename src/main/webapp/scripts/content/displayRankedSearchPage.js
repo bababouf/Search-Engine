@@ -1,22 +1,18 @@
-import {createBackButton} from "./createBackButton.js";
+import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
 import {removeMainElements} from "../utils/removeMainElements.js";
 import {createSearchBar} from "./createSearchBar.js";
 import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
 
 let rankedMode = null;
-
-// Displays a "page" containing instructions for the ranked mode, as well as a next button
-export const displayRankedSearchPage = (buttonId) => {
+export const displayRankedSearchPageInstructions = (buttonId) => {
     removeMainElements();
     const instructions = createRankedInstructions();
     const mainElement = document.querySelector('main');
     mainElement.insertBefore(instructions, mainElement.firstChild);
-
     const nextButton = document.querySelector('#next-button');
     nextButton.addEventListener('click', () => {
-        handleNextButtonClicked(buttonId);
+        displayRankedSearchPage(buttonId);
     });
-
 }
 
 // Creates HTMl for ranked retrieval instructions
@@ -43,15 +39,15 @@ const createRankedInstructions = () => {
 }
 
 // When the next button is clicked, the ranked modes, search bar, and back button are displayed
-const handleNextButtonClicked = (buttonId) => {
+export const displayRankedSearchPage = (buttonId) => {
     removeMainElements();
     const mainElement = document.querySelector('main');
     const rankedModes = createRankedModes();
     const searchBar = createSearchBar();
-    const backButton = createBackButton();
+
     mainElement.appendChild(rankedModes);
     mainElement.appendChild(searchBar);
-    mainElement.appendChild(backButton);
+    appendBackToHomeButton();
     toggleModeSelection();
     attachQuerySubmitListener(buttonId);
 }
