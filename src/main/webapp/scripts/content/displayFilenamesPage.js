@@ -71,7 +71,7 @@ const createLoadingSpinner = () => {
     const loadingDiv = document.createElement('div');
     loadingDiv.classList.add('flex-column');
     loadingDiv.innerHTML = `
-            <span class="loader"></span>
+            <span class="loading-spinner"></span>
             <p>Indexing...</p>
             `
     const mainElement = document.querySelector('main');

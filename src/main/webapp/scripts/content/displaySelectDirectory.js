@@ -18,7 +18,7 @@ const createDirectorySelection = () => {
 
     directorySelectionContainer.innerHTML = `
             <h2>Select Directory</h2>
-                <div class="flex-row">
+                <div class="card-container">
                     <div class="card">
                         <h3>Default Directory</h3>
                         <p>This directory contains 30,000 NPS.org webpages and can be used to test the various query modes this application has to offer. </p>

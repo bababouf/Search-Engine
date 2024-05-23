@@ -1,52 +1,35 @@
-/* 
-TODO:
-    - Comment
-    - Responsive design 
-    - Accessibility
-    
-*/
-
-
-
+/* BASE STYLES */
 body{
     padding: 0;
     margin: 0;
     font-family: Roboto, 'Open Sans', system-ui;
     line-height: 2rem;
     text-align: center;
+    background-color: #121212;
+    color: white;
 }
 
-.hero-container{
-    padding: 60px 0px;
-    background-image: url(../images/barberry.jpg);
-    background-size: cover;
-}
-
-.navbar{
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    padding-right: 50px;
+p{
+    font-size: 1.2rem;
+    font-weight: 400;
+    text-align: center;
 }
 
 h1{
-    color:wheat;
-    font-size: 4rem; 
+    color:white;
+    font-size: 3rem;
+
 }
 
 h2{
-    color: wheat;
-    font-size: 2.5rem;
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: darkslategray;
+    color: white;
+    font-size: 2.3rem;
 }
 
 h3{
-    color:lightslategrey;
+    color: beige;
     font-size: 2rem;
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: darkslategray;
-    margin: 15px 0px; 
+    margin: 15px 0;
 }
 
 button{
@@ -57,48 +40,81 @@ button{
     border: 1px solid transparent;
     letter-spacing: 2px;
     min-width: 110px;
-    color: lightslategray;
-    box-shadow: inset 0 0 0 2px lightslategray;
+    color: beige;
+    box-shadow: inset 0 0 0 2px beige;
     background-color: transparent;
     transition-duration: .2s;
-    margin: 15px 0px;
+    margin: 15px 0;
 }
 
 button:hover{
-    color: #fff;
+    color: beige;
     background-color: lightslategray;
-}
-
-.back-button-container{
-    display: flex;
-    justify-content: center;
-}
-
-
-.overview{
-    margin: 0rem 10rem;
-}
-
-.card-container{
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-}
-
-.card{
-    width: 300px;
 }
 
 li, a{
     text-decoration: none;
     list-style-type: none;
-    color: wheat;
+    color: white;
 }
+
 li a:hover{
     transition: padding .3s, top .3s, box-shadow .3s;
     box-shadow: 0 0.2rem 0 0 lightslategray;
 }
-.searchbox {
+
+/* UTILITY CLASSES */
+.flex-column{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flex-row{
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.margin-horizontal-10rem{
+    margin: 0 10rem;
+}
+
+.card-container{
+    display: flex;
+    justify-content: center;
+    gap: 5rem;
+    margin: 0 3rem;
+}
+
+/* COMPONENTS */
+.sidebar {
+
+    background-color: rgb(30, 30, 30);
+    padding-top: 20px;
+    position: fixed;
+    height: 100vh;
+    width: 200px;
+
+}
+
+.sidebar a {
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 18px;
+    color: white;
+    display: block;
+}
+
+.sidebar a:hover {
+    background-color: #575757;
+}
+
+.search-box {
     padding: 10px;
     width: 80px;
     height: 80px;
@@ -106,7 +122,7 @@ li a:hover{
     border-radius: 50px;
     box-sizing: border-box;
     font-size: 26px;
-    color: wheat;
+    color: white;
     outline: none;
     transition: .5s;
 }
@@ -117,36 +133,33 @@ li a:hover{
     border-radius: 10px;
 }
 
-.flex-column{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.hero__container{
+    padding: 60px 0;
+    background-image: url(../images/barberry.jpg);
+    background-size: cover;
+    border-bottom: 5px solid #666;
+    position: sticky;
+    top: 0;
 }
 
-.upload-corpus-div{
+.hero__navbar{
     display: flex;
     justify-content: center;
+    font-style: italic;
+    font-size: 1.1rem;
     gap: 1rem;
+    margin-right: 35px;
 }
 
-.active{
-    color: #fff;
-    background-color: lightslategray;
+.card{
+    width: 300px;
 }
 
 .error-message{
     color: #880808;
 }
 
-.result-link{
-    color: darkslategray;
-}
-
-
-/*
-lil loading button
- */
-.loader {
+.loading-spinner {
     margin-top: 5rem;
     width: 48px;
     height: 48px;
@@ -166,6 +179,38 @@ lil loading button
         transform: rotate(360deg);
     }
 }
+
+.upload-corpus-div{
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.result-link{
+    color: darkslategray;
+}
+
+.active{
+    color: #fff;
+    background-color: lightslategray;
+}
+
+.documentation{
+    margin: 0 5rem 0 150px;
+    text-align: left;
+}
+
+.documentation p{
+    text-align: left;
+
+}
+
+
+
+
+
+
+
 
 
   
