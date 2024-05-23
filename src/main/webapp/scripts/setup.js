@@ -1,57 +1,27 @@
-import {displayUploadDirectoryPage} from "./content/displayUploadDirectoryPage.js";
-import {removeMainElements} from "./utils/removeMainElements.js";
-import {displayBooleanSearchPage} from "./content/displayBooleanSearchPage.js";
-import {displayRankedSearchPage} from "./content/displayRankedSearchPage.js";
-import {captureMainContent} from "./utils/captureMainContent.js";
-import {setDirectoryPathAtServer} from "./utils/setDirectoryPathAtServer.js";
+import { displayDocumentationPage } from "./content/displayDocumentationPage.js";
+import { displaySelectDirectory } from "./content/displaySelectDirectory.js";
+import {captureMainContent, setInitialContent} from "./utils/homepageContentManager.js";
 
-// Initially captures the main content once the HTML page has been loaded
 let mainContent = null;
 window.addEventListener('DOMContentLoaded', () => {
     mainContent = captureMainContent();
+    setInitialContent(mainContent);
+    initializeHomePageEventListeners();
 });
 
-const mainElement = document.querySelector('main');
-mainElement.addEventListener('click', event => {
-    dispatchButtonClick(event);
-});
+export const initializeHomePageEventListeners = () => {
+    const documentationAnchor = document.querySelector('.documentation__anchor');
+    documentationAnchor.addEventListener('click', event => {
+        event.preventDefault();
+        displayDocumentationPage();
+    });
 
-// Dispatches work to the proper method depending on which button has been clicked
-const dispatchButtonClick = (event) => {
-    const target = event.target;
+    const nextButton = document.querySelector('.homepage__get-started');
+    nextButton.addEventListener('click', event => {
+        displaySelectDirectory();
+    });
+};
 
-    if (target.matches(".directory-selection-button")) {
-        dispatchDirectoryButtonClick(target);
-    } else if (target.classList.contains('back-to-home-button')) {
-        handleBackToHomeButtonClick();
-    } else if (target.classList.contains('back-button')) {
-        dispatchBackButtonClick(target);
-    }
-}
 
-// Depending on which of the directory buttons are clicked, work will again be dispatched to the proper method
-const dispatchDirectoryButtonClick = (target) => {
-    if (target.id === 'default-directory-button') {
-        setDirectoryPathAtServer();
-    } else if (target.id === 'upload-directory-button') {
-        displayUploadDirectoryPage();
-    }
-}
-
-// Allows for content to be set back to what it was when the page initially loaded
-const handleBackToHomeButtonClick = () => {
-    const mainElement = document.querySelector('main');
-    mainElement.innerHTML = mainContent;
-}
-
-// Allows the user to go back and enter another query after the search results have been displayed
-const dispatchBackButtonClick = (target) =>  {
-    removeMainElements();
-    if (target.id === 'boolean-button') {
-        displayBooleanSearchPage(target.id);
-    } else {
-        displayRankedSearchPage(target.id);
-    }
-}
 
 

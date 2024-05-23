@@ -8,7 +8,7 @@ export const createSearchBar = () => {
     <div class="box">
         <form id ="search-form" name="search">
             <div class="flex-column">
-                <input id="query" type="text" class="searchbox" name="txt">
+                <input id="query" type="text" class="searchbox" name="txt" autocomplete="off">
                 <button type="submit"> Query! </button>   
             </div>
         </form>

@@ -1,4 +1,4 @@
-import {createBackButton} from "./createBackButton.js";
+import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
 import {createSearchBar} from "./createSearchBar.js";
 import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
 import {removeMainElements} from "../utils/removeMainElements.js";
@@ -10,12 +10,11 @@ export const displayBooleanSearchPage = (buttonId) => {
     const instructions = createBooleanInstructions();
     const queryFormats = createAcceptableQueryFormats();
     const searchBar = createSearchBar();
-    const backButton = createBackButton();
 
     mainElement.insertBefore(instructions, mainElement.firstChild);
     mainElement.appendChild(searchBar);
     mainElement.appendChild(queryFormats);
-    mainElement.appendChild(backButton);
+    appendBackToHomeButton();
 
     attachQuerySubmitListener(buttonId);
 

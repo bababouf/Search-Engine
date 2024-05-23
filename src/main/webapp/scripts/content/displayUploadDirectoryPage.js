@@ -1,5 +1,5 @@
 import {removeMainElements} from "../utils/removeMainElements.js";
-import {createBackButton} from "./createBackButton.js";
+import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
 import {displayFilenamesPage} from "./displayFilenamesPage.js";
 
 // Displays a "page" containing a form for directory upload and a submit button + back button
@@ -7,24 +7,26 @@ export const displayUploadDirectoryPage = () => {
     removeMainElements();
     const mainElement = document.querySelector('main');
     const uploadDirectory = createUploadDirectoryForm();
-    const backButton = createBackButton();
+
 
     mainElement.appendChild(uploadDirectory);
-    mainElement.appendChild(backButton);
+    appendBackToHomeButton();
     attachSubmitDirectoryListener();
 }
 
 // Creates a form used allowing the user to enter a folder of either .TXT documents or .JSON documents
 const createUploadDirectoryForm = () => {
     const uploadDirectory = document.createElement('div');
-    uploadDirectory.classList.add('upload-corpus-div');
+
 
     uploadDirectory.innerHTML = `
+    <div class="upload-corpus-div">
     <form id="folderForm" enctype="multipart/form-data">
-        <label for="folderPath">Choose a corpus directory: </label>
+        <h2>Select a Directory</h2>
         <input type="file" id="folderInput" name="folderInput" webkitdirectory = 'true'>
         <button type="submit">Submit</button>
     </form>
+    </div>
     `;
 
     return uploadDirectory;
