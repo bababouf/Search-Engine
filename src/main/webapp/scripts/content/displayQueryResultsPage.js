@@ -38,7 +38,7 @@ const handleNoResults = () => {
 const displayResults = (listOfResults) => {
 
     const resultsDiv = document.createElement('div');
-    resultsDiv.classList.add('card-container');
+    resultsDiv.classList.add('flex-row');
     resultsDiv.style.flexWrap = 'wrap';
 
     listOfResults.forEach(result => {

@@ -23,7 +23,7 @@ export const displayBooleanSearchPage = (buttonId) => {
 // Creates the HTML for the boolean retrieval instructions
 const createBooleanInstructions = () => {
     const instructions = document.createElement('div');
-    instructions.classList.add('overview');
+    instructions.classList.add('boolean-search__overview');
 
     instructions.innerHTML = `
         <h2>Instructions</h2>

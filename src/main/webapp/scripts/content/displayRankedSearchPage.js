@@ -30,7 +30,7 @@ const createRankedInstructions = () => {
         <p> As a result of the above, a document's ranking is based off a combination of the query term's weight, as well as the 
         weight for that term in each of the documents. This program allows for the choice of four different ranking algorithms, each
         building off of the above basic ranking algorithm. Below are the different ranking algorithms that can be selected. </p>
-        <div class="card-container">
+        <div class="flex-row">
             <button id="next-button">Next</button>
         </div>
     `;
