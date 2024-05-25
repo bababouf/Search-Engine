@@ -91,7 +91,9 @@ li a:hover{
     margin: 0 3rem;
 }
 
+
 /* COMPONENTS */
+
 .sidebar {
 
     background-color: rgb(30, 30, 30);
@@ -99,6 +101,7 @@ li a:hover{
     position: fixed;
     height: 100vh;
     width: 200px;
+
 
 }
 
@@ -202,15 +205,9 @@ li a:hover{
 
 .documentation p{
     text-align: left;
-
+}
+.section {
+    scroll-margin-top: 300px /* Adjust this value to the height of your fixed header */
 }
 
 
-
-
-
-
-
-
-
-  

@@ -34,19 +34,20 @@ const createIntroductionSection = () => {
     const introSection = document.createElement('div');
     introSection.classList.add('documentation');
     introSection.innerHTML = `
-        <h2 id="documentation__intro-section"> Introduction </h2>
+        <h2 id="documentation__intro-section" class="section"> Introduction </h2>
         <p> 
         This web application functions as a search engine and indexer, enabling users to search a default set of documents or 
         upload and query their own collections. The default collection includes 30,000 webpages scraped from NPS.org (National 
         Park Service pages). If users upload their own collection, it must consist entirely of either .TXT or .JSON files.
         </p>
-        <p>
+        <p >
         After selecting the corpus, the user can choose between two query modes: boolean retrieval or ranked retrieval. 
         Boolean queries must be in disjunctive normal form, accepting standard AND/OR queries as well as ORs of ANDs. Ranked 
         retrieval allows for "bag of words" queries, similar to typical web browser searches. This mode accepts any query and 
         returns the top ten most relevant documents. Additionally, users can select from several ranking schemes in ranked 
         retrieval: default, TF-IDF, Okapi, and Wacky, each offering a unique approach to ranking documents and query terms.
         </p>
+        
         <a href="https://github.com/bababouf/Search-Engine/tree/master">GitHub Repository</a>
            
     `;
@@ -57,7 +58,7 @@ const createTechnologyStackSection = () => {
     const techSection = document.createElement('div');
     techSection.classList.add('documentation');
     techSection.innerHTML = `
-        <h2 id="documentation__tech-stack-section">Technology Stack</h2>
+        <h2 id="documentation__tech-stack-section" class="section">Technology Stack</h2>
         <p>
         The front end of the application is built using vanilla JavaScript, CSS, and HTML. A single HTML page (index.html) is 
         employed, with user interactions triggering various scripts to dynamically modify the content without reloading the page.
@@ -77,7 +78,7 @@ const createIndexingSection = () => {
     const indexingSection = document.createElement('div');
     indexingSection.classList.add('documentation');
     indexingSection.innerHTML = `
-        <h2 id="documentation__indexing-section">Indexing</h2>
+        <h2 id="documentation__indexing-section" class="section">Indexing</h2>
         <h3>Overview</h3>
         <p> 
         Creating an index is crucial for speeding up the search engine's response time. By investing time upfront to build an index for a 
@@ -129,7 +130,7 @@ const createQueryingSection = () => {
     const queryingSection = document.createElement('div');
     queryingSection.classList.add('documentation');
     queryingSection.innerHTML = `
-        <h2 id="documentation__querying-section">Querying </h2>
+        <h2 id="documentation__querying-section" class="section">Querying </h2>
         <h3>Overview</h3>
         <p>
         As mentioned in the introduction section, the two accepted modes of query are boolean retrieval and ranked retrieval. The boolean retrieval mode accepts
