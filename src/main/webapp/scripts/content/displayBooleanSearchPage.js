@@ -12,8 +12,8 @@ export const displayBooleanSearchPage = (buttonId) => {
     const searchBar = createSearchBar();
 
     mainElement.insertBefore(instructions, mainElement.firstChild);
-    mainElement.appendChild(searchBar);
     mainElement.appendChild(queryFormats);
+    mainElement.appendChild(searchBar);
     appendBackToHomeButton();
 
     attachQuerySubmitListener(buttonId);
@@ -24,7 +24,7 @@ export const displayBooleanSearchPage = (buttonId) => {
 const createBooleanInstructions = () => {
     const instructions = document.createElement('div');
     instructions.classList.add('boolean-search__overview');
-
+    instructions.classList.add('margin-horizontal-10rem');
     instructions.innerHTML = `
         <h2>Instructions</h2>
         <p> The program accepts boolean queries that are in disjunctive normal form (DNF), also described as an OR of ANDS. 
