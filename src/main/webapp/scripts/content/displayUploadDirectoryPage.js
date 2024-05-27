@@ -23,6 +23,7 @@ const createUploadDirectoryForm = () => {
     <div class="upload-corpus-div">
     <form id="folderForm" enctype="multipart/form-data">
         <h2>Select a Directory</h2>
+        <p class="margin-horizontal-10rem">Directory must contain all .TXT files, or all .JSON files. A directory containing any other files, or a mixture of .TXT and .JSON will be rejected.</p>
         <input type="file" id="folderInput" name="folderInput" webkitdirectory = 'true'>
         <button type="submit">Submit</button>
     </form>

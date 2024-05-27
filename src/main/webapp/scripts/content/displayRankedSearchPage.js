@@ -19,7 +19,7 @@ export const displayRankedSearchPageInstructions = (buttonId) => {
 const createRankedInstructions = () => {
     const instructions = document.createElement('div');
     instructions.classList.add('overview');
-
+    instructions.classList.add('margin-horizontal-10rem');
     instructions.innerHTML = `
         <h2>Instructions</h2>
         <p> Ranked queries do not have a specific form as they treat each query as a "bag of words". As a brief introduction, consider
@@ -45,6 +45,10 @@ export const displayRankedSearchPage = (buttonId) => {
     const rankedModes = createRankedModes();
     const searchBar = createSearchBar();
 
+    const header = document.createElement('h2');
+    header.textContent = 'Select Ranking Scheme';
+
+    mainElement.appendChild(header);
     mainElement.appendChild(rankedModes);
     mainElement.appendChild(searchBar);
     appendBackToHomeButton();
@@ -61,24 +65,23 @@ const createRankedModes = () => {
     rankedModes.innerHTML = `
     <div class="card">
         <h3> Default </h3>
-        <p> Returns documents containing each of the query terms being AND'd. </p>
-        <p> Example: dogs cats birds </p>
+        <p>  </p>
         <button id ="default-ranked" class="ranked-button"> Select </button>
   
     </div>
     <div class="card">
         <h3> TFIDF </h3>
-        <p>TFIDF, known as term frequency-inverse document frequency, will blah blah</p>
+        <p></p>
         <button id ="tfidf-ranked" class="ranked-button"> Select </button>
     </div>
     <div class="card">
         <h3> Okapi BM25 </h3>
-        <p> Terms can be AND'd together, and these groups can then be OR'd. </p> 
+        <p>  </p> 
         <button id ="okapi-ranked" class="ranked-button"> Select </button>
     </div>
     <div class="card">
         <h3> Wacky </h3>
-        <p> Returns documents that contain the queried phrase. </p>
+        <p>  </p>
         <button id ="wacky-ranked" class="ranked-button"> Select </button>
     </div>
     `;

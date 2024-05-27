@@ -47,7 +47,6 @@ const createIntroductionSection = () => {
         returns the top ten most relevant documents. Additionally, users can select from several ranking schemes in ranked 
         retrieval: default, TF-IDF, Okapi, and Wacky, each offering a unique approach to ranking documents and query terms.
         </p>
-        
         <a href="https://github.com/bababouf/Search-Engine/tree/master">GitHub Repository</a>
            
     `;
@@ -58,17 +57,24 @@ const createTechnologyStackSection = () => {
     const techSection = document.createElement('div');
     techSection.classList.add('documentation');
     techSection.innerHTML = `
-        <h2 id="documentation__tech-stack-section" class="section">Technology Stack</h2>
+        <h2 id="documentation__tech-stack-section" class="section">Application Architecture</h2>
         <p>
         The front end of the application is built using vanilla JavaScript, CSS, and HTML. A single HTML page (index.html) is 
         employed, with user interactions triggering various scripts to dynamically modify the content without reloading the page.
-        The back end follows the Jakarta EE (Java) specification and uses the Jersey Server implementation for its REST API. The 
-        most common requests from the browser to the server are POST requests containing the user's query. For these requests, the 
+        The back end follows the Jakarta EE (Java) specification and uses the Jersey Server implementation for its REST API. 
+        </p>
+        <img class="arch-diagram" src="../../images/arch-diagram.png" height="430" width="800" >
+        <p>
+        The most common requests from the browser to the server are POST requests containing the user's query. For these requests, the 
         server interacts with a MySQL database, which has a two-column structure where each row contains a term and its byte position 
         in another binary file. This design enables efficient term lookup and quick query responses. Maven is used as a build automation 
-        tool, streamlining development by managing dependencies, compiling source code, and packaging the application. It uses a 
-        Project Object Model (POM) file to define the project's structure and configurations, ensuring efficient project management 
-        and consistency across development environments.
+        tool, streamlining development by managing dependencies, compiling source code, and packaging the application.
+        </p>
+        <p>
+        
+        Azure Web Hosting is a cloud-based service provided by Microsoft Azure that allows users to deploy, manage, and scale web applications. In 
+        this project, it hosts the entire web application, ensuring high availability, security, and performance for both the front end (HTML/CSS/JavaScript) 
+        and the backend (Java Jakarta EE, Jersey Server) components, as well as the MySQL database.
         </p>
     `;
     return techSection;
@@ -78,12 +84,13 @@ const createIndexingSection = () => {
     const indexingSection = document.createElement('div');
     indexingSection.classList.add('documentation');
     indexingSection.innerHTML = `
-        <h2 id="documentation__indexing-section" class="section">Indexing</h2>
-        <h3>Overview</h3>
+        <h2 id="documentation__indexing-section" class="section">Data Flows</h2>
+        <h3>Indexing</h3>
         <p> 
         Creating an index is crucial for speeding up the search engine's response time. By investing time upfront to build an index for a 
         given corpus, we can significantly reduce the time it takes to retrieve search results for individual queries.
         </p>
+        <img src="../../images/indexing_flowchart.png" width = "1200">
         <p>
         During indexing, each document is examined word by word. Every word is transformed to its base form (stemmed) to ensure consistency 
         when indexing variations of the same word. For example, the word run and it's variations (running, ran, runner) would all map to a single
@@ -130,7 +137,7 @@ const createQueryingSection = () => {
     const queryingSection = document.createElement('div');
     queryingSection.classList.add('documentation');
     queryingSection.innerHTML = `
-        <h2 id="documentation__querying-section" class="section">Querying </h2>
+        <h2 id="documentation__querying-section" class="section">Processing Queries </h2>
         <h3>Overview</h3>
         <p>
         As mentioned in the introduction section, the two accepted modes of query are boolean retrieval and ranked retrieval. The boolean retrieval mode accepts
