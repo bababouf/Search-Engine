@@ -232,7 +232,7 @@ public class PositionalInvertedIndexer {
                     }
                 }
             }
-            diskIndexWriter.calculateAndWriteDocumentWeights(termFrequency, absolutePath, id, documentTokens, bytes);
+            diskIndexWriter.writeDocumentWeights(termFrequency, absolutePath, id, documentTokens, bytes);
 
         }
 

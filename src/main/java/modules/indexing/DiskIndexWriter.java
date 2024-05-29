@@ -131,7 +131,7 @@ public class DiskIndexWriter {
      * to the docWeights.bin file. These include LD (used to normalize very short documents/very long documents), the number of tokens, number of ASCII bytes, and the average term
      * frequency of terms in the document.
      */
-    public void calculateAndWriteDocumentWeights(Map<String, Integer> termFrequency, Path absolutePath, int id, int documentTokens, int bytes) {
+    public void writeDocumentWeights(Map<String, Integer> termFrequency, Path absolutePath, int id, int documentTokens, int bytes) {
         String pathToDocWeights = absolutePath.toString() + "/index/docWeights.bin";
 
         try {

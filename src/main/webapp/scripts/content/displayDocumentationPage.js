@@ -14,12 +14,9 @@ export const displayDocumentationPage = (event) => {
     const flexContainer = document.createElement('div');
     const docsContainer = document.createElement('div');
 
-
     flexContainer.classList.add('flex-container');
     docsContainer.classList.add('documentation');
     flexContainer.appendChild(sidebar);
-
-
 
     docsContainer.appendChild(introSection);
     docsContainer.appendChild(techSection);
@@ -40,14 +37,14 @@ const createIntroductionSection = () => {
         upload and query their own collections. The default collection includes 30,000 webpages scraped from NPS.org (National 
         Park Service pages). If users upload their own collection, it must consist entirely of either .TXT or .JSON files.
         </p>
-        <p >
+        <p>
         After selecting the corpus, the user can choose between two query modes: boolean retrieval or ranked retrieval. 
         Boolean queries must be in disjunctive normal form, accepting standard AND/OR queries as well as ORs of ANDs. Ranked 
         retrieval allows for "bag of words" queries, similar to typical web browser searches. This mode accepts any query and 
         returns the top ten most relevant documents. Additionally, users can select from several ranking schemes in ranked 
         retrieval: default, TF-IDF, Okapi, and Wacky, each offering a unique approach to ranking documents and query terms.
         </p>
-        <a href="https://github.com/bababouf/Search-Engine/tree/master">GitHub Repository</a>
+        <a href="https://github.com/bababouf/Search-Engine/tree/master">Link to GitHub Repository</a>
            
     `;
     return introSection;
@@ -71,11 +68,10 @@ const createTechnologyStackSection = () => {
         tool, streamlining development by managing dependencies, compiling source code, and packaging the application.
         </p>
         <p>
-        
-        Azure Web Hosting is a cloud-based service provided by Microsoft Azure that allows users to deploy, manage, and scale web applications. In 
-        this project, it hosts the entire web application, ensuring high availability, security, and performance for both the front end (HTML/CSS/JavaScript) 
-        and the backend (Java Jakarta EE, Jersey Server) components, as well as the MySQL database.
+        The web application is deployed using Microsoft's Azure App Service. This is a platform as a service (PaaS) which provides complete 
+        managed hosting of the application (meaning Microsoft's hardware is being used as the server). 
         </p>
+        <br><br>
     `;
     return techSection;
 }
@@ -88,14 +84,13 @@ const createIndexingSection = () => {
         <h3>Indexing</h3>
         <p> 
         Creating an index is crucial for speeding up the search engine's response time. By investing time upfront to build an index for a 
-        given corpus, we can significantly reduce the time it takes to retrieve search results for individual queries.
+        given corpus, the time it takes to retrieve search results for individual queries is significantly decreased. 
         </p>
         <img src="../../images/indexing_flowchart.png" width = "1200">
         <p>
         During indexing, each document is examined word by word. Every word is transformed to its base form (stemmed) to ensure consistency 
-        when indexing variations of the same word. For example, the word run and it's variations (running, ran, runner) would all map to a single
-        term. These base terms are then stored in a hashmap, each associated with a list of postings. Each posting contains the document's ID, 
-        which uniquely identifies the term within the corpus, along with a list of positions where the term occurs in that document.<br>
+        when indexing variations of the same word. These base terms are then stored in a hashmap, each associated with a list of postings. 
+        Each posting contains the document's ID, which uniquely identifies the term within the corpus, along with a list of positions where the term occurs in that document.<br>
         </p>
         <p>
         The index itself is stored in a binary file. When writing terms to disk, a specific sequence is followed: document frequency, document ID, 
@@ -104,26 +99,26 @@ const createIndexingSection = () => {
         </p>
         <h3>Critical Classes</h3>
         <p>
-        This section will give details for the most important classes used in the indexing process, in the order in which they are used. The path to the method, 
-        along with the method signature is given. <br>
-        As a note, each path starts from the modules directory, which can be found <a href="https://github.com/bababouf/Search-Engine/tree/test-branch/src/main/java/modules">here.</a>
+        This section will provide the method signature and an explanation for the important classes shown in the indexing flowchart above.  <br>
+        As a note, each path starts from the <em><a href="https://github.com/bababouf/Search-Engine/tree/test-branch/src/main/java/modules">modules </a></em> directory. 
         </p>
         <p>
-        <strong><em>1. modules.text.NonBasicTokenProcessor.processToken(String token)</strong></em><br>
-        The <em>processToken</em> method is called on every term in each of the corpus documents. This method takes care of the preprocessing, which involves
+        <strong>1. modules.text.NonBasicTokenProcessor.processToken(token)</strong><br>
+        This method is called on every term in each of the corpus documents. This method takes care of the preprocessing, which involves
         the stemming mentioned in the last section, as well as basic transformations of terms such as lowercasing and splitting hyphenated terms into their individual 
         terms. 
         </p>
         <p>
-        <strong><em>2. modules.indexing.PositionalInvertedIndex.addTerm(String term, int documentId, int position)</strong></em><br>
+        <strong>2. modules.indexing.PositionalInvertedIndex.addTerm(term, documentID, position)</strong><br>
         The PositionalInvertedIndex class contains the hashmap that will eventually be moved to disk. Each of the stemmed terms is added to this hashmap through
         the <em>addTerm</em> method. Each key in the hashmap corresponds to a stemmed term, and each value is a list of postings. As mentioned above, the posting
         list contains a document's ID, and all the positions (integer values) where that term shows up in a document. 
         </p>
-        <strong><em>3. modules.indexing.DiskIndexWriter.calculateAndWriteDocumentWeights(Map< String, Integer > termFrequency, Path absolutePath, int id, int documentTokens, int bytes)</strong></em><br>
-        Once the last term in a document is processed and added to the hashmap, the <em>calculateAndWriteDocumentWeights</em> method is called to store important 
-        information obtained from each document. These include the length of the document (used to normalize very short documents/very long documents), the number 
-        of tokens, number of ASCII bytes, and the average term frequency of terms in the document.
+        <p>
+        <strong>3. modules.indexing.DiskIndexWriter.writeDocumentWeights(termFrequencyMap, absolutePathToIndex, ID, documentTokens, bytes)</strong><br>
+        Once the last term in a document is processed and added to the hashmap, this method stores important information obtained from each document. These include 
+        the length of the document (used to normalize very short documents/very long documents), the number of tokens, number of ASCII bytes, and the average term 
+        frequency of terms in the document.
         </p>
         <p>
         <strong><em>4. modules.indexing.DiskIndexWriter.writeAverageTokensForCorpus(String pathToDocWeights, double averageTokens)</strong></em><br>

@@ -23,14 +23,18 @@ const createQueryModes = () => {
     <h2>Select Query Mode</h2>
     <div class = "card-container">
     <div class="card">
-        <h3> Boolean Retrieval Mode </h3>
-        <img src="../../images/venn-diagram-logo.png" height="55" width="75">
+        <h3> 
+        <img src="../../images/venn-diagram-logo.png" height="40" width="40">
+        Boolean Retrieval Mode </h3>
+        
         <p> Configures the program to handle boolean queries. </p>
         <button class = "query-modes__mode-button" id="boolean-button"> Go! </button>  
     </div>
     <div class="card">
-        <h3> Ranked Retrieval Mode </h3>
-        <img src="../../images/mag-glass-logo.png" height="55" width="75">
+        <h3>
+         <img src="../../images/search-glass.png" height="40" width="40">
+         Ranked Retrieval Mode </h3>
+       
         <p> Configures the program to handle ranked requests. </p>
         <button class = "query-modes__mode-button" id="ranked-button"> Go! </button>  
     </div>
