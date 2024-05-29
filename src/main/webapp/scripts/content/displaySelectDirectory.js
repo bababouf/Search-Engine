@@ -21,13 +21,13 @@ const createDirectorySelection = () => {
                 <div class="card-container">
                     <div class="card">
                         <h3>Default Directory</h3> 
-                        <img src="../../images/default-dir-logo.png" height="55" width="75">               
+                        <img src="../../images/default-dir-logo.png" height="30" width="40">               
                         <p>This directory contains 30,000 NPS.org webpages and can be used to test the various query modes this application has to offer. </p>
                         <button class ="directory-selection__button" id="default-directory-button" type="submit"> Go! </button>
                     </div>
                     <div class="card">
                         <h3>Upload Directory</h3>
-                        <img src="../../images/upload-logo.png" height="55" width="75">
+                        <img src="../../images/upload-logo.png" height="30" width="40">
                         <p>This option allows for a directory of .TXT or .JSON files to be uploaded. Indexing time grows as the corpus size increases. </p>
                         <button class ="directory-selection__button" id="upload-directory-button" type="submit"> Go! </button>
                     </div>

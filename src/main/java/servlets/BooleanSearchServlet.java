@@ -34,6 +34,8 @@ public class BooleanSearchServlet extends HttpServlet {
         DiskPositionalIndex index = createDiskPositionalIndex();
         DirectoryCorpus corpus = createCorpus();
         List<Posting> queryPostings = processBooleanQuery(query, index);
+        // returnTop15Postings(queryPostings);
+
         String results = setupResults(queryPostings, corpus);
         ServletUtilities.sendResultsToBrowser(results, response);
     }
@@ -69,6 +71,15 @@ public class BooleanSearchServlet extends HttpServlet {
         }
 
         return queryPostings;
+    }
+
+    public List<Posting> returnTop15Postings(List<Posting> queryPostings) {
+        List<Posting> top15Postings = new ArrayList<>();
+
+
+        return top15Postings;
+
+
     }
 
     // Returns the application-scope "path" variable
