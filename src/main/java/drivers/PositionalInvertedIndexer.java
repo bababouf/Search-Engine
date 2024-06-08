@@ -43,13 +43,16 @@ public class PositionalInvertedIndexer {
         do {
             query = readInQuery(readIn);
 
-            if (query.contains("STEM")) {
+            if (query.contains("STEM"))
+            {
                 stemQuery(query);
 
-            } else if (query.contains("VOCAB")) {
+            } else if (query.contains("VOCAB"))
+            {
                 printVocabulary(index);
 
-            } else if (!query.contains("END")) {
+            } else if (!query.contains("END"))
+            {
                 processBooleanQuery(query, index, corpus);
             }
         } while (!query.equals("END"));
@@ -61,7 +64,8 @@ public class PositionalInvertedIndexer {
      *
      * @param readIn Scanner is passed to avoid opening many System.in streams.
      */
-    public static Path readInDirectoryToIndex(Scanner readIn) {
+    public static Path readInDirectoryToIndex(Scanner readIn)
+    {
         System.out.print("Enter corpus path: ");
         String path = readIn.nextLine();
         return Paths.get(path).toAbsolutePath();
@@ -70,7 +74,8 @@ public class PositionalInvertedIndexer {
     /**
      * Displays the various query forms that are accepted, and prompts user to enter a query.
      */
-    public static String readInQuery(Scanner readIn) {
+    public static String readInQuery(Scanner readIn)
+    {
         System.out.print(
                 """
                         Query Forms:\s
@@ -91,7 +96,8 @@ public class PositionalInvertedIndexer {
     /**
      * Closes the scanner and ends the program.
      */
-    public static void endProgram(Scanner readIn) {
+    public static void endProgram(Scanner readIn)
+    {
         System.out.println("Ending program.");
         readIn.close();
         System.exit(0);
@@ -100,7 +106,8 @@ public class PositionalInvertedIndexer {
     /**
      * Uses PorterScanner to stem terms.
      */
-    public static void stemQuery(String query) {
+    public static void stemQuery(String query)
+    {
         String termToStem = query.split(" ")[1];
         PorterStemmer stemmer = new PorterStemmer();
         String stemmedTerm = stemmer.stem(termToStem);
@@ -110,12 +117,14 @@ public class PositionalInvertedIndexer {
     /**
      * Prints the first 100 vocabulary terms.
      */
-    public static void printVocabulary(Index index) {
+    public static void printVocabulary(Index index)
+    {
         List<String> vocabulary = index.getVocabulary();
         List<String> first1000Vocab = vocabulary.subList(0, 1000);
         System.out.println("First 100 terms (sorted): ");
 
-        for (String term : first1000Vocab) {
+        for (String term : first1000Vocab)
+        {
             System.out.println(term);
         }
         System.out.println("Total vocabulary terms: " + vocabulary.size());
@@ -130,20 +139,25 @@ public class PositionalInvertedIndexer {
      * The getPostings method returns the List of postings satisfying the query, and this list is displayed to the user.
      * The user can then choose to view the content of one of the documents.
      */
-    public static void processBooleanQuery(String query, Index index, DocumentCorpus corpus) throws IOException {
+    public static void processBooleanQuery(String query, Index index, DocumentCorpus corpus) throws IOException
+    {
         BooleanQueryParser booleanParser = new BooleanQueryParser();
         QueryComponent queryComponent = booleanParser.parseQuery(query);
         List<Posting> queryPostings = queryComponent.getPostings(index);
 
-        if (queryPostings == null) {
+        if (queryPostings == null)
+        {
             System.out.println("\n Term not found in corpus \n");
-        } else {
+        } else
+        {
 
-            for (Posting queryPosting : queryPostings) {
+            for (Posting queryPosting : queryPostings)
+            {
                 int documentID = queryPosting.getDocumentId();
                 Document document = corpus.getDocument(documentID);
                 System.out.println(document.getTitle() + " (ID " + document.getId() + ")");
             }
+
             System.out.println("Query Postings Size: " + queryPostings.size());
             int documentToShow;
             Scanner readIn = new Scanner(System.in);
@@ -156,18 +170,20 @@ public class PositionalInvertedIndexer {
             int character;
             int count = 0;
 
-            while ((character = jsonReader.read()) != -1) {
+            while ((character = jsonReader.read()) != -1)
+            {
                 textBuilder.append((char) character);
                 count++;
 
-                if (count == 120) {
+                if (count == 120)
+                {
                     String sequenceFromBody = textBuilder.toString();
                     System.out.println(sequenceFromBody);
                     textBuilder.delete(0, textBuilder.length());
                     count = 0;
                 }
-
             }
+
             String bodyOfDocument = textBuilder.toString();
             System.out.println(bodyOfDocument);
 
@@ -181,11 +197,13 @@ public class PositionalInvertedIndexer {
      * many times and thus have a list of positions per document. In addition, this function calls calculateAndWriteDocumentWeights
      * for each document in order to write document weights.
      */
-    public static PositionalInvertedIndex indexCorpus(DocumentCorpus corpus, Path absolutePath) throws IOException {
+    public static PositionalInvertedIndex indexCorpus(DocumentCorpus corpus, Path absolutePath) throws IOException
+    {
 
         System.out.println("Indexing...");
         File theDir = new File(absolutePath + "/index");
-        if (!theDir.exists()){
+        if (!theDir.exists())
+        {
             theDir.mkdirs();
         }
 
@@ -193,14 +211,12 @@ public class PositionalInvertedIndexer {
         NonBasicTokenProcessor processor = new NonBasicTokenProcessor();
         List<String> tokenList;
         PositionalInvertedIndex positionalIndex = new PositionalInvertedIndex();
-
         DiskIndexWriter diskIndexWriter = new DiskIndexWriter();
         double averageTokens = 0;
-
-
         diskIndexWriter.clearFileContents(absolutePath);
 
-        for (Document document : corpus.getDocuments()) {
+        for (Document document : corpus.getDocuments())
+        {
             int documentTokens = 0;
             int bytes = 0;
             int position = 0;
@@ -211,7 +227,8 @@ public class PositionalInvertedIndexer {
             EnglishTokenStream ETS = new EnglishTokenStream(document.getContent());
             tokens = ETS.getTokens(); // Text in the document is split by whitespace into iterable strings
 
-            for (String term : tokens) {
+            for (String term : tokens)
+            {
                 tokenList = processor.processToken(term); // Tokens are further processed
                 for (String token : tokenList) {
 

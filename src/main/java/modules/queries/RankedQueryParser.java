@@ -14,13 +14,13 @@ public class RankedQueryParser {
     public List<QueryComponent> parseQuery(String query) {
 
         List<QueryComponent> subqueryLiterals = new ArrayList<>();
-        NonBasicTokenProcessor processor = new NonBasicTokenProcessor();
-        String lowerCaseQuery = query.toLowerCase();
-        String[] arrayOfUnstemmedTerms = lowerCaseQuery.split(" ");
+        String[] terms = query.toLowerCase().split(" ");
         List<String> processedTokens;
+        NonBasicTokenProcessor processor = new NonBasicTokenProcessor();
 
-        for (String term : arrayOfUnstemmedTerms) {
-            processedTokens = processor.processToken(term);
+        for (String term : terms) {
+            processedTokens = processor.processToken(term); // May contain multiple terms (if the term passed is hyphenated)
+
             for(String token: processedTokens){
                 TermLiteral literal = new TermLiteral(token);
                 subqueryLiterals.add(literal);

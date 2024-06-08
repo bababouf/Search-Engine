@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-
 /**
  * Represents a phrase literal consisting of one or more terms that must occur in sequence.
  */
@@ -32,17 +30,17 @@ public class PhraseLiteral implements QueryComponent {
 	@Override
 	public List<Posting> getPostings(Index index) throws IOException {
 
+		// Get the postings list for the first term
 		String firstTerm = mTerms.get(0);
-		List<Posting> firstTermPostings = index.getPostings(firstTerm);
-		String secondTerm = mTerms.get(1);
-		List<Posting> nextTermPostings = index.getPostings(secondTerm);
-		List<Posting> result = MergeLists(firstTermPostings, nextTermPostings, 1);
+		List<Posting> result = index.getPostings(firstTerm);
 
-		for(int i = 2; i < mTerms.size(); i++)
-		{
-			String nthTerm = mTerms.get(i);
-			List<Posting> nthTermPostings = index.getPostings(nthTerm);
-			result = MergeLists(result, nthTermPostings, i);
+		// Iterate through the remaining terms and merge their postings lists with the current result
+		for (int i = 1; i < mTerms.size(); i++) {
+			String nextTerm = mTerms.get(i);
+			List<Posting> nextTermPostings = index.getPostings(nextTerm);
+
+			// Merge the current result with the postings list of the next term
+			result = MergeLists(result, nextTermPostings, i);
 		}
 
 		return result;
@@ -57,63 +55,45 @@ public class PhraseLiteral implements QueryComponent {
 	@Override
 	public List<Posting> getPostingsWithPositions(Index index) throws IOException {
 
-		List<Posting> result = new ArrayList<>();
+		// Retrieve the postings list for the first term
 		String firstTerm = mTerms.get(0);
-		List<Posting> firstTermPostings = index.getPostingsWithPositions(firstTerm);
-		String secondTerm = mTerms.get(1);
-		List<Posting> nextTermPostings = index.getPostingsWithPositions(secondTerm);
+		List<Posting> result = index.getPostingsWithPositions(firstTerm);
 
-		result = MergeLists(firstTermPostings, nextTermPostings, 1); // Merge lists called with both lists, as well as "1" to indicate they must be 1 position away
+		// Iterate through the remaining terms and merge their postings lists with the current result
+		for (int i = 1; i < mTerms.size(); i++) {
+			String nextTerm = mTerms.get(i);
+			List<Posting> nextTermPostings = index.getPostingsWithPositions(nextTerm);
 
-		for(int i = 2; i < mTerms.size(); i++)
-		{
-			String nthTerm = mTerms.get(i);
-			List<Posting> nthTermPostings = index.getPostingsWithPositions(nthTerm);
-			result = MergeLists(result, nthTermPostings, i);
+			// Merge the current result with the postings list of the next term
+			// The offset 'i' indicates the position difference between terms
+			result = MergeLists(result, nextTermPostings, i);
 		}
 
 		return result;
 	}
 
 
-	public List<Posting> MergeLists(List<Posting> literal, List<Posting> nextLiteral, int termsApart)
-	{
-
+	public List<Posting> MergeLists(List<Posting> literal, List<Posting> nextLiteral, int termsApart) {
 		List<Posting> result = new ArrayList<>();
-		// Two pointers, j and k, used to traverse each of the lists passed to this method
 		int j = 0;
 		int k = 0;
 
-		while (true) {
-			if (j >= literal.size() || k >= nextLiteral.size()) // End of the list is reached, break
-			{
-				break;
-			}
-			if(literal.get(j).getDocumentId() == nextLiteral.get(k).getDocumentId()) // Matching documents found
-			{
-				Posting listA = literal.get(j);
-				Posting listB = nextLiteral.get(k);
-				Posting resultingPosting;
-				resultingPosting = checkPostingPositions(listA, listB, termsApart); // Must check for appropriate positions of terms in the document
-				if (resultingPosting != null) // Proper positions were found if this selection statement is true
-				{
-					result.add(resultingPosting);
+		while (j < literal.size() && k < nextLiteral.size()) {
+			int docId1 = literal.get(j).getDocumentId();
+			int docId2 = nextLiteral.get(k).getDocumentId();
+
+			if (docId1 == docId2) { // Matching documents found
+				Posting mergedPosting = checkPostingPositions(literal.get(j), nextLiteral.get(k), termsApart);
+				if (mergedPosting != null) {
+					result.add(mergedPosting);
 				}
-
-				// Continue moving through each list
 				j++;
 				k++;
-
-			}
-			else if (literal.get(j).getDocumentId() < nextLiteral.get(k).getDocumentId()) // For each posting list, docIDs are in order. Thus, we continue with smaller docID list first
-			{
+			} else if (docId1 < docId2) { // Advance in the first list
 				j++;
-
-			} else {
+			} else { // Advance in the second list
 				k++;
-
 			}
-
 		}
 
 		return result;
@@ -122,48 +102,30 @@ public class PhraseLiteral implements QueryComponent {
 	/**
 	 * This method ensures that the two postings passed to it have the appropriate separation of term positions.
 	 */
-	public Posting checkPostingPositions(Posting p, Posting d, int sup)
-	{
-		List<Integer> firstList = p.getPosition();
-		List<Integer> secondList = d.getPosition();
+	public Posting checkPostingPositions(Posting p, Posting d, int sup) {
+		List<Integer> firstList = p.getPositions();
+		List<Integer> secondList = d.getPositions();
 		List<Integer> positions = new ArrayList<>();
 
-		// Pointers to traverse each of the lists passed
 		int l = 0;
 		int k = 0;
-		while(true)
-		{
-			if (l >= firstList.size() || k >= secondList.size()) // End of one of the lists found
-			{
-				break;
-			}
-			if(firstList.get(l) + sup ==  secondList.get(k) ) // Appropriate positions for terms found
-			{
-				positions.add(firstList.get(l));
+
+		while (l < firstList.size() && k < secondList.size()) {
+			int pos1 = firstList.get(l);
+			int pos2 = secondList.get(k);
+
+			if (pos1 + sup == pos2) { // Appropriate positions found
+				positions.add(pos1);
 				l++;
 				k++;
-
-			}
-			else if(firstList.get(l) + sup < secondList.get(k))
-			{
-
+			} else if (pos1 + sup < pos2) { // Move forward in the first list
 				l++;
-			}
-			else
-			{
+			} else { // Move forward in the second list
 				k++;
 			}
 		}
-		if(positions.size() != 0)
-		{
-			return new Posting(p.getDocumentId(), positions ); // Return the posting for the two terms found
-		}
-		else
-		{
-			return null;
-		}
 
-
+		return positions.isEmpty() ? null : new Posting(p.getDocumentId(), positions);
 	}
 	@Override
 	public String toString() {

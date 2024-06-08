@@ -9,7 +9,8 @@ export const displayDocumentationPage = (event) => {
     const introSection = createIntroductionSection();
     const techSection = createTechnologyStackSection();
     const indexingSection = createIndexingSection();
-    const queryingSection = createQueryingSection();
+    const booleanSection = createBooleanSection();
+    const rankedSection = createRankedSection();
     const mainElement = document.querySelector('main');
     const flexContainer = document.createElement('div');
     const docsContainer = document.createElement('div');
@@ -21,7 +22,8 @@ export const displayDocumentationPage = (event) => {
     docsContainer.appendChild(introSection);
     docsContainer.appendChild(techSection);
     docsContainer.appendChild(indexingSection);
-    docsContainer.appendChild(queryingSection);
+    docsContainer.appendChild(booleanSection);
+    docsContainer.appendChild(rankedSection);
     flexContainer.appendChild(docsContainer);
     mainElement.appendChild(flexContainer);
 
@@ -58,20 +60,20 @@ const createTechnologyStackSection = () => {
         <p>
         The front end of the application is built using vanilla JavaScript, CSS, and HTML. A single HTML page (index.html) is 
         employed, with user interactions triggering various scripts to dynamically modify the content without reloading the page.
-        The back end follows the Jakarta EE (Java) specification and uses the Jersey Server implementation for its REST API. 
+        The back-end follows the Jakarta EE (Java) specification and uses the Jersey Server implementation for its REST API. 
         </p>
         <img class="arch-diagram" src="../../images/arch-diagram.png" height="430" width="800" >
         <p>
-        The most common requests from the browser to the server are POST requests containing the user's query. For these requests, the 
-        server interacts with a MySQL database, which has a two-column structure where each row contains a term and its byte position 
-        in another binary file. This design enables efficient term lookup and quick query responses. Maven is used as a build automation 
-        tool, streamlining development by managing dependencies, compiling source code, and packaging the application.
+        The REST API handles processing queries and communicates with a MYSQL database to make responses as efficient as possible. 
+        Maven is used as a build automation tool, streamlining development by managing dependencies, compiling source code, and 
+        packaging the application.
         </p>
         <p>
         The web application is deployed using Microsoft's Azure App Service. This is a platform as a service (PaaS) which provides complete 
         managed hosting of the application (meaning Microsoft's hardware is being used as the server). 
         </p>
-        <br><br>
+        <br>
+        
     `;
     return techSection;
 }
@@ -80,12 +82,12 @@ const createIndexingSection = () => {
     const indexingSection = document.createElement('div');
     indexingSection.classList.add('documentation');
     indexingSection.innerHTML = `
-        <h2 id="documentation__indexing-section" class="section">Data Flows</h2>
-        <h3>Indexing</h3>
+        <h2 id="documentation__indexing-section" class="section">Indexing</h2>
         <p> 
         Creating an index is crucial for speeding up the search engine's response time. By investing time upfront to build an index for a 
         given corpus, the time it takes to retrieve search results for individual queries is significantly decreased. 
         </p>
+        <h4>Indexing Flowchart</h4>
         <img src="../../images/indexing_flowchart.png" width = "1200">
         <p>
         During indexing, each document is examined word by word. Every word is transformed to its base form (stemmed) to ensure consistency 
@@ -100,46 +102,37 @@ const createIndexingSection = () => {
         <h3>Critical Classes</h3>
         <p>
         This section will provide the method signature and an explanation for the important classes shown in the indexing flowchart above.  <br>
-        As a note, each path starts from the <em><a href="https://github.com/bababouf/Search-Engine/tree/test-branch/src/main/java/modules">modules </a></em> directory. 
+        Each method signature is clickable, and will open up the code for a given method in a new tab.  
         </p>
         <p>
-        <strong>1. modules.text.NonBasicTokenProcessor.processToken(token)</strong><br>
-        This method is called on every term in each of the corpus documents. This method takes care of the preprocessing, which involves
-        the stemming mentioned in the last section, as well as basic transformations of terms such as lowercasing and splitting hyphenated terms into their individual 
-        terms. 
+        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/text/NonBasicTokenProcessor.java#L20" target="_blank"> 1. modules.text.NonBasicTokenProcessor.processToken(token)</a></em></strong><br>
+        This method is invoked for each token (an individual term) in every document. Each term undergoes stemming and is converted to lowercase. If the term is hyphenated, 
+        it is split into its individual components, and each component is then stemmed and converted to lowercase. The processed term is then returned from the method.
         </p>
         <p>
-        <strong>2. modules.indexing.PositionalInvertedIndex.addTerm(term, documentID, position)</strong><br>
-        The PositionalInvertedIndex class contains the hashmap that will eventually be moved to disk. Each of the stemmed terms is added to this hashmap through
-        the <em>addTerm</em> method. Each key in the hashmap corresponds to a stemmed term, and each value is a list of postings. As mentioned above, the posting
-        list contains a document's ID, and all the positions (integer values) where that term shows up in a document. 
+        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/indexing/PositionalInvertedIndex.java#L30" target="_blank"> 2. modules.indexing.PositionalInvertedIndex.addTerm(term, documentID, position)</a></em></strong><br>
+        The <em>addTerm</em> method will add a single term from a single documentID one position at a time. A term can appear in many documents, and it can appear many times 
+        in a single document. This method is invoked for every processed token that was returned in the previous <em>processToken</em> method.
         </p>
         <p>
-        <strong>3. modules.indexing.DiskIndexWriter.writeDocumentWeights(termFrequencyMap, absolutePathToIndex, ID, documentTokens, bytes)</strong><br>
+        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/indexing/DiskIndexWriter.java#L134" target="_blank"> 3. modules.indexing.DiskIndexWriter.writeDocumentWeights(termFrequencyMap, absolutePathToIndex, ID, documentTokens, bytes)</a></em></strong><br>
         Once the last term in a document is processed and added to the hashmap, this method stores important information obtained from each document. These include 
         the length of the document (used to normalize very short documents/very long documents), the number of tokens, number of ASCII bytes, and the average term 
-        frequency of terms in the document.
+        frequency of terms in the document. This information is important for calculating document rankings in the ranked retrieval mode. 
         </p>
         <p>
-        <strong><em>4. modules.indexing.DiskIndexWriter.writeAverageTokensForCorpus(String pathToDocWeights, double averageTokens)</strong></em><br>
+        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/indexing/DiskIndexWriter.java#L176" target="_blank"> 4. modules.indexing.DiskIndexWriter.writeAverageTokensForCorpus(String pathToDocWeights, double averageTokens)</a></em></strong><br>
         After all documents have been processed, the <em>writeAverageTokensForCorpus</em> is called to write the average number of tokens to the end of the 
         docWeights.bin file. 
         </p>
     `;
     return indexingSection;
 }
-const createQueryingSection = () => {
-    const queryingSection = document.createElement('div');
-    queryingSection.classList.add('documentation');
-    queryingSection.innerHTML = `
-        <h2 id="documentation__querying-section" class="section">Processing Queries </h2>
-        <h3>Overview</h3>
-        <p>
-        As mentioned in the introduction section, the two accepted modes of query are boolean retrieval and ranked retrieval. The boolean retrieval mode accepts
-        basic AND/OR queries, as well as ORs of ANDs. The ranked retrieval mode offers four different ranking schemes, each using a slightly different algorithm to 
-        rank the documents. This section will give a detailed look into how each of the modes work, and present the most important Java classes used. 
-        </p>
-        <h3>Boolean Retrieval</h3>
+const createBooleanSection = () => {
+    const booleanSection = document.createElement('div');
+    booleanSection.classList.add('documentation');
+    booleanSection.innerHTML = `
+        <h2 id="documentation__boolean-section" class="section"> Boolean Retrieval </h2>
         <p>
         Boolean retrieval is a classic model in information retrieval that uses Boolean logic to match documents to a user's query. This approach employs the AND and 
         OR operators. Terms separated by a space are combined using AND, while terms separated by a "+" are combined using OR. A query can have multiple AND conditions 
@@ -147,19 +140,20 @@ const createQueryingSection = () => {
         "goose." Additionally, Boolean retrieval accepts phrase queries, which are enclosed in double quotes. Documents matching a phrase query must contain the exact phrase 
         within the text.
         </p>
+        <img class="arch-diagram" src="../../images/boolean-diagram.png" height="400" width="500">
         <p>
-        Boolean searches will provide ALL the documents that match a given query, and there is no ranking of documents. If a user queries for "dogs", every document 
-        containing the stemmed root of dogs will be returned, and in no particular order. 
+        Since boolean queries can be fairly complex and can consist of many terms, the first step is to break down a query into it's individual components. A query that only 
+        contains one term is simple, and would only contain a single component representing that term. However, more complex queries may involve AND'ing together certain terms, 
+        and OR'ing others. 
+        </p>
+        <p>
+        A QueryComponent is an interface representing a part of a larger query, whether it is a literal string or a combination of other components. Concrete classes (the classes 
+        that implement the QueryComponent interface) include the following classes: ORQuery, ANDQuery, PhraseLiteral, and TermLiteral. The example on the left shows how a query might 
+        be decomposed; each subquery (group of terms split up by the "+") are AND'd together, and then an ORQuery is created to obtain the final results list. 
         </p>
         <h3>Critical Classes</h3>
         <p>
-        When a Boolean query first enters the system, it needs to be parsed into its individual components. A QueryComponent is an interface representing a part of a 
-        larger query, whether it is a literal string or a combination of other components. For instance, the query "dogs cats" would be parsed to return an ANDQuery 
-        component, which is a concrete class that implements the QueryComponent interface. Other concrete classes include OrQuery, PhraseLiteral, and TermLiteral. The boolean 
-        parser will be explained below in more detail. 
-        </p>
-        <p>
-        <strong><em>1. modules.queries.BooleanQueryParser.parseQuery(String query)</strong></em><br>
+        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/queries/BooleanQueryParser.java#L42" target="_blank"> 1. modules.queries.BooleanQueryParser.parseQuery(query)</a></em></strong><br>
         The <em>parseQuery</em>  method accepts a raw query as a string parameter. The query is scanned to identify segments separated by "+" signs, which represent terms to be 
         OR'd. Each segment is processed as a subquery. 
         </p>
@@ -172,12 +166,50 @@ const createQueryingSection = () => {
         multiple components, the method returns an OrQuery containing those components.
         </p>
         <p>
-        <strong><em>2. modules.queries.QueryComponent.getPostings(DiskPositionalIndex index)</strong></em><br>
-        Each of the concrete classes will implement a getPostings method, which takes as a parameter the index. 
+        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/queries/QueryComponent.java#L20" target="_blank"> 2. modules.queries.QueryComponent.getPostings(index)</a></em></strong><br>
+        Each of the concrete classes will implement a getPostings method, which takes as a parameter the index. Depending on which class is implementing the method, it can look widely 
+        different. For example, the getPostings method for the ANDQuery class will take the intersection of two or more terms. In contrast, the ORQuery class will implement a method that 
+        takes the union of two or more terms. The final list of documents is then returned from these methods.
         </p>
-        <h3>Ranked Retrieval</h3>
-        <h3>Critical Classes</h3>
+        
     `;
-    return queryingSection;
+    return booleanSection;
 
+}
+
+const createRankedSection = () => {
+    const rankedSection = document.createElement('div');
+    rankedSection.classList.add('documentation');
+    rankedSection.innerHTML = `
+        <h2 id="documentation__ranked-section" class="section"> Ranked Retrieval </h2>
+        <p>
+        As mentioned above, one of several different ranking schemes can be selected for the ranked retrieval mode. Each ranking scheme varies in how weights are calculated for 
+        the terms in documents, as well as the terms in the query. Similar to how the QueryComponent interface class was used in indexing, the RankingStrategy interface class 
+        is implemented by each of the ranking scheme classes (the concrete classes). 
+        </p>
+        <img src="../../images/ranking-strategy-diagram.png" height="400" width="1000">
+        <p>
+        The two pieces of information passed to the servlet that handles ranked queries is the user's query and the ranking scheme that the user selected. A dispatch class is used 
+        to call the appropriate calculate method for the selected ranking scheme. This dispatch class is called RankedDispatch. 
+        
+        </p>
+        <h3>Critical Classes</h3>
+        <p>
+        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/rankingSchemes/RankedDispatch.java#L25" target="_blank"> 1. modules.rankingSchemes.RankedDispatch(index, corpus)</a></em></strong><br>
+        The first step in processing a ranked query is to configure the system so that it knows which corpus is being queried (since the user could have uploaded their own, 
+        or chosen to query the default NPS corpus). An object of the RankedDispatch class is instantiated by simply calling the constructor and passing it the index and corpus. 
+        </p>
+        <p>
+        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/rankingSchemes/RankedDispatch.java#L45" target="_blank"> 2. modules.rankingSchemes.RankedDispatch.calculate(rankingScheme, query)</a></em></strong><br>
+        Once the RankedDispatch class is instantiated, the calculate method can be called, passing to it an instance of the ranking scheme class being used, as well as the query 
+        string. Before calculations can be done, several preprocessing steps are done to lowercase and split the query by whitespace into its individual terms. The 
+        RankedQueryParser.parseQuery method takes care of this. After parsing, a list of QueryComponents is returned
+        </p>
+        <p>
+        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/rankingSchemes/RankedDispatch.java#L45" target="_blank"> 2. modules.rankingSchemes.RankedDispatch.calculateAccumulatorValue(rankingScheme, query)</a></em></strong><br>
+        </p>
+        
+        
+    `;
+    return rankedSection;
 }

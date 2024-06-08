@@ -25,14 +25,13 @@ public class AndQuery implements QueryComponent {
 	 */
 	@Override
 	public List<Posting> getPostings(Index index) throws IOException {
+		// Initialize result with the merged postings of the first two components
+		QueryComponent firstLiteral = mComponents.get(0);
+		QueryComponent secondLiteral = mComponents.get(1);
+		List<Posting> result = MergeLists(firstLiteral.getPostings(index), secondLiteral.getPostings(index));
 
-		QueryComponent firstLiteral = mComponents.get(0); // Get the first component of the query
-		QueryComponent secondLiteral = mComponents.get(1); // Get the second component of the query
-		List<Posting> result = MergeLists(firstLiteral.getPostings(index), secondLiteral.getPostings(index)); // Merge first 2 components
-
-		for(int i = 2; i < mComponents.size(); i++)
-		{
-			// MergeLists does the actual merging of posting lists
+		// Iterate through the remaining components and merge their postings with the current result
+		for (int i = 2; i < mComponents.size(); i++) {
 			result = MergeLists(result, mComponents.get(i).getPostings(index));
 		}
 
@@ -46,33 +45,27 @@ public class AndQuery implements QueryComponent {
 	 * that will be returned. If the end of either list is reached, exit loop. For iterating through the lists, increment the pointer
 	 * whose docID is the lesser of the two.
 	 */
-	public List<Posting> MergeLists(List<Posting> literal, List<Posting> nextLiteral)
-	{
+	public List<Posting> MergeLists(List<Posting> literal, List<Posting> nextLiteral) {
 		List<Posting> result = new ArrayList<>();
 		int j = 0;
 		int k = 0;
-		while (true) {
-			if (j >= literal.size() || k >= nextLiteral.size()) // If at the end of either list, end loop
-			{
-				break;
-			}
-			if(literal.get(j).getDocumentId() == nextLiteral.get(k).getDocumentId()) // If the documentIDs match, add result
-			{
-				Posting tempToAdd = literal.get(j);
-				result.add(tempToAdd);
+
+		while (j < literal.size() && k < nextLiteral.size()) {
+			int docId1 = literal.get(j).getDocumentId();
+			int docId2 = nextLiteral.get(k).getDocumentId();
+
+			if (docId1 == docId2) { // If the document IDs match, add to the result list
+				result.add(literal.get(j));
 				j++;
 				k++;
-			}
-			else if (literal.get(j).getDocumentId() < nextLiteral.get(k).getDocumentId()) // Since docIDs for each posting list are in order, increment the list whose docID is less
-			{
+			} else if (docId1 < docId2) { // Increment the list with the lesser docID
 				j++;
 			} else {
 				k++;
 			}
-
 		}
-		return result;
 
+		return result;
 	}
 	@Override
 	public String toString() {

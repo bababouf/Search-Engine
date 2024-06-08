@@ -25,7 +25,7 @@ const attachListener = (mainElement, backButton, buttonId) => {
     backButton.addEventListener('click', event => {
         if(buttonId === 'ranked-button')
         {
-            displayRankedSearchPage();
+            displayRankedSearchPage(buttonId);
         }
         else if(buttonId === 'boolean-button')
         {

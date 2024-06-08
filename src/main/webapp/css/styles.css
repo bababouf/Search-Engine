@@ -31,6 +31,9 @@ h3{
     font-size: 2rem;
     margin: 15px 0;
 }
+h4{
+    text-align: center;
+}
 
 button{
     cursor: pointer;
@@ -201,7 +204,7 @@ li a:hover{
 }
 
 .documentation{
-    margin: 0 5rem 0 150px;
+    margin: 0 10rem 0 200px;
     text-align: left;
 }
 

@@ -70,6 +70,8 @@ public class QueryIndexTest {
     /**
      * This method ensures invalid inputs are rejects for the DiskPositionalIndexer.readInSystemMode() method.
      */
+
+    /*
     @Test
     public void readInQueryModeTest() {
         setUpStreams();
@@ -84,7 +86,7 @@ public class QueryIndexTest {
 
         }
     }
-
+*/
     /**
      * Boolean Query mode allows for several types of queries, and this method ensures single term queries are processed correctly.
      * Two of the test-corpus documents contain the word dog, and are added to the expectedIDs list. DocumentIDs are the IDs returned

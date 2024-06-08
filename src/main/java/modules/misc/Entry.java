@@ -1,18 +1,32 @@
 package modules.misc;
 
 public class Entry {
-    Integer docID;
-    Double Ad;
+    private final Integer docID;
+    private final Double accumulatorValue;
 
+    /**
+     * Constructs an Entry with the specified document ID and accumulator value.
+     * @param id The document ID.
+     * @param accumulatorValue The accumulator value.
+     */
     public Entry(Integer id, Double accumulatorValue) {
-        docID = id;
-        Ad = accumulatorValue;
+        this.docID = id;
+        this.accumulatorValue = accumulatorValue;
     }
-    public Integer getDocID(){
+
+    /**
+     * Gets the document ID.
+     * @return The document ID.
+     */
+    public Integer getDocID() {
         return docID;
     }
-    public Double getAd(){
-        return Ad;
-    }
 
+    /**
+     * Gets the accumulator value.
+     * @return The accumulator value.
+     */
+    public Double getAccumulatorValue() {
+        return accumulatorValue;
+    }
 }

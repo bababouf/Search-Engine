@@ -6,70 +6,55 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class PositionalInvertedIndex implements Index{
+/**
+ * A positional inverted index maintains a mapping of terms to their corresponding posting lists,
+ * and an array of vocabulary terms.
+ */
+public class PositionalInvertedIndex implements Index {
 
     private final HashMap<String, List<Posting>> invertedIndex;
-
-    private final List<String> mVocabulary;
-    private int mCorpusSize;
-
+    private final List<String> vocabulary;
 
     /**
-     * A positional inverted index maintains two variables: one is the hashmap of strings to their corresponding posting lists,
-     * and the other is the array of vocabulary terms.
+     * Constructs a PositionalInvertedIndex with an empty index and vocabulary list.
      */
     public PositionalInvertedIndex() {
-
-        invertedIndex = new HashMap<String, List<Posting>>();
-        mVocabulary = new ArrayList<String>();
+        invertedIndex = new HashMap<>();
+        vocabulary = new ArrayList<>();
     }
 
     /**
-     * This function adds a term to the positional index.
+     * Adds a term to the positional index.
+     * @param term The term to add.
+     * @param documentId The document ID where the term is found.
+     * @param position The position of the term in the document.
      */
     public void addTerm(String term, int documentId, int position) {
+        List<Posting> postingListForTerm = invertedIndex.get(term);
 
-        List<Posting> postingListForTerm;
-        postingListForTerm = invertedIndex.get(term);
-        List<Integer> postingList = new ArrayList<>();
+        if (postingListForTerm == null) {
+            postingListForTerm = new ArrayList<>();
+            Posting p = new Posting(documentId, new ArrayList<>(List.of(position)));
+            postingListForTerm.add(p);
+            invertedIndex.put(term, postingListForTerm);
+            vocabulary.add(term);
+        } else {
+            Posting lastPosting = postingListForTerm.get(postingListForTerm.size() - 1);
 
-        if(postingListForTerm == null)
-        {
-            List<Posting> postingListForTerm2 = new ArrayList<>();
-            postingList.add(position);
-            Posting p = new Posting(documentId, postingList);
-            postingListForTerm2.add(p);
-            invertedIndex.put(term, postingListForTerm2);
-            mVocabulary.add(term);
-        }
-        else
-        {
-            Posting lastIndex = postingListForTerm.get(postingListForTerm.size() - 1);
-
-            if(lastIndex.getDocumentId() == documentId)
-            {
-                postingList = lastIndex.getPosition();
-                postingList.add(position);
-                postingListForTerm.set(postingListForTerm.size() - 1, lastIndex);
-                invertedIndex.put(term, postingListForTerm);
-
-            }
-            else
-            {
-                postingList.add(position);
-                Posting p = new Posting(documentId, postingList);
+            if (lastPosting.getDocumentId() == documentId) {
+                lastPosting.getPositions().add(position);
+            } else {
+                Posting p = new Posting(documentId, new ArrayList<>(List.of(position)));
                 postingListForTerm.add(p);
-                invertedIndex.put(term, postingListForTerm);
-
             }
         }
-
-
-
-
-
     }
 
+    /**
+     * Returns the posting list for a single term.
+     * @param term The term to retrieve postings for.
+     * @return The posting list for the term.
+     */
     /**
      * Returns posting list for a single term
      */
@@ -100,24 +85,19 @@ public class PositionalInvertedIndex implements Index{
         return null;
     }
 
-
-    @Override
-    public Integer getVocabSize() throws IOException {
-        return null;
-    }
-
     /**
-     * Returns the sorted vocabulary list of terms
+     * Returns the sorted vocabulary list of terms.
+     * @return The sorted vocabulary list.
      */
     public List<String> getVocabulary() {
-
-        Collections.sort(mVocabulary);
-        return mVocabulary;
+        List<String> sortedVocabulary = new ArrayList<>(vocabulary);
+        Collections.sort(sortedVocabulary);
+        return sortedVocabulary;
     }
 
     @Override
     public Integer getCorpusSize() {
-        return mVocabulary.size();
+        return vocabulary.size();
     }
 
 

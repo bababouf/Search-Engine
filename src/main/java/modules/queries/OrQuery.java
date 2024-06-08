@@ -26,19 +26,19 @@ public class OrQuery implements QueryComponent {
 	public List<Posting> getPostings(Index index) throws IOException {
 		List<Posting> result = new ArrayList<>();
 
-		if(mComponents.size() >= 2)
-		{
+		if (mComponents.size() >= 2) {
+			// Retrieve postings for the first two components and merge them
 			QueryComponent firstLiteral = mComponents.get(0);
 			QueryComponent secondLiteral = mComponents.get(1);
 			result = MergeLists(firstLiteral.getPostings(index), secondLiteral.getPostings(index));
 
-			for(int i = 2; i < mComponents.size(); i++)
-			{
+			// Iterate through the remaining components and merge their postings with the current result
+			for (int i = 2; i < mComponents.size(); i++) {
 				result = MergeLists(result, mComponents.get(i).getPostings(index));
 			}
 		}
-		return result;
 
+		return result;
 	}
 
 	/**
@@ -52,39 +52,33 @@ public class OrQuery implements QueryComponent {
 		List<Posting> result = new ArrayList<>();
 		int j = 0;
 		int k = 0;
-		while (true) {
-			if (j == literal.size() && k == nextLiteral.size()) { // End of both lists is found
-				return result;
-			} else if (j == literal.size()) { // End of one of the lists is found
-				Posting tempToAdd = nextLiteral.get(k);
-				result.add(tempToAdd);
+
+		while (j < literal.size() || k < nextLiteral.size()) {
+			if (j == literal.size()) { // End of the first list is reached
+				result.add(nextLiteral.get(k));
 				k++;
-			} else if (k == nextLiteral.size()) { // End of the other list is found
-				Posting tempToAdd = literal.get(j);
-				result.add(tempToAdd);
+			} else if (k == nextLiteral.size()) { // End of the second list is reached
+				result.add(literal.get(j));
 				j++;
 			} else {
-				if (literal.get(j).getDocumentId() == nextLiteral.get(k).getDocumentId()) { // Both lists contain same docID, add one
-					Posting tempToAdd = literal.get(j);
-					result.add(tempToAdd);
+				int docId1 = literal.get(j).getDocumentId();
+				int docId2 = nextLiteral.get(k).getDocumentId();
+
+				if (docId1 == docId2) { // Both lists contain the same docID, add one
+					result.add(literal.get(j));
 					j++;
 					k++;
-				} else if (literal.get(j).getDocumentId() < nextLiteral.get(k).getDocumentId()) { // Increment list with lesser docID
-
-					Posting tempToAdd = literal.get(j);
-					result.add(tempToAdd);
+				} else if (docId1 < docId2) { // Add and increment the list with the lesser docID
+					result.add(literal.get(j));
 					j++;
-
-				} else
-				{
-					Posting tempToAdd = nextLiteral.get(k);
-					result.add(tempToAdd);
-
+				} else {
+					result.add(nextLiteral.get(k));
 					k++;
 				}
 			}
 		}
 
+		return result;
 	}
 
 	@Override

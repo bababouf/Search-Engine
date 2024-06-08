@@ -14,44 +14,47 @@ import java.nio.file.Path;
  */
 
 public class JSONFileDocument implements FileDocument{
-    private int mDocumentId;
-    private Path mFilePath;
-    private String mTitle;
+    private int documentID;
+    private Path filePath;
+    private String title;
     private String URL;
 
     /**
      * Constructs a JSONFileDocument with a given document ID representing the file at the given absoluteFilePath
      */
     public JSONFileDocument(int id, Path absoluteFilePath) {
-        mDocumentId = id;
-        mFilePath = absoluteFilePath;
-
+        documentID = id;
+        filePath = absoluteFilePath;
     }
 
     @Override
-    public Path getFilePath() {
-        return mFilePath;
+    public Path getFilePath()
+    {
+        return filePath;
     }
 
     @Override
-    public int getId() {
-        return mDocumentId;
+    public int getId()
+    {
+        return documentID;
     }
 
     @Override
     public Reader getContent() {
 
         JSONParser parser = new JSONParser();
-        String path = mFilePath.toString();
-        try {
+        String path = filePath.toString();
+
+        try
+        {
             Object obj = parser.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject)obj;
             String body = (String)jsonObject.get("body");
             StringReader reader = new StringReader(body);
-
             return reader;
-
-        } catch (ParseException | IOException e) {
+        }
+        catch (ParseException | IOException e)
+        {
             throw new RuntimeException(e);
         }
     }
@@ -59,35 +62,43 @@ public class JSONFileDocument implements FileDocument{
     @Override
     public String getTitle() {
         JSONParser parser = new JSONParser();
-        String path = mFilePath.toString();
-        try {
+        String path = filePath.toString();
+        try
+        {
             Object obj = parser.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject)obj;
             String title = (String)jsonObject.get("title");
-            mTitle = title;
-            return mTitle;
+            this.title = title;
+            return this.title;
 
-        } catch (ParseException | IOException e) {
+        }
+        catch (ParseException | IOException e)
+        {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public String getURL() {
         JSONParser parser = new JSONParser();
-        String path = mFilePath.toString();
-        try {
+        String path = filePath.toString();
+        try
+        {
             Object obj = parser.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject)obj;
             String url = (String)jsonObject.get("url");
             URL = url;
             return URL;
 
-        } catch (ParseException | IOException e) {
+        }
+        catch (ParseException | IOException e)
+        {
             throw new RuntimeException(e);
         }
     }
 
-    public static FileDocument loadJsonFileDocument(Path absolutePath, int documentId) {
+    public static FileDocument loadJsonFileDocument(Path absolutePath, int documentId)
+    {
         return new JSONFileDocument(documentId, absolutePath);
     }
 }

@@ -54,7 +54,7 @@ const createAcceptableQueryFormats = () => {
     </div>
     <div class="card">
         <h3> OR of ANDs </h3>
-        <p> Terms can be AND'd together, and these groups can then be OR'd. </p>
+        <p> One or more terms can be AND'd together, and two or more of these groups can then be OR'd. </p>
         <p> Example: dogs cats + birds walruses
          
     </div>
