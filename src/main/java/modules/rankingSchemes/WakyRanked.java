@@ -80,7 +80,7 @@ public class WakyRanked implements RankingStrategy{
                     RandomAccessFile docWeights = new RandomAccessFile(onDiskIndex.pathToWeights, "r");
                     docWeights.seek((32 * id) + 24);
                     Double avgTFTD = docWeights.readDouble();
-                    Double weightOfTermInDocument = (1 + Math.log(posting.getTFtd()))/(1 + Math.log(avgTFTD));
+                    Double weightOfTermInDocument = (1 + Math.log(posting.getTermFrequency()))/(1 + Math.log(avgTFTD));
 
 
                     if (ADMap.get(id) == null) {

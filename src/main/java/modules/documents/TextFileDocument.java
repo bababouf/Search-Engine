@@ -9,9 +9,8 @@ import java.nio.file.Path;
  * Represents a document that is saved as a simple text file in the local file system.
  */
 public class TextFileDocument implements FileDocument {
-	private int mDocumentId;
-	private Path mFilePath;
-
+	private int documentID;
+	private Path filePath;
 	private String URL;
 	private String title;
 	
@@ -19,43 +18,52 @@ public class TextFileDocument implements FileDocument {
 	 * Constructs a TextFileDocument with the given document ID representing the file at the given
 	 * absolute file path.
 	 */
-	public TextFileDocument(int id, Path absoluteFilePath) {
-		mDocumentId = id;
-		mFilePath = absoluteFilePath;
+	public TextFileDocument(int id, Path absoluteFilePath)
+	{
+		documentID = id;
+		filePath = absoluteFilePath;
 	}
 
 	@Override
-	public Path getFilePath() {
-		return mFilePath;
+	public Path getFilePath()
+	{
+		return filePath;
 	}
 
 	@Override
-	public int getId() {
-		return mDocumentId;
+	public int getId()
+	{
+		return documentID;
 	}
 
 	@Override
-	public Reader getContent() {
-		System.out.println("In here????");
-		try {
-			return Files.newBufferedReader(mFilePath);
-		} catch (IOException e) {
+	public Reader getContent()
+	{
+		try
+		{
+			return Files.newBufferedReader(filePath);
+		}
+		catch (IOException e)
+		{
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	public String getTitle() {
-		 title = mFilePath.getFileName().toString();
-			return title;
+	public String getTitle()
+	{
+		 title = filePath.getFileName().toString();
+		 return title;
 	}
-	@Override
-	public String getURL() {
 
+	@Override
+	public String getURL()
+	{
 		return null;
 	}
 
-	public static FileDocument loadTextFileDocument(Path absolutePath, int documentId) {
+	public static FileDocument loadTextFileDocument(Path absolutePath, int documentId)
+	{
 		return new TextFileDocument(documentId, absolutePath);
 	}
 }

@@ -27,7 +27,7 @@ public class RankedDispatch {
         directoryCorpus = corpus;
     }
 
-
+/*
     public List<QueryComponent> promptUser(){
         String query = "";
         do {
@@ -38,6 +38,8 @@ public class RankedDispatch {
 
         }while(query != "exit");
     }
+
+ */
 
     /**
      * Depending on which ranking scheme is passed (strategy), the appropriate calculate method will be called.

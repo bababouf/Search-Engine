@@ -70,7 +70,7 @@ public class TermFreqInvDocFreqRanked implements RankingStrategy{
 
                 for (Posting posting : postingsForTerm) {
                     Integer id = posting.getDocumentId();
-                    Double weightOfTermInDocument = (double) posting.getTFtd();
+                    Double weightOfTermInDocument = (double) posting.getTermFrequency();
 
                     if (ADMap.get(id) == null) {
                         Double accumulatorValue = weightOfTermInDocument * weightOfTermInQuery;

@@ -75,7 +75,7 @@ public class DefaultRanked implements RankingStrategy{
 
                 for (Posting posting : postingsForTerm) {
                     Integer id = posting.getDocumentId();
-                    Double weightOfTermInDocument = (1 + (Math.log(posting.getTFtd())));
+                    Double weightOfTermInDocument = (1 + (Math.log(posting.getTermFrequency())));
 
                     if (ADMap.get(id) == null) {
                         Double accumulatorValue = weightOfTermInDocument * weightOfTermInQuery;

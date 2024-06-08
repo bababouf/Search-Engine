@@ -1,6 +1,5 @@
 package modules.indexing;
 
-import drivers.DiskPositionalIndexer;
 import modules.database.MySQLDB;
 
 import java.io.IOException;
@@ -15,17 +14,17 @@ public class DiskPositionalIndex implements Index{
     public String pathToWeights;
     public int corpusSize;
     public String pathToAvgDocLength;
-    public String thePath;
-
+    public String pathToCorpus;
 
     public DiskPositionalIndex(Path path)
     {
         String pathString = path.toAbsolutePath().toString();
-        thePath = pathString;
+        pathToCorpus = pathString;
         pathToWeights = pathString + "/index/docWeights.bin";
         pathToIndex = pathString + "/index/postings.bin";
         pathToAvgDocLength = pathString + "/index/docLengthAvg.bin";
     }
+
     public DiskPositionalIndex(Path path, int sizeOfCorpus)
     {
         String pathString = path.toAbsolutePath().toString();
@@ -33,103 +32,79 @@ public class DiskPositionalIndex implements Index{
         pathToIndex = pathString + "/index/postings.bin";
         corpusSize = sizeOfCorpus;
         pathToAvgDocLength = pathString + "/index/docLengthAvg.bin";
-
     }
-    public double returnLD(int index) throws IOException {
-        RandomAccessFile docWeights = new RandomAccessFile(pathToWeights, "r");
-        docWeights.skipBytes(4 * index);
-        double LD = docWeights.readDouble();
-        return LD;
-
-    }
-
 
     @Override
     public List<Posting> getPostingsWithPositions(String term) throws IOException {
-        MySQLDB database = new MySQLDB(thePath);
-        Long byte_position = database.selectTerm(term);
+        MySQLDB database = new MySQLDB(pathToCorpus);
+        Long bytePosition = database.selectTerm(term);
         RandomAccessFile onDiskIndex = new RandomAccessFile(pathToIndex, "r");
-        onDiskIndex.seek(byte_position);
+        onDiskIndex.seek(bytePosition);
 
+        int docFrequency = onDiskIndex.readInt();
+        List<Posting> postings = new ArrayList<>();
+        int docID = 0;
+        List<Integer> positions = new ArrayList<>();
 
-        Integer dft = onDiskIndex.readInt();
-        List<Posting> postingList = new ArrayList<>();
-
-        Integer docID = 0;
-        List<Integer> positionList = new ArrayList<>();
-        for(int i = 0; i < dft; i++)
+        for(int i = 0; i < docFrequency; i++)
         {
-
-
             docID = docID + onDiskIndex.readInt();
-            Integer tftd = onDiskIndex.readInt();
+            int termFrequency = onDiskIndex.readInt();
             Integer position = 0;
-            for(int j = 0; j < tftd; j++)
-            {
 
+            for(int j = 0; j < termFrequency; j++)
+            {
                 Integer positionGap = onDiskIndex.readInt();
                 position = position + positionGap;
-                positionList.add(position);
-
+                positions.add(position);
             }
-                Posting p = new Posting(docID, positionList);
-                postingList.add(p);
-                positionList = new ArrayList<>();
 
+            Posting posting = new Posting(docID, positions);
+            postings.add(posting);
+            positions = new ArrayList<>();
 
         }
 
-        return postingList;
+        return postings;
     }
 
     @Override
     public List<Posting> getPostings(String term) throws IOException{
-        MySQLDB database = new MySQLDB(thePath);
-        Long byte_position = database.selectTerm(term);
+        MySQLDB database = new MySQLDB(pathToCorpus);
+        Long bytePosition = database.selectTerm(term);
+        List<Posting> postings = new ArrayList<>();
 
-        List<Posting> postingList = new ArrayList<>();
-
-        if (byte_position == null) {
-            return postingList;
-        } else {
-
+        if (bytePosition != null)
+        {
             RandomAccessFile onDiskIndex = new RandomAccessFile(pathToIndex, "r");
+            onDiskIndex.seek(bytePosition);
+            int documentFrequency = onDiskIndex.readInt();
+            int docID = 0;
 
-            onDiskIndex.seek(byte_position);
-
-            Integer dft = onDiskIndex.readInt();
-
-            Integer docID = 0;
-
-            for (int i = 0; i < dft; i++) {
+            for (int i = 0; i < documentFrequency; i++)
+            {
                 docID = docID + onDiskIndex.readInt();
-
-                Integer tftd = onDiskIndex.readInt();
-                onDiskIndex.skipBytes(tftd * 4);
-                Posting p = new Posting(docID, null);
-                p.setTFTD(tftd);
-                postingList.add(p);
-
+                int termFrequency = onDiskIndex.readInt();
+                onDiskIndex.skipBytes(termFrequency * 4);
+                Posting posting = new Posting(docID, null);
+                posting.setTermFrequency(termFrequency);
+                postings.add(posting);
             }
 
-            return postingList;
         }
+        return postings;
 
     }
 
     @Override
 
     public Integer getCorpusSize() {
-       return corpusSize;
+        return corpusSize;
     }
 
     @Override
-    public Integer getVocabSize() throws IOException {
-        return null;
-    }
-    @Override
     public List<String> getVocabulary() {
-        MySQLDB database = new MySQLDB(thePath);
+        MySQLDB database = new MySQLDB(pathToCorpus);
         return database.retrieveVocabulary();
     }
 }

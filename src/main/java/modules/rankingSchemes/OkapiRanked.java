@@ -81,14 +81,14 @@ public class OkapiRanked implements RankingStrategy{
 
                 for (Posting posting : postingsForTerm) {
                     Integer id = posting.getDocumentId();
-                    int termFrequencyOfTermInDocument = posting.getTFtd();
+                    int termFrequencyOfTermInDocument = posting.getTermFrequency();
                     documentWeights.seek((32 * id) + 8);
                     double docLength = documentWeights.readDouble();
                     documentWeights.seek(documentWeights.length() - 32);
                     double avgTokensPerDoc = documentWeights.readDouble();
 
                     Double weightOfTermInDocument =
-                            (2.2 * termFrequencyOfTermInDocument)/(1.2 * (.25 + .75 * (docLength/avgTokensPerDoc)) + posting.getTFtd());
+                            (2.2 * termFrequencyOfTermInDocument)/(1.2 * (.25 + .75 * (docLength/avgTokensPerDoc)) + posting.getTermFrequency());
 
 
                     if (ADMap.get(id) == null) {

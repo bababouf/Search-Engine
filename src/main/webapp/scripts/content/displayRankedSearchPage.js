@@ -76,7 +76,7 @@ const createRankedModes = () => {
     </div>
     <div class="card">
         <h3> Okapi BM25 </h3>
-        <p>  </p> 
+        <p> </p> 
         <button id ="okapi-ranked" class="ranked-button"> Select </button>
     </div>
     <div class="card">
@@ -97,6 +97,7 @@ const toggleModeSelection = () => {
             document.querySelector?.(".active")?.classList?.remove('active'); // Deselects the previously selected ranked mode (if there was one)
             event.currentTarget.classList.add('active'); // Selects the new mode
             rankedMode = event.currentTarget.id;
+            console.log(`selecting ${event.currentTarget.id}`)
         })
     })
 }
@@ -112,6 +113,7 @@ const attachQuerySubmitListener = (buttonId) => {
             createErrorMessage();
 
         } else {
+            console.log(`button id ${buttonId}`)
             verifyQueryDispatch(buttonId, rankedMode);
             rankedMode = null;
         }

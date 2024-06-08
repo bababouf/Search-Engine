@@ -44,7 +44,7 @@ public class RankedSearchServlet extends HttpServlet {
         DiskPositionalIndex index = new DiskPositionalIndex(defaultPath);
         DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(defaultPath, ".json");
         RankedDispatch rankedAlgorithm = new RankedDispatch(index, corpus);
-
+        System.out.println("Mode: " + mode);
         switch (mode) {
             case "default-ranked" -> {
                 DefaultRanked defaultRanked = new DefaultRanked();
@@ -60,12 +60,12 @@ public class RankedSearchServlet extends HttpServlet {
             case "okapi-ranked" -> {
                 OkapiRanked okapiRanked = new OkapiRanked();
                 rankedAlgorithm.calculate(okapiRanked, query);
-                rankedAlgorithm.calculateAccumulatorValue(okapiRanked);
+                top10Ranked = rankedAlgorithm.calculateAccumulatorValue(okapiRanked);
             }
             case "wacky-ranked" -> {
                 WakyRanked wakyRanked = new WakyRanked();
                 rankedAlgorithm.calculate(wakyRanked, query);
-                rankedAlgorithm.calculateAccumulatorValue(wakyRanked);
+                top10Ranked = rankedAlgorithm.calculateAccumulatorValue(wakyRanked);
             }
         }
         if (top10Ranked != null) {

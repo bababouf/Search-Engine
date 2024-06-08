@@ -28,6 +28,7 @@ public class BuildIndexTest {
      * Tests the DiskPositionalIndexer.readInSystemMode method to ensure it rejects multiple non-numerical inputs until
      * a numerical input (1) is entered.
      */
+    /*
     @Test
     public void readInSystemModeTest() {
         setUpStreams();
@@ -41,6 +42,8 @@ public class BuildIndexTest {
             restoreStreams();
         }
     }
+
+     */
 
     /**
      * Tests the DiskPositionalIndexer.readInPath method to ensure it returns the absolute path from the

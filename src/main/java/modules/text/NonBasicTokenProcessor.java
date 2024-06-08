@@ -18,12 +18,12 @@ public class NonBasicTokenProcessor implements TokenProcessor {
      */
     @Override
     public List<String> processToken(String token) {
-        PorterStemmer stemmer = new PorterStemmer();
 
+        PorterStemmer stemmer = new PorterStemmer();
         List<String> termList = new ArrayList<>();
         List<String> termListLowercase = new ArrayList<>();
-
         boolean hyphenatedWord = token.contains("-");
+
         if(hyphenatedWord)
         {
             int startIndex = 0;
@@ -44,13 +44,9 @@ public class NonBasicTokenProcessor implements TokenProcessor {
             for(String term : termList)
             {
                 String processedTerm = processTokenHelper(term);
-
                 String stemmedTerm = stemmer.stem(processedTerm);
-
                 termListLowercase.add(stemmedTerm.toLowerCase());
-
             }
-
         }
         else
         {

@@ -14,14 +14,11 @@ public interface Index {
 	 */
 	List<Posting> getPostings(String term) throws IOException;
 
-
-
 	/**
 	 * A sorted list of all terms in the index vocabulary.
 	 */
 	Integer getCorpusSize();
 
-	Integer getVocabSize() throws IOException;
 	List<String> getVocabulary();
 
 	List<Posting> getPostingsWithPositions(String firstTerm) throws IOException;

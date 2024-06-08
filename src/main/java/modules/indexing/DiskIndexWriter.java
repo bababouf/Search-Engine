@@ -21,46 +21,48 @@ public class DiskIndexWriter {
      * It's important to note that the IDs and positions are written in gaps. Ex: Doc IDS 5, 8, 15 will be
      * written as 5, 3, 7 (difference between consecutive documents). Gaps typically allow more compact storage.
      *
-     * @param onDiskIndex This is the path to the corpus that is input from the user. The postings.bin file is created within
+     * @param pathToIndex This is the path to the corpus that is input from the user. The postings.bin file is created within
      *                    that directory, in its own /index directory.
      */
-    public List<Long> writeIndex(PositionalInvertedIndex PII, Path onDiskIndex) throws IOException, SQLException {
+    public List<Long> writeIndex(PositionalInvertedIndex index, Path pathToIndex) throws IOException, SQLException {
 
-        String onDisk = onDiskIndex.toString() + "/index/postings.bin";
+        String onDisk = pathToIndex.toString() + "/index/postings.bin";
         System.out.println("Ondisk path: " + onDisk);
-        List<Long> termBytePositions = null;
+        List<Long> bytePositions = null;
         try {
             RandomAccessFile onDiskFile =
                     new RandomAccessFile(
                             onDisk, "rw");
 
-            List<String> vocabulary = PII.getVocabulary();
-            termBytePositions = new ArrayList<>();
+            List<String> vocabulary = index.getVocabulary();
+            bytePositions = new ArrayList<>();
             System.out.println("Moving positional index... \n");
 
-            for (String term : vocabulary) {
+            for (String term : vocabulary)
+            {
                 long bytePosition = onDiskFile.getFilePointer();
-                termBytePositions.add(bytePosition); // Add each term's bytePosition to list
+                bytePositions.add(bytePosition); // Add each term's bytePosition to list
                 int lastDocID = 0; // Will keep track of lastDocID in order to write each ID as a gap
-                List<Posting> postingsForTerm = PII.getPostings(term);
-                int documentFrequencyForTerm = postingsForTerm.size(); // How many documents the term is found in
-                onDiskFile.writeInt(documentFrequencyForTerm);
+                List<Posting> postings = index.getPostings(term);
+                int documentFrequency = postings.size(); // How many documents the term is found in
+                onDiskFile.writeInt(documentFrequency);
 
-                for (Posting posting : postingsForTerm) {
+                for (Posting posting : postings)
+                {
                     int docID = posting.getDocumentId();
                     int docIDGap = docID - lastDocID; // Gap is current docID - last docID
                     lastDocID = docID; // Set current ID to last
                     onDiskFile.writeInt(docIDGap);
-                    List<Integer> positionsForPosting = posting.getPosition();
-                    int termFrequencyInDocument = positionsForPosting.size(); // Number of times a term is found in a document
-                    onDiskFile.writeInt(termFrequencyInDocument);
+                    List<Integer> positions = posting.getPositions();
+                    int termFrequency = positions.size(); // Number of times a term is found in a document
+                    onDiskFile.writeInt(termFrequency);
                     int lastPosition = 0; // Will keep track of lastPosition in order to write each position as a gap
 
-                    for (Integer currentPosition : positionsForPosting) {
+                    for (Integer currentPosition : positions)
+                    {
                         int positionGap = currentPosition - lastPosition;
                         onDiskFile.writeInt(positionGap);
                         lastPosition = currentPosition;
-
                     }
                 }
 
@@ -71,7 +73,7 @@ public class DiskIndexWriter {
             e.printStackTrace();
         }
 
-        return termBytePositions;
+        return bytePositions;
 
     }
 
@@ -79,19 +81,19 @@ public class DiskIndexWriter {
      * This function connects to a local SQLite DB and inserts a row at a time, consisting of a term and its corresponding
      * long byte position.
      *
-     * @param termBytePositions A list of long byte positions written in ascending alphabetical order for each term
+     * @param bytePositions A list of long byte positions written in ascending alphabetical order for each term
      */
-    public void writeTermBytePositionsToDatabase(PositionalInvertedIndex PII, List<Long> termBytePositions, String thePath) {
-        List<String> vocabulary = PII.getVocabulary(); // Ascending alphabetical order
+    public void writeTermBytePositionsToDatabase(PositionalInvertedIndex index, List<Long> bytePositions, String pathToDB) {
+        List<String> vocabulary = index.getVocabulary(); // Ascending alphabetical order
         System.out.println("Writing term byte positions to database.");
-        MySQLDB database = new MySQLDB(thePath); // This connects to the DB (hardcoded to sample.db at project root location)
+        MySQLDB database = new MySQLDB(pathToDB); // This connects to the DB (hardcoded to sample.db at project root location)
         database.dropTable(); // If the program is run multiple times this ensures the DB doesn't grow infinitely
         database.createTable();
         int count = 0;
 
         for (int i = 0; i < vocabulary.size(); i++) {
             String term = vocabulary.get(i);
-            long bytePosition = termBytePositions.get(i);
+            long bytePosition = bytePositions.get(i);
 
             /*
               In an effort to increase efficient insertion of terms to the DB, instead of operating in auto-commit mode
@@ -108,7 +110,7 @@ public class DiskIndexWriter {
 
         }
         database.commit();
-        System.out.println("wee here?");
+
     }
 
     /**
@@ -141,11 +143,11 @@ public class DiskIndexWriter {
 
             Set<String> terms = termFrequency.keySet();
             double LD = 0.0;
-            double averageTFTD = 0.0; // averageTermFrequencyOfTermsInDocument
+            double avgTermFrequency = 0.0; // averageTermFrequencyOfTermsInDocument
 
             for (String term : terms) {
                 int frequencyOfTerm = termFrequency.get(term);
-                averageTFTD = averageTFTD + frequencyOfTerm;
+                avgTermFrequency = avgTermFrequency + frequencyOfTerm;
 
                 if (frequencyOfTerm >= 1) {
                     Double weightOfTermInDocument = (1 + (Math.log(frequencyOfTerm))); // Terms that appear more are given a higher weight
@@ -154,13 +156,13 @@ public class DiskIndexWriter {
                 }
             }
 
-            averageTFTD = averageTFTD / (termFrequency.values().size());
+            avgTermFrequency = avgTermFrequency / (termFrequency.values().size());
             LD = Math.sqrt(LD);
             documentWeights.seek(32L * id);
             documentWeights.writeDouble(LD);
             documentWeights.writeDouble(documentTokens);
             documentWeights.writeDouble(bytes);
-            documentWeights.writeDouble(averageTFTD);
+            documentWeights.writeDouble(avgTermFrequency);
             documentWeights.seek(documentWeights.length());
             documentWeights.close();
 
