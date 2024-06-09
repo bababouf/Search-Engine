@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy WAR app to Azure Web App - search-engine-app
+name: Build and deploy WAR app to Azure Web App - Search-Engine-App
 
 on:
   push:
@@ -48,15 +48,15 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_AF74B2B96CC94C118154EC5CAB49A1C1 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_20B983B7AD9648788E12AD72BCF7FC43 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_738761482C7740989FEC70064371887D }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_31638B5C95A24CDF865B218B0D6FDA3B }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B7668EAAC8FD44C6AF213E2024E4AE2E }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3333726D986B4864BF20A5DED413620A }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'search-engine-app'
+          app-name: 'Search-Engine-App'
           slot-name: 'Production'
           package: '*.war'
           
