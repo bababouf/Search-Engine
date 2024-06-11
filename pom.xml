@@ -108,6 +108,28 @@
                 <groupId>com.microsoft.azure</groupId>
                 <artifactId>azure-webapp-maven-plugin</artifactId>
                 <version>2.9.0</version>
+                <configuration>
+                    <schemaVersion>v2</schemaVersion>
+                    <resourceGroup>search-engine-rg</resourceGroup>
+                    <appName>search-engine-app</appName>
+                    <pricingTier>F1</pricingTier>
+                    <region>centralus</region>
+                    <runtime>
+                        <os>Windows</os>
+                        <javaVersion>Java 17</javaVersion>
+                        <webContainer>Tomcat 10.1</webContainer>
+                    </runtime>
+                    <deployment>
+                        <resources>
+                            <resource>
+                                <directory>${project.basedir}/target</directory>
+                                <includes>
+                                    <include>*.war</include>
+                                </includes>
+                            </resource>
+                        </resources>
+                    </deployment>
+                </configuration>
             </plugin>
         </plugins>
     </build>
