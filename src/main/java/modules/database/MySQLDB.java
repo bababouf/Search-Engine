@@ -17,20 +17,40 @@ public class MySQLDB {
     all-nps-sites-extracted corpus, or a DB for the user-uploaded corpus.
      */
     public MySQLDB(String pathToDB) {
-
-        if(pathToDB.endsWith("all-nps-sites-extracted"))
-        {
-            directory = "/default_directory";
-        }
-        else
-        {
-            directory = "/uploaded_directory";
+        if (pathToDB.endsWith("all-nps-sites-extracted")) {
+            directory = "default_directory";
+        } else {
+            directory = "uploaded_directory";
         }
 
-        conn = connect();
-        System.out.println("Connected to MySQL database.");
+        conn = connect(directory); // Pass directory to the connect method
+        if (conn != null) {
+            System.out.println("Connected to MySQL database.");
+        } else {
+            System.out.println("Failed to connect to MySQL database.");
+        }
     }
 
+    private Connection connect(String databaseName) {
+        // Replace these with your Azure Database for MySQL details
+        String serverName = "search-engine-app.mysql.database.azure.com";
+        String username = "bababouf";
+        String password = "310Dmz124xd?!"; // Replace this with your actual password
+
+        String URL = "jdbc:mysql://" + serverName + ":3306/" + databaseName + "?useSSL=true";
+
+        Connection conn = null;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(URL, username, password);
+            conn.setAutoCommit(false);
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println("Failed to connect to MySQL database: " + e.getMessage());
+        }
+        return conn;
+    }
+    /*
     private Connection connect() {
 
         String URL = "jdbc:mysql://localhost:3306" + directory;
@@ -50,7 +70,7 @@ public class MySQLDB {
         }
         return conn;
     }
-
+*/
     /*
     This method returns the starting bytePosition of a single term
      */
@@ -118,16 +138,19 @@ public class MySQLDB {
         }
     }
 
-    public void dropTable()
-    {
+    public void dropTable() {
+        if (conn == null) {
+            System.err.println("Connection is null.");
+            return;
+        }
         final String SQL = "DROP TABLE IF EXISTS byte_positions";
-        try (Statement statement = conn.createStatement())
-        {
+        try (Statement statement = conn.createStatement()) {
             statement.executeUpdate(SQL);
             conn.commit();
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
+            System.err.println("SQLException: " + e.getMessage());
+            System.err.println("SQLState: " + e.getSQLState());
+            System.err.println("VendorError: " + e.getErrorCode());
             e.printStackTrace();
         }
     }
