@@ -49,5 +49,5 @@ jobs:
         with:
           app-name: 'search-engine-app'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D9EBE0091ADF4433A2A3C45045EEDD33 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_692CD66EB0A141049EA503EB2769BB09 }}
           package: '*.war'
