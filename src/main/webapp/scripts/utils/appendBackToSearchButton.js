@@ -2,6 +2,7 @@
 import {displayRankedSearchPage} from "../content/displayRankedSearchPage.js";
 import {displayBooleanSearchPage} from "../content/displayBooleanSearchPage.js";
 
+// Appends the "back-to-search" button to the main element
 export const appendBackToSearchButton = (buttonId) => {
     const backButton = createBackButton();
     const mainElement = document.querySelector('main');
@@ -9,6 +10,7 @@ export const appendBackToSearchButton = (buttonId) => {
     attachListener(mainElement, backButton, buttonId);
 }
 
+// Creates HTML for the "back-to-search" button
 const createBackButton = () => {
 
     const backButtonContainer = document.createElement('div');
@@ -21,6 +23,7 @@ const createBackButton = () => {
 
 }
 
+// Attaches eventListener for "back-to-search" button
 const attachListener = (mainElement, backButton, buttonId) => {
     backButton.addEventListener('click', event => {
         if(buttonId === 'ranked-button')
