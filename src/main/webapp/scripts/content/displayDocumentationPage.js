@@ -1,7 +1,7 @@
 import {removeMainElements} from "../utils/removeMainElements.js";
 import {createSidebar} from "./createSidebar.js";
 
-
+// Creates the documentation page
 export const displayDocumentationPage = (event) => {
 
     removeMainElements();
@@ -29,6 +29,7 @@ export const displayDocumentationPage = (event) => {
 
 }
 
+// Creates the HTML for the introduction section
 const createIntroductionSection = () => {
     const introSection = document.createElement('div');
     introSection.classList.add('documentation');
@@ -46,12 +47,13 @@ const createIntroductionSection = () => {
         returns the top ten most relevant documents. Additionally, users can select from several ranking schemes in ranked 
         retrieval: default, TF-IDF, Okapi, and Wacky, each offering a unique approach to ranking documents and query terms.
         </p>
-        <a href="https://github.com/bababouf/Search-Engine/tree/master">Link to GitHub Repository</a>
+        <a href="https://github.com/bababouf/Search-Engine/tree/main">Link to GitHub Repository</a>
            
     `;
     return introSection;
 }
 
+// Creates HTML for the technology section
 const createTechnologyStackSection = () => {
     const techSection = document.createElement('div');
     techSection.classList.add('documentation');
@@ -78,6 +80,7 @@ const createTechnologyStackSection = () => {
     return techSection;
 }
 
+// Creates HTML for the indexing section
 const createIndexingSection = () => {
     const indexingSection = document.createElement('div');
     indexingSection.classList.add('documentation');
@@ -128,6 +131,8 @@ const createIndexingSection = () => {
     `;
     return indexingSection;
 }
+
+// Creates HTML for the boolean section
 const createBooleanSection = () => {
     const booleanSection = document.createElement('div');
     booleanSection.classList.add('documentation');
@@ -177,6 +182,7 @@ const createBooleanSection = () => {
 
 }
 
+// Creates HTML for the ranked section
 const createRankedSection = () => {
     const rankedSection = document.createElement('div');
     rankedSection.classList.add('documentation');

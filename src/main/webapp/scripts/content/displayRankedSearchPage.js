@@ -65,23 +65,19 @@ const createRankedModes = () => {
     rankedModes.innerHTML = `
     <div class="card">
         <h3> Default </h3>
-        <p>  </p>
         <button id ="default-ranked" class="ranked-button"> Select </button>
   
     </div>
     <div class="card">
         <h3> TFIDF </h3>
-        <p></p>
         <button id ="tfidf-ranked" class="ranked-button"> Select </button>
     </div>
     <div class="card">
         <h3> Okapi BM25 </h3>
-        <p> </p> 
         <button id ="okapi-ranked" class="ranked-button"> Select </button>
     </div>
     <div class="card">
         <h3> Wacky </h3>
-        <p>  </p>
         <button id ="wacky-ranked" class="ranked-button"> Select </button>
     </div>
     `;
