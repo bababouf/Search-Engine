@@ -40,6 +40,14 @@ public class ServletUtilities {
         out.flush();
     }
 
+    // Returns the path to the root directory (directory containing pom.xml)
+    public static String getProjectRootDir(String servletContextDir) {
+        String currentDir = servletContextDir;
+        while (currentDir != null && !new File(currentDir + File.separator + "pom.xml").exists()) {
+            currentDir = new File(currentDir).getParent();
+        }
+        return currentDir;
+    }
     // Returns the filename (file1.txt) from the part that was passed
     public static String getFileName(Part part) {
         String filename = part.getSubmittedFileName();
