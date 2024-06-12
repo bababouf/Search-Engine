@@ -33,16 +33,17 @@ public class MySQLDB {
 
     private Connection connect(String databaseName) {
         // Replace these with your Azure Database for MySQL details
-        String serverName = "search-engine-app.mysql.database.azure.com";
-        String username = "bababouf";
+        String serverName = "se-postgre-server.postgres.database.azure.com";
+        String username = "bababouf@se-postgre-server";
+        ;
         String password = "310Dmz124xd?!"; // Replace this with your actual password
 
-        String URL = "jdbc:mysql://" + serverName + ":3306/" + databaseName + "?useSSL=true";
+        String URL = "jdbc:postgresql://" + serverName + "/" + databaseName;
 
         Connection conn = null;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(URL, username, password);
             conn.setAutoCommit(false);
         } catch (ClassNotFoundException | SQLException e) {
@@ -116,7 +117,7 @@ public class MySQLDB {
      */
     public void insertTerm(String term, long bytePosition)
     {
-        final String SQL = "INSERT IGNORE INTO byte_positions VALUES (?, ?)";
+        final String SQL = "INSERT INTO byte_positions VALUES (?, ?) ON CONFLICT DO NOTHING";
         try (PreparedStatement ps = conn.prepareStatement(SQL))
         {
             ps.setString(1, term);
