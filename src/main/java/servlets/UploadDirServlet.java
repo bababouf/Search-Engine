@@ -78,6 +78,7 @@ public class UploadDirServlet extends HttpServlet {
     }
 
     /*
+
      In HTTP, when a form contains <input type="file"> elements and the form is submitted with
      enctype="multipart/form-data", the request is sent as a multipart request, and each file
      uploaded is treated as a separate part .
