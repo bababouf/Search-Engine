@@ -3,7 +3,16 @@ import {removeMainElements} from "../utils/removeMainElements.js";
 import {createSearchBar} from "./createSearchBar.js";
 import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
 
-let rankedMode = null;
+/*
+This file contains methods for creating and displaying the "ranked search" page. The HTML to display the page is created,
+and event listeners are attached to each of the ranking schemes that the user may select. Before the ranked search page is
+displayed, a page containing information on ranked searches is first displayed. When the user clicks the next button, the
+ranked search page is displayed.
+ */
+
+let rankedMode = null; // Initially null, this global variable is set when a ranking scheme is selected
+
+// Displays the ranked search instructions, as well as a next button to proceed to the ranked search page
 export const displayRankedSearchPageInstructions = (buttonId) => {
     removeMainElements();
     const instructions = createRankedInstructions();

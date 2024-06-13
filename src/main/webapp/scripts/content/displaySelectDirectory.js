@@ -3,22 +3,32 @@ import {setDirectoryPathAtServer} from "../utils/setDirectoryPathAtServer.js";
 import {displayUploadDirectoryPage} from "./displayUploadDirectoryPage.js";
 import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
 
+/*
+This file contains methods for creating and displaying the "select directory" page. The HTML to display the page is
+created, and event listeners are attached to each of the directory buttons.
+ */
+
+/*
+Removes previous HTML content attached to the main element, and appends the newly created HTML for the "select directory"
+page.
+ */
 export const displaySelectDirectory = () => {
     removeMainElements();
     const mainElement = document.querySelector('main');
     const directorySelectionElements = createDirectorySelection();
-    mainElement.appendChild(directorySelectionElements);
+    mainElement.appendChild(directorySelectionElements); // Appends "select directory" HTML to the main
     appendBackToHomeButton();
-    attachDirectoryListeners();
+    attachDirectoryListeners(); // Attach event listeners to each of the directory buttons
 
 }
 
+// Creates the HTML for the "select directory" page
 const createDirectorySelection = () => {
     const directorySelectionContainer = document.createElement('div');
 
     directorySelectionContainer.innerHTML = `
             <h2>Select Directory</h2>
-                <div class="card-container">
+                <div class="card-container"> 
                     <div class="card">
                         <h3>Default Directory</h3> 
                         <img src="../../images/default-dir-logo.png" height="30" width="40">               
@@ -37,27 +47,22 @@ const createDirectorySelection = () => {
     return directorySelectionContainer;
 }
 
+// Attaches event listeners to each of the directory buttons
 const attachDirectoryListeners = () => {
     const directoryButtons = document.querySelectorAll('button');
     directoryButtons.forEach(button => button.addEventListener('click', event => {
-        dispatchButtonClick(event);
+        dispatchDirectoryButtonClick(event);
     }));
 }
 
-const dispatchButtonClick = (event) => {
-    const target = event.currentTarget;
-
-    if (target.classList.contains("directory-selection__button")) {
-        dispatchDirectoryButtonClick(target);
+// Calls the appropriate method for handling each of the directory clicks (default or upload)
+const dispatchDirectoryButtonClick = (event) => {
+    if (event.target.id === 'default-directory-button') {
+        setDirectoryPathAtServer(); // Contacts servlet so that it knows to use default corpus
     }
-}
-
-// Depending on which of the directory buttons are clicked, work will again be dispatched to the proper method
-const dispatchDirectoryButtonClick = (target) => {
-    if (target.id === 'default-directory-button') {
-        setDirectoryPathAtServer();
-    } else if (target.id === 'upload-directory-button') {
-        displayUploadDirectoryPage();
+    else if (event.target.id === 'upload-directory-button')
+    {
+        displayUploadDirectoryPage(); // Calls method to display "upload directory" page
     }
 }
 

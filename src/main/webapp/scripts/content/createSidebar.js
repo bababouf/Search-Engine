@@ -1,3 +1,4 @@
+// Creates HTML for the sidebar in the documenation page
 export const createSidebar = () => {
     const sidebarDiv = document.createElement('div');
     sidebarDiv.classList.add('sidebar');
