@@ -2,12 +2,15 @@ import {removeMainElements} from "../utils/removeMainElements.js";
 import {appendBackToSearchButton} from "../utils/appendBackToSearchButton.js";
 
 
+/*
+This file contains methods for creating and displaying the "query results" page
+*/
+
 export const displayQueryResultsPage = (response, buttonId) => {
 
     removeMainElements();
     const mainElement = document.querySelector('main');
     const listOfResults = JSON.parse(response);
-
     let resultsDiv;
 
     if (listOfResults?.length === 0 ?? null) {
@@ -19,15 +22,13 @@ export const displayQueryResultsPage = (response, buttonId) => {
     const numberOfResultsMsg = document.createElement('h3');
     numberOfResultsMsg.textContent = `Displaying ${listOfResults.length} results for query. `;
 
-
     mainElement.appendChild(numberOfResultsMsg);
     mainElement.appendChild(resultsDiv);
-
     appendBackToSearchButton(buttonId);
 }
 
+// Creates HTML to be displayed when no results are found
 const handleNoResults = () => {
-
     const resultsDiv = document.createElement('div');
     const message = document.createElement('h3');
     message.textContent = 'No results';
@@ -35,6 +36,10 @@ const handleNoResults = () => {
     return resultsDiv;
 }
 
+/*
+Creates HTML for displaying the results. Results are displayed in rows, where each result is contained in a card (which
+contains the title and link).
+ */
 const displayResults = (listOfResults) => {
 
     const resultsDiv = document.createElement('div');

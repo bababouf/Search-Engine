@@ -1,7 +1,9 @@
 import {displayQueryModesPage} from "../content/displayQueryModesPage.js";
 
-
-//This method contacts the servlet so that it knows the default directory has been selected.
+/*
+This method makes a GET request to the servlet so that the default corpus that the user selected can be set. If no errors
+occur, a call to a method to "displayQueryModes" page will occur.
+ */
 export const setDirectoryPathAtServer = () => {
 
     fetch(`/home`, {
@@ -14,7 +16,7 @@ export const setDirectoryPathAtServer = () => {
             return response.text();
         })
         .then(responseText => {
-            displayQueryModesPage();
+            displayQueryModesPage(); // Calls method to display "query modes" page
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);

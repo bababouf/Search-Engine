@@ -3,7 +3,10 @@ import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
 import {displayBooleanSearchPage} from "./displayBooleanSearchPage.js";
 import {displayRankedSearchPageInstructions} from "./displayRankedSearchPage.js";
 
-// Displays a "page" containing the query modes (boolean and ranked) and a back button
+/*
+This file contains methods for creating and displaying the "query modes" selection page. The HTML to display the
+page is created, and event listeners are attached to each of the query mode buttons.
+ */
 export const displayQueryModesPage = () => {
     removeMainElements();
     const mainElement = document.querySelector('main');
@@ -11,7 +14,6 @@ export const displayQueryModesPage = () => {
 
     mainElement.appendChild(modesDiv);
     appendBackToHomeButton();
-
     attachModeButtonListeners();
 }
 
@@ -52,14 +54,15 @@ const attachModeButtonListeners = () => {
     });
 }
 
-// Depending on which query mode is selected, the proper method will be dispatched to handle the work
+// Calls the appropriate method for handling each of the "query mode" button clicks
 const queryModeDispatch = (event) => {
-
     const buttonId = event.currentTarget.id;
 
     if (buttonId === 'boolean-button') {
         displayBooleanSearchPage(buttonId);
-    } else if (event.currentTarget.id === 'ranked-button') {
+    }
+    else if (event.currentTarget.id === 'ranked-button')
+    {
         displayRankedSearchPageInstructions(buttonId);
     }
 

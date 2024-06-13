@@ -1,13 +1,18 @@
 import {displayQueryResultsPage} from "../content/displayQueryResultsPage.js";
 
-
+/*
+This file contains methods for sending a user-entered query in the browser to the proper servlet for processing. The same
+method is used for both boolean queries and ranked queries, but each is processed in its own servlet (with a unique
+endpoint). Boolean queries are processed in the servlet with "/booleansearch" endpoint, and ranked queries are processed
+in the servlet with the "/rankedsearch" endpoint.
+ */
 export const verifyQueryDispatch = (buttonId, rankedMode = null) => {
 
     let endpoint = setEndpoint(buttonId);
     sendToServlet(endpoint, rankedMode, buttonId)
 }
 
-// Depending on which retrieval mode was selected, the proper endpoint is set
+// The button id will either contain "boolean-button" or "ranked-button", and this allows for the correct endpoint to be set
 const setEndpoint = (buttonId) => {
     let endpoint = '';
     if (buttonId === 'boolean-button') {
@@ -18,7 +23,11 @@ const setEndpoint = (buttonId) => {
     return endpoint;
 }
 
-// This method sends the query and mode to the servlet for processing
+/*
+This method sends a GET request to the endpoint passed as a parameter. In the body of the request, the user-entered query
+is set, as well as the ranking scheme selected (this will be null for boolean queries). If no errors occur, a call to a method
+that displays the query results will be made.
+ */
 const sendToServlet = (endpoint, rankedMode, buttonId) => {
     const value = document.querySelector('#query');
 

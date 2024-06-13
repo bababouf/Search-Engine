@@ -3,7 +3,12 @@ import {createSearchBar} from "./createSearchBar.js";
 import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
 import {removeMainElements} from "../utils/removeMainElements.js";
 
-// Creates a "page" containing instructions for boolean retrieval, acceptable query formats, a search bar (with a submit button), and a back button
+/*
+This file contains methods for creating and displaying the "boolean search" page. The HTML to display the page is
+created, and an event listener is attached to the "submit query" button. The HTML for the page consists of instructions,
+cards containing acceptable query formats (with examples), a search bar (with a submit button), and the "back to home"
+button
+ */
 export const displayBooleanSearchPage = (buttonId) => {
     removeMainElements();
     const mainElement = document.querySelector('main');

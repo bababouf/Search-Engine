@@ -1,4 +1,7 @@
-// Creates HTML for a search bar (and submit button)
+/*
+Creates HTML for a search bar (and submit button). This search bar is used on the boolean query page and the ranked
+query page.
+ */
 export const createSearchBar = () => {
 
     const searchDiv = document.createElement('div');

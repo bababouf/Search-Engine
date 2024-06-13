@@ -1,8 +1,10 @@
-
 import {displayRankedSearchPage} from "../content/displayRankedSearchPage.js";
 import {displayBooleanSearchPage} from "../content/displayBooleanSearchPage.js";
 
-// Appends the "back-to-search" button to the main element
+/*
+This file contains methods for creating the "back to search" button. This button is used to take the user from the results page
+back to either the "boolean search" or the "ranked search" page
+*/
 export const appendBackToSearchButton = (buttonId) => {
     const backButton = createBackButton();
     const mainElement = document.querySelector('main');
@@ -12,7 +14,6 @@ export const appendBackToSearchButton = (buttonId) => {
 
 // Creates HTML for the "back-to-search" button
 const createBackButton = () => {
-
     const backButtonContainer = document.createElement('div');
     backButtonContainer.classList.add('back-button-container');
     backButtonContainer.innerHTML = `

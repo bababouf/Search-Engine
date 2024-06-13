@@ -1,15 +1,18 @@
 import {removeMainElements} from "../utils/removeMainElements.js";
 import {displayQueryModesPage} from "./displayQueryModesPage.js";
 
-// Displays a "page" containing the uploaded directory's filenames and a next button
+/*
+This file contains methods for creating and displaying the "filenames" page. The HTML to display the page is
+created, and an event listener is created for the "proceed to next" page
+ */
 export const displayFilenamesPage = (files) => {
     removeMainElements();
     const mainElement = document.querySelector('main');
     const fileNames = createFilenamesList(files);
     const nextButton = createNextButton();
 
-    mainElement.appendChild(fileNames);
-    mainElement.appendChild(nextButton);
+    mainElement.appendChild(fileNames); // Appends filenames HTML to main element
+    mainElement.appendChild(nextButton); // Appends next button to main element
 
     nextButton.addEventListener('click', () => {
         const formData = convertToFormData(files);
@@ -25,7 +28,9 @@ const createFilenamesList = (files) => {
     header.textContent = 'Documents';
     container.appendChild(header);
 
-    const arrayOfFiles = [...files];
+    const arrayOfFiles = [...files]; // Convert file list to array of files
+
+    // For each file, create a paragraph element to display the filename
     arrayOfFiles.forEach(file => {
         const fileName = document.createElement('p');
         fileName.textContent = file.name;
@@ -36,7 +41,8 @@ const createFilenamesList = (files) => {
 
 }
 
-// Creates a next button to proceed to indexing the uploaded directory
+
+// Creates the "proceed to next" button, as well as a paragraph element (to explain what will happen if the user proceeds)
 const createNextButton = () => {
     const nextButtonContainer = document.createElement('div');
     nextButtonContainer.classList.add('flex-column');
@@ -49,23 +55,31 @@ const createNextButton = () => {
     return nextButtonContainer;
 }
 
-// Converting to form data allows for easy/fast transfer of files to servlet
+/*
+This method converts the list of files to form data allows for easy/fast transfer of files to servlet. This is necessary
+for the servlet to process each of the files.
+ */
 const convertToFormData = (files) => {
     const formData = new FormData();
-    for (let i = 0; i < files.length; i++) {
+    for (let i = 0; i < files.length; i++)
+    {
         formData.append('files[]', files[i]);
     }
+
     return formData;
 }
 
-// This method is called when the next button is clicked
+/*
+Calls a method to remove the main elements, display a "loading spinner" (to let the user know the indexing process has begun),
+and sends the uploaded files (converted to form data) to be processed by the servlet
+ */
 const handleUploadedDirectory = (formData) => {
     removeMainElements();
     createLoadingSpinner();
     sendToServlet(formData);
 }
 
-// Creates a spinning "loading" spinner that is displayed while the uploaded dir is indexed
+// Creates the HTML for a "loading" spinner that is displayed while the uploaded directory is being indexed
 const createLoadingSpinner = () => {
     removeMainElements();
     const loadingDiv = document.createElement('div');
@@ -79,7 +93,10 @@ const createLoadingSpinner = () => {
 
 }
 
-// Sends the files (converted to form data) to the servlet
+/*
+Sends the files (converted to form data) to the servlet. If no errors occur, a call to display the "query modes" page is
+made.
+ */
 const sendToServlet = (formData) => {
     const value = document.querySelector('#query');
 

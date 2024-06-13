@@ -2,22 +2,23 @@ import {removeMainElements} from "../utils/removeMainElements.js";
 import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
 import {displayFilenamesPage} from "./displayFilenamesPage.js";
 
-// Displays a "page" containing a form for directory upload and a submit button + back button
+/*
+This file contains methods for creating and displaying the "upload directory" page. The HTML to display the page is
+created, and an event listener is attached to submit the user-selected directory.
+ */
 export const displayUploadDirectoryPage = () => {
     removeMainElements();
     const mainElement = document.querySelector('main');
     const uploadDirectory = createUploadDirectoryForm();
 
-
-    mainElement.appendChild(uploadDirectory);
+    mainElement.appendChild(uploadDirectory); // Attaches HTML for "upload directory" page to the main element
     appendBackToHomeButton();
-    attachSubmitDirectoryListener();
+    attachSubmitDirectoryListener(); // Attaches event listener for submitting directory
 }
 
-// Creates a form used allowing the user to enter a folder of either .TXT documents or .JSON documents
+// Creates the HTML that allows the user to select a directory from their filesystem
 const createUploadDirectoryForm = () => {
     const uploadDirectory = document.createElement('div');
-
 
     uploadDirectory.innerHTML = `
     <div class="upload-corpus-div">
@@ -44,21 +45,26 @@ const attachSubmitDirectoryListener = () => {
 }
 
 /*
-    Ensure uploaded folder of files contains all .TXT or all .JSON documents. If so, continue on and display
-    all the filenames. Else display error message.
+Ensures the directory that the user selected contains all .JSON files, or all .TXT files. If this is not the case, an
+error message is displayed to the user. If the directory is accepted, a call to a method that displays the filenames that
+were uploaded is made
  */
 const verifyUploadedDirectory = (files) => {
     const mainElement = document.querySelector('main');
     const arrayOfFiles = [...files];
+
+    // Check if every file is either .JSON or .TXT
     if (arrayOfFiles.every(file => file.name.endsWith('.json')) || arrayOfFiles.every(file => file.name.endsWith('.txt'))) {
-        displayFilenamesPage(files);
-    } else {
+        displayFilenamesPage(files); // Call method to display filenames
+    }
+    else
+    {
         const errorMsg = createErrorMessage();
-        mainElement.insertBefore(errorMsg, mainElement.firstChild);
+        mainElement.insertBefore(errorMsg, mainElement.firstChild); // Insert error message as first element attached to main
     }
 }
 
-// Creates the HTML + sets CSS attributes for the error message
+// Creates HTML for the error message that is displayed if improper filetypes are uploaded
 const createErrorMessage = () => {
     const errorMsg = document.createElement('p');
     errorMsg.textContent = 'Directory must contain all .TXT files or all .JSON files. ';
