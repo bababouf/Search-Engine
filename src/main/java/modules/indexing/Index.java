@@ -14,10 +14,6 @@ public interface Index {
 	 */
 	List<Posting> getPostings(String term) throws IOException;
 
-	/**
-	 * A sorted list of all terms in the index vocabulary.
-	 */
-	Integer getCorpusSize();
 
 	List<String> getVocabulary();
 

@@ -16,75 +16,115 @@ public class NonBasicTokenProcessor implements TokenProcessor {
      * This function will first check the token passed to it is hyphenated. If so, it will split on each hyphen (if more than one)
      * and will create separate tokens for each. Each of these will then be passed to the processTokenHelper function.
      */
+    private PorterStemmer stemmer;
+
     @Override
     public List<String> processToken(String token) {
-
-        PorterStemmer stemmer = new PorterStemmer();
-        List<String> termList = new ArrayList<>();
-        List<String> termListLowercase = new ArrayList<>();
-        boolean hyphenatedWord = token.contains("-");
-
-        if(hyphenatedWord)
+        if (token == null || token.isEmpty())
         {
-            int startIndex = 0;
-            String hyphenatedTerm = "";
-            for(int i = 0; i < token.length(); i++)
-            {
-                char charAtIndex = token.charAt(i);
-                if(charAtIndex == ' ' && (i - startIndex > 1))
-                {
-                    String term = token.substring(startIndex, i);
-                    termList.add(token.substring(startIndex, i));
-                    startIndex = i + 1;
-                    hyphenatedTerm += term;
-                }
-            }
-            termList.add(hyphenatedTerm);
-
-            for(String term : termList)
-            {
-                String processedTerm = processTokenHelper(term);
-                String stemmedTerm = stemmer.stem(processedTerm);
-                termListLowercase.add(stemmedTerm.toLowerCase());
-            }
+            return new ArrayList<>();
         }
-        else
-        {
-            String processedToken = processTokenHelper(token);
-            String stemmedTerm = stemmer.stem(processedToken);
-            termListLowercase.add(stemmedTerm.toLowerCase());
 
-        }
-        return termListLowercase;
-
+        List<String> termList = splitToken(token);
+        return processTerms(termList);
     }
 
     /**
-     * This function will remove non-alphanumeric characters from the beginning and end of each token passed to it.
-     * It will not, however, remove non-alphanumeric chars from the middle (199.111.1.1 will remain unchanged).
-     * Next, all apostrophes and quation marks are removed from anywhere in the token. The token is then converted to
-     * lowercase and stemmed using the PorterStemmer package.
+     * This method will split a token that contains hyphens by the hyphens, adding each of the individual terms (as well
+     * as the full hyphenated term without the hyphens) to the term list
      */
-    public String processTokenHelper(String token) {
+    private List<String> splitToken(String token) {
+        List<String> termList = new ArrayList<>();
+        if (token.contains("-"))
+        {
+            // Split the token by hyphens and add to term list
+            String[] terms = token.split("-");
+            for (String term : terms)
+            {
+                termList.add(term);
+            }
+            // Add the full hyphenated term, removing the hyphens
+            termList.add(token.replace("-", ""));
+        }
+        // If the token does not contain a hyphen, simply add the token to the term list
+        else
+        {
+            termList.add(token);
+        }
+
+        return termList;
+    }
+
+    /**
+     * This method will stem and lowercase each of the terms passed to it
+     */
+    private List<String> processTerms(List<String> termList) {
+        List<String> termListLowercase = new ArrayList<>();
+
+        for (String term : termList)
+        {
+            // Remove specific non-alphanumeric characters from token
+            String processedTerm = processTokenHelper(term);
+
+            // Retrieves the stemmed term
+            String stemmedTerm = stemmer.stem(processedTerm);
+
+            // Lowercases the term
+            termListLowercase.add(stemmedTerm.toLowerCase());
+        }
+
+        return termListLowercase;
+    }
+
+    /**
+     * This method will loop through the token passed, removing certain non-alphanumeric characters based
+     * on their position within the string.
+     */
+    private String processTokenHelper(String token)
+    {
         int index = 0;
 
-        while (index <= token.length() - 1) {
+        // Loop through the entire token from start to end
+        while (index <= token.length() - 1)
+        {
 
+            // Check if the character at index is alphanumeric
             boolean isAlphanumeric = isLetterOrDigit(token.charAt(index));
-            if (isAlphanumeric) {
-                index++;
-            } else if (index == 0) {
-                token = token.substring(1);
 
-            } else if (index == token.length() - 1) {
+            // If the character is alphanumeric, increment the index and move to the next character
+            if (isAlphanumeric)
+            {
+                index++;
+            }
+            // The character is NOT alphanumeric AND is at the beginning of the token
+            else if (index == 0)
+            {
+                // Remove the character by creating a substring from index 1 to the end of string
+                token = token.substring(1);
+            }
+            // The character is NOT alphanumeric AND is at the end of the token
+            else if (index == token.length() - 1)
+            {
+                // Remove the character by creating a substring from index 0 to end of string - 1 (last char removed)
                 token = token.substring(0, index);
+
+                // Adjust index since token is now shortened
                 index--;
 
-            } else {
-                if (token.charAt(index) == 34 || token.charAt(index) == 39) {
-                    token = token.substring(0, index) + token.substring(index + 1);
+            }
 
-                } else {
+            // Character is NOT alphanumeric AND is in middle of token
+            else
+            {
+                // Check if the character is a double quote (ASCII 34) or single quote (ASCII 39)
+                if (token.charAt(index) == 34 || token.charAt(index) == 39)
+                {
+                    // Create a new substring with that index removed
+                    token = token.substring(0, index) + token.substring(index + 1);
+                }
+                // If the character is not a single or double quote, simply move to the next character
+                else
+                {
                     index++;
                 }
             }
@@ -92,5 +132,6 @@ public class NonBasicTokenProcessor implements TokenProcessor {
         }
         return token;
     }
-
 }
+
+

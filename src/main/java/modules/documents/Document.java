@@ -21,5 +21,8 @@ public interface Document {
 	 */
 	String getTitle();
 
+	/**
+	 * The URL of the document
+	 */
 	String getURL();
 }

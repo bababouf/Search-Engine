@@ -12,11 +12,13 @@ import java.util.stream.Collectors;
  * An OrQuery composes other QueryComponents and merges their postings with a union-type operation.
  */
 public class OrQuery implements QueryComponent {
-	// The components of the Or query.
-	private List<QueryComponent> mComponents;
 
-	public OrQuery(List<QueryComponent> components) {
-		mComponents = components;
+	// The components of the ORQuery
+	private final List<QueryComponent> components;
+
+	public OrQuery(List<QueryComponent> components)
+	{
+		this.components = components;
 	}
 
 	/**
@@ -24,22 +26,26 @@ public class OrQuery implements QueryComponent {
 	 */
 	@Override
 	public List<Posting> getPostings(Index index) throws IOException {
-		List<Posting> result = new ArrayList<>();
+		List<Posting> resultsList = new ArrayList<>();
 
-		if (mComponents.size() >= 2) {
+		if (components.size() >= 2)
+		{
 			// Retrieve postings for the first two components and merge them
-			QueryComponent firstLiteral = mComponents.get(0);
-			QueryComponent secondLiteral = mComponents.get(1);
-			result = MergeLists(firstLiteral.getPostings(index), secondLiteral.getPostings(index));
+			QueryComponent listOne = components.get(0);
+			QueryComponent listTwo = components.get(1);
+			resultsList = MergeLists(listOne.getPostings(index), listTwo.getPostings(index));
 
 			// Iterate through the remaining components and merge their postings with the current result
-			for (int i = 2; i < mComponents.size(); i++) {
-				result = MergeLists(result, mComponents.get(i).getPostings(index));
+			for (int i = 2; i < components.size(); i++)
+			{
+				resultsList = MergeLists(resultsList, components.get(i).getPostings(index));
 			}
 		}
 
-		return result;
+		return resultsList;
 	}
+
+
 
 	/**
 	 * This method will obtain a list that contains the union of the two lists passed to it. In order to do this,
@@ -48,32 +54,51 @@ public class OrQuery implements QueryComponent {
 	 * the loop continues until the end of the other list is reached.
 	 */
 
-	public List<Posting> MergeLists(List<Posting> literal, List<Posting> nextLiteral) {
+	public List<Posting> MergeLists(List<Posting> listOne, List<Posting> listTwo) {
 		List<Posting> result = new ArrayList<>();
-		int j = 0;
-		int k = 0;
+		int l1Index = 0;
+		int l2Index = 0;
 
-		while (j < literal.size() || k < nextLiteral.size()) {
-			if (j == literal.size()) { // End of the first list is reached
-				result.add(nextLiteral.get(k));
-				k++;
-			} else if (k == nextLiteral.size()) { // End of the second list is reached
-				result.add(literal.get(j));
-				j++;
-			} else {
-				int docId1 = literal.get(j).getDocumentId();
-				int docId2 = nextLiteral.get(k).getDocumentId();
+		while (l1Index < listOne.size() || l2Index < listTwo.size())
+		{
+			// If the end of listOne is reached, continue to add documents and increment listTwo
+			if (l1Index == listOne.size())
+			{
+				result.add(listTwo.get(l2Index));
+				l2Index++;
+			}
+			// If the end of listTwo is reached, continue to add documents and increment listOne
+			else if (l2Index == listTwo.size())
+			{
+				result.add(listOne.get(l1Index));
+				l1Index++;
+			}
+			// If neither list has reached the end...
+			else
+			{
+				// Get the documentIDs from both of the lists
+				int currentDocL1 = listOne.get(l1Index).getDocumentId();
+				int currentDocL2 = listTwo.get(l2Index).getDocumentId();
 
-				if (docId1 == docId2) { // Both lists contain the same docID, add one
-					result.add(literal.get(j));
-					j++;
-					k++;
-				} else if (docId1 < docId2) { // Add and increment the list with the lesser docID
-					result.add(literal.get(j));
-					j++;
-				} else {
-					result.add(nextLiteral.get(k));
-					k++;
+				// If the documents match, add the ID to the resultsList and increment both lists
+				if (currentDocL1 == currentDocL2)
+				{
+					result.add(listOne.get(l1Index));
+					l1Index++;
+					l2Index++;
+				}
+				// If they don't match, add the document with the lesser documentID and increment that document
+				else if (currentDocL1 < currentDocL2)
+				{
+					result.add(listOne.get(l1Index));
+					l1Index++;
+				}
+				//TODO
+				// This should never be reached
+				else
+				{
+					result.add(listTwo.get(l2Index));
+					l2Index++;
 				}
 			}
 		}
@@ -85,7 +110,7 @@ public class OrQuery implements QueryComponent {
 	public String toString() {
 		// Returns a string of the form "[SUBQUERY] + [SUBQUERY] + [SUBQUERY]"
 		return "(" +
-				String.join(" + ", mComponents.stream().map(c -> c.toString()).collect(Collectors.toList()))
+				String.join(" + ", components.stream().map(c -> c.toString()).collect(Collectors.toList()))
 				+ " )";
 	}
 }

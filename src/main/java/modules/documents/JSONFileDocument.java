@@ -2,7 +2,6 @@ package modules.documents;
 
 import org.json.simple.*;
 import org.json.simple.parser.*;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -14,10 +13,8 @@ import java.nio.file.Path;
  */
 
 public class JSONFileDocument implements FileDocument{
-    private int documentID;
-    private Path filePath;
-    private String title;
-    private String URL;
+    private final int documentID;
+    private final Path filePath;
 
     /**
      * Constructs a JSONFileDocument with a given document ID representing the file at the given absoluteFilePath
@@ -27,18 +24,27 @@ public class JSONFileDocument implements FileDocument{
         filePath = absoluteFilePath;
     }
 
+    /**
+     * Returns the absolute file path
+     */
     @Override
     public Path getFilePath()
     {
         return filePath;
     }
 
+    /**
+     * Returns the document ID
+     */
     @Override
     public int getId()
     {
         return documentID;
     }
 
+    /**
+     * Returns a reader over the body of the JSON document
+     */
     @Override
     public Reader getContent() {
 
@@ -50,8 +56,7 @@ public class JSONFileDocument implements FileDocument{
             Object obj = parser.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject)obj;
             String body = (String)jsonObject.get("body");
-            StringReader reader = new StringReader(body);
-            return reader;
+            return new StringReader(body);
         }
         catch (ParseException | IOException e)
         {
@@ -59,6 +64,9 @@ public class JSONFileDocument implements FileDocument{
         }
     }
 
+    /**
+     * Returns the title of the JSON document
+     */
     @Override
     public String getTitle() {
         JSONParser parser = new JSONParser();
@@ -67,9 +75,7 @@ public class JSONFileDocument implements FileDocument{
         {
             Object obj = parser.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject)obj;
-            String title = (String)jsonObject.get("title");
-            this.title = title;
-            return this.title;
+            return (String)jsonObject.get("title");
 
         }
         catch (ParseException | IOException e)
@@ -78,6 +84,9 @@ public class JSONFileDocument implements FileDocument{
         }
     }
 
+    /**
+     * Returns the URL of the JSON document
+     */
     @Override
     public String getURL() {
         JSONParser parser = new JSONParser();
@@ -86,9 +95,7 @@ public class JSONFileDocument implements FileDocument{
         {
             Object obj = parser.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject)obj;
-            String url = (String)jsonObject.get("url");
-            URL = url;
-            return URL;
+            return (String)jsonObject.get("url");
 
         }
         catch (ParseException | IOException e)
@@ -97,6 +104,9 @@ public class JSONFileDocument implements FileDocument{
         }
     }
 
+    /**
+     * This method returns a JSONFileDocument
+     */
     public static FileDocument loadJsonFileDocument(Path absolutePath, int documentId)
     {
         return new JSONFileDocument(documentId, absolutePath);

@@ -4,64 +4,44 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-This class contains the methods for creating a MYSQL database.
+/**
+ * The Postgres database is used to efficiently access the Azure Blob Storage file when information on a term needs to
+ * be retrieved. The database contains two attributes; a string term and a long byte position. In this way, each term
+ * and its associated starting byte position (in the Azure Blob file) can be stored. It's important to note here that
+ * two databases can be created (one for the default corpus, and one for a user-uploaded corpus).
  */
-public class MySQLDB {
+public class PostgresDB {
 
     private static Connection conn;
     public String directory;
 
-    /*
-    The constructor allows for two different databases to be created: the default DB containing the
-    all-nps-sites-extracted corpus, or a DB for the user-uploaded corpus.
-     */
-    public MySQLDB(String pathToDB) {
-        if (pathToDB.endsWith("all-nps-sites-extracted")) {
-            directory = "default_directory";
-        } else {
-            directory = "uploaded_directory";
-        }
+    public PostgresDB(String databaseName) {
+        directory = databaseName;
 
         conn = connect(directory); // Pass directory to the connect method
-        if (conn != null) {
-            System.out.println("Connected to MySQL database.");
-        } else {
-            System.out.println("Failed to connect to MySQL database.");
+        if (conn != null)
+        {
+            System.out.println("Connected to Postgres database.");
+        }
+        else
+        {
+            System.out.println("Failed to connect to Postgres database.");
         }
     }
 
+    /**
+     * This method connects to the application's Postgres database
+     */
     private Connection connect(String databaseName) {
-        // Replace these with your Azure Database for MySQL details
-        String serverName = "se-postgre-server.postgres.database.azure.com";
-        String username = "bababouf@se-postgre-server";
-        ;
+        String serverName = "bababouf-postgre-server.postgres.database.azure.com:5432";
+        String username = "bababouf";
         String password = "310Dmz124xd?!"; // Replace this with your actual password
-
         String URL = "jdbc:postgresql://" + serverName + "/" + databaseName;
-
-        Connection conn = null;
-
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(URL, username, password);
-            conn.setAutoCommit(false);
-        } catch (ClassNotFoundException | SQLException e) {
-            System.out.println("Failed to connect to MySQL database: " + e.getMessage());
-        }
-        return conn;
-    }
-    /*
-    private Connection connect() {
-
-        String URL = "jdbc:mysql://localhost:3306" + directory;
-        String username = "root";
-        String password = "admin";
         Connection conn = null;
 
         try
         {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(URL, username, password);
             conn.setAutoCommit(false);
         }
@@ -71,10 +51,7 @@ public class MySQLDB {
         }
         return conn;
     }
-*/
-    /*
-    This method returns the starting bytePosition of a single term
-     */
+
     public Long selectTerm(String term) {
 
         final String SQL = "SELECT term, byte_position FROM byte_positions WHERE term = ?";
@@ -101,7 +78,8 @@ public class MySQLDB {
         try (PreparedStatement preparedStatement = conn.prepareStatement("SELECT term FROM byte_positions");
              ResultSet resultSet = preparedStatement.executeQuery())
         {
-            while (resultSet.next()) {
+            while (resultSet.next())
+            {
                 vocabularyList.add(resultSet.getString("term"));
             }
         }
@@ -112,9 +90,6 @@ public class MySQLDB {
         return vocabularyList;
     }
 
-    /*
-    Carries out inserting a single term into the DB
-     */
     public void insertTerm(String term, long bytePosition)
     {
         final String SQL = "INSERT INTO byte_positions VALUES (?, ?) ON CONFLICT DO NOTHING";
@@ -132,23 +107,30 @@ public class MySQLDB {
 
     public void commit()
     {
-        try {
+        try
+        {
             conn.commit();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             e.printStackTrace();
         }
     }
 
     public void dropTable() {
-        if (conn == null) {
+        if (conn == null)
+        {
             System.err.println("Connection is null.");
             return;
         }
         final String SQL = "DROP TABLE IF EXISTS byte_positions";
-        try (Statement statement = conn.createStatement()) {
+        try (Statement statement = conn.createStatement())
+        {
             statement.executeUpdate(SQL);
             conn.commit();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             System.err.println("SQLException: " + e.getMessage());
             System.err.println("SQLState: " + e.getSQLState());
             System.err.println("VendorError: " + e.getErrorCode());

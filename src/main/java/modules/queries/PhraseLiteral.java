@@ -12,14 +12,16 @@ import java.util.stream.Collectors;
  * Represents a phrase literal consisting of one or more terms that must occur in sequence.
  */
 public class PhraseLiteral implements QueryComponent {
-	// The list of individual terms in the phrase.
-	private List<String> mTerms = new ArrayList<>();
+
+	// The list of individual terms in the phrase
+	private final List<String> terms = new ArrayList<>();
 	
 	/**
 	 * Constructs a PhraseLiteral with the given individual phrase terms.
 	 */
-	public PhraseLiteral(List<String> terms) {
-		mTerms.addAll(terms);
+	public PhraseLiteral(List<String> terms)
+	{
+		this.terms.addAll(terms);
 	}
 
 	/**
@@ -31,12 +33,12 @@ public class PhraseLiteral implements QueryComponent {
 	public List<Posting> getPostings(Index index) throws IOException {
 
 		// Get the postings list for the first term
-		String firstTerm = mTerms.get(0);
+		String firstTerm = terms.get(0);
 		List<Posting> result = index.getPostings(firstTerm);
 
 		// Iterate through the remaining terms and merge their postings lists with the current result
-		for (int i = 1; i < mTerms.size(); i++) {
-			String nextTerm = mTerms.get(i);
+		for (int i = 1; i < terms.size(); i++) {
+			String nextTerm = terms.get(i);
 			List<Posting> nextTermPostings = index.getPostings(nextTerm);
 
 			// Merge the current result with the postings list of the next term
@@ -56,12 +58,12 @@ public class PhraseLiteral implements QueryComponent {
 	public List<Posting> getPostingsWithPositions(Index index) throws IOException {
 
 		// Retrieve the postings list for the first term
-		String firstTerm = mTerms.get(0);
+		String firstTerm = terms.get(0);
 		List<Posting> result = index.getPostingsWithPositions(firstTerm);
 
 		// Iterate through the remaining terms and merge their postings lists with the current result
-		for (int i = 1; i < mTerms.size(); i++) {
-			String nextTerm = mTerms.get(i);
+		for (int i = 1; i < terms.size(); i++) {
+			String nextTerm = terms.get(i);
 			List<Posting> nextTermPostings = index.getPostingsWithPositions(nextTerm);
 
 			// Merge the current result with the postings list of the next term
@@ -130,7 +132,7 @@ public class PhraseLiteral implements QueryComponent {
 	@Override
 	public String toString() {
 		String terms = 
-			mTerms.stream()
+			this.terms.stream()
 			.collect(Collectors.joining(" "));
 		return "\"" + terms + "\"";
 	}
