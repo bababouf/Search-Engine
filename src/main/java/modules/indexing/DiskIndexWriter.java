@@ -1,6 +1,6 @@
 package modules.indexing;
 
-import modules.database.MySQLDB;
+import modules.database.PostgresDB;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -86,7 +86,7 @@ public class DiskIndexWriter {
     public void writeTermBytePositionsToDatabase(PositionalInvertedIndex index, List<Long> bytePositions, String pathToDB) {
         List<String> vocabulary = index.getVocabulary(); // Ascending alphabetical order
         System.out.println("Writing term byte positions to database.");
-        MySQLDB database = new MySQLDB(pathToDB); // This connects to the DB (hardcoded to sample.db at project root location)
+        PostgresDB database = new PostgresDB(pathToDB); // This connects to the DB (hardcoded to sample.db at project root location)
         database.dropTable(); // If the program is run multiple times this ensures the DB doesn't grow infinitely
         database.createTable();
         int count = 0;

@@ -1,6 +1,6 @@
 package modules.indexing;
 
-import modules.database.MySQLDB;
+import modules.database.PostgresDB;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -36,7 +36,7 @@ public class DiskPositionalIndex implements Index{
 
     @Override
     public List<Posting> getPostingsWithPositions(String term) throws IOException {
-        MySQLDB database = new MySQLDB(pathToCorpus);
+        PostgresDB database = new PostgresDB(pathToCorpus);
         Long bytePosition = database.selectTerm(term);
         RandomAccessFile onDiskIndex = new RandomAccessFile(pathToIndex, "r");
         onDiskIndex.seek(bytePosition);
@@ -70,7 +70,7 @@ public class DiskPositionalIndex implements Index{
 
     @Override
     public List<Posting> getPostings(String term) throws IOException{
-        MySQLDB database = new MySQLDB(pathToCorpus);
+        PostgresDB database = new PostgresDB(pathToCorpus);
         Long bytePosition = database.selectTerm(term);
         List<Posting> postings = new ArrayList<>();
 
@@ -96,15 +96,13 @@ public class DiskPositionalIndex implements Index{
 
     }
 
-    @Override
-
     public Integer getCorpusSize() {
         return corpusSize;
     }
 
     @Override
     public List<String> getVocabulary() {
-        MySQLDB database = new MySQLDB(pathToCorpus);
+        PostgresDB database = new PostgresDB(pathToCorpus);
         return database.retrieveVocabulary();
     }
 }
