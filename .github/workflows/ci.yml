@@ -26,7 +26,7 @@ jobs:
         distribution: 'adopt'
 
     - name: Build with Maven
-      run: mvn package -B
+      run: mvn clean package -B
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
