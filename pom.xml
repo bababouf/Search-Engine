@@ -111,7 +111,6 @@
                     <excludes>
                         <exclude>modules/rankingSchemes/**/*.java</exclude> <!-- Adjust the path as needed -->
                         <exclude>servlets/RankedSearchServlet.java</exclude>
-                        <exclude>servlets/ServletUtilities.java</exclude>
                         <exclude>servlets/UploadDirServlet.java</exclude>
                         <!-- Add more file patterns as needed -->
                     </excludes>
