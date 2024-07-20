@@ -113,6 +113,10 @@ public class BlobStorageWriter {
         for (int i = 0; i < vocabulary.size(); i++)
         {
             String term = vocabulary.get(i);
+            if(term.length() >= 254)
+            {
+                term = term.substring(0, 254);
+            }
             long bytePosition = bytePositions.get(i);
             database.insertTerm(term, bytePosition);
 

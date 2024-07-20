@@ -16,7 +16,6 @@ public class NonBasicTokenProcessor implements TokenProcessor {
      * This function will first check the token passed to it is hyphenated. If so, it will split on each hyphen (if more than one)
      * and will create separate tokens for each. Each of these will then be passed to the processTokenHelper function.
      */
-    private PorterStemmer stemmer;
 
     @Override
     public List<String> processToken(String token) {
@@ -66,6 +65,7 @@ public class NonBasicTokenProcessor implements TokenProcessor {
             // Remove specific non-alphanumeric characters from token
             String processedTerm = processTokenHelper(term);
 
+            PorterStemmer stemmer = new PorterStemmer();
             // Retrieves the stemmed term
             String stemmedTerm = stemmer.stem(processedTerm);
 

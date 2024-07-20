@@ -14,11 +14,12 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import modules.documents.DirectoryCorpus;
 import modules.documents.Document;
+import modules.indexing.AzureBlobPositionalIndex;
 import modules.indexing.Posting;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-import modules.indexing.DiskPositionalIndex;
+import modules.indexing.AzureBlobPositionalIndex;
 import modules.queries.BooleanQueryParser;
 import modules.queries.PhraseLiteral;
 import modules.queries.QueryComponent;
@@ -31,7 +32,7 @@ public class BooleanSearchServlet extends HttpServlet {
     // This servlet is invoked when POST requests are made to the /search/booleansearch endpoint
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String query = getQuery(request);
-        DiskPositionalIndex index = createDiskPositionalIndex();
+        AzureBlobPositionalIndex index = createDiskPositionalIndex();
         DirectoryCorpus corpus = createCorpus();
         List<Posting> queryPostings = processBooleanQuery(query, index);
         // returnTop15Postings(queryPostings);
@@ -46,20 +47,23 @@ public class BooleanSearchServlet extends HttpServlet {
         return jsonBody.get("query").getAsString();
     }
     // Creates the DiskPositionalIndex object
-    public DiskPositionalIndex createDiskPositionalIndex() {
-        Path defaultPath = getDefaultPath();
-        return new DiskPositionalIndex(defaultPath);
+    public AzureBlobPositionalIndex createDiskPositionalIndex() {
+        ServletContext context = getServletContext();
+        String directoryType = (String) context.getAttribute("directoryType");
+
+        return new AzureBlobPositionalIndex(directoryType);
     }
     // Creates the DirectoryCorpus object
     public DirectoryCorpus createCorpus() {
-        Path defaultPath = getDefaultPath();
-        DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(defaultPath, ".json");
+        ServletContext context = getServletContext();
+        Path directoryPath = (Path) context.getAttribute("path");
+        DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(directoryPath, ".json");
         corpus.getDocuments();
         return corpus;
     }
 
     // Returns a list of postings that satisfy the boolean query
-    public List<Posting> processBooleanQuery(String query, DiskPositionalIndex index) throws IOException {
+    public List<Posting> processBooleanQuery(String query, AzureBlobPositionalIndex index) throws IOException {
         BooleanQueryParser booleanParser = new BooleanQueryParser();
         QueryComponent queryComponent = booleanParser.parseQuery(query);
         List<Posting> queryPostings;

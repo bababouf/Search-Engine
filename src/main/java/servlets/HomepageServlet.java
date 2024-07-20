@@ -12,6 +12,7 @@ public class HomepageServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
         setResponseHeaders(response);
         setDefaultPath();
+        setDefaultDirectoryType();
     }
 
     /*
@@ -35,6 +36,10 @@ public class HomepageServlet extends HttpServlet {
         String projectRoot = ServletUtilities.getProjectRootDir(servletContextDir); // This will give the project root (the directory that contains the pom.xml file).
         String defaultDirectoryPath = projectRoot + File.separator + "all-nps-sites-extracted";
         context.setAttribute("path", defaultDirectoryPath); // setAttribute() allows for setting application-scope vars
+    }
+    public void setDefaultDirectoryType(){
+        ServletContext context = getServletContext();
+        context.setAttribute("directoryType", "default_directory");
     }
 
 }
