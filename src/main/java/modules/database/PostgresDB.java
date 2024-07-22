@@ -34,6 +34,14 @@ public class PostgresDB {
      */
     private Connection connect(String databaseName) {
         String envConnectionString = System.getenv("DB_CONNECTION_STRING");
+
+        //String envString = "jdbc:postgresql://bababouf-postgre-server.postgres.database.azure.com:5432/default_directory?user=bababouf&password=d65Gqpa2%3F";
+        //String serverName = "bababouf-postgre-server.postgres.database.azure.com:5432";
+        //String username = "bababouf";
+        //String password = "d65Gqpa2?"; // Replace this with your actual password
+
+        //jdbc:postgresql://bababouf-postgre-server.postgres.database.azure.com:5432/default_directory
+        //String URL = "jdbc:postgresql://" + serverName + "/" + databaseName;
         Connection conn = null;
 
         try
