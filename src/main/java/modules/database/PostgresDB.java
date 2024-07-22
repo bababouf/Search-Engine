@@ -33,21 +33,18 @@ public class PostgresDB {
      * This method connects to the application's Postgres database
      */
     private Connection connect(String databaseName) {
-        String serverName = "bababouf-postgre-server.postgres.database.azure.com:5432";
-        String username = "bababouf";
-        String password = "310Dmz124xd?!"; // Replace this with your actual password
-        String URL = "jdbc:postgresql://" + serverName + "/" + databaseName;
+        String envConnectionString = System.getenv("DB_CONNECTION_STRING");
         Connection conn = null;
 
         try
         {
             Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(URL, username, password);
+            conn = DriverManager.getConnection(envConnectionString);
             conn.setAutoCommit(false);
         }
         catch (ClassNotFoundException | SQLException e)
         {
-            System.out.println("Failed to connect to MySQL database: " + e.getMessage());
+            System.out.println("Failed to connect to PostgreSQL database: " + e.getMessage());
         }
         return conn;
     }
