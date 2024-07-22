@@ -2,6 +2,7 @@ import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
 import {createSearchBar} from "./createSearchBar.js";
 import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
 import {removeMainElements} from "../utils/removeMainElements.js";
+import {downloadCorpusAtServer} from "../utils/downloadCorpusAtServer.js";
 
 /*
 This file contains methods for creating and displaying the "boolean search" page. The HTML to display the page is
@@ -10,6 +11,7 @@ cards containing acceptable query formats (with examples), a search bar (with a 
 button
  */
 export const displayBooleanSearchPage = (buttonId) => {
+    downloadCorpusAtServer();
     removeMainElements();
     const mainElement = document.querySelector('main');
     const instructions = createBooleanInstructions();

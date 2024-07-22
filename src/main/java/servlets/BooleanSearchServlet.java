@@ -6,9 +6,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.json.bind.Jsonb;
-import jakarta.json.bind.JsonbBuilder;
-import jakarta.json.bind.JsonbException;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -19,7 +16,6 @@ import modules.indexing.Posting;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-import modules.indexing.AzureBlobPositionalIndex;
 import modules.queries.BooleanQueryParser;
 import modules.queries.PhraseLiteral;
 import modules.queries.QueryComponent;
@@ -28,12 +24,22 @@ import modules.queries.QueryComponent;
 @WebServlet(name = "BooleanSearchServlet", value = "/search/booleansearch")
 public class BooleanSearchServlet extends HttpServlet {
 
+    public DirectoryCorpus corpus;
+    public AzureBlobPositionalIndex index;
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("In the boolean get");
+        index = createDiskPositionalIndex();
+        corpus = createCorpus();
+
+    }
 
     // This servlet is invoked when POST requests are made to the /search/booleansearch endpoint
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        System.out.println("In boolean servlet");
         String query = getQuery(request);
-        AzureBlobPositionalIndex index = createDiskPositionalIndex();
-        DirectoryCorpus corpus = createCorpus();
+
+
         List<Posting> queryPostings = processBooleanQuery(query, index);
         // returnTop15Postings(queryPostings);
 
@@ -50,15 +56,29 @@ public class BooleanSearchServlet extends HttpServlet {
     public AzureBlobPositionalIndex createDiskPositionalIndex() {
         ServletContext context = getServletContext();
         String directoryType = (String) context.getAttribute("directoryType");
+        System.out.println("Directory type" + directoryType);
 
         return new AzureBlobPositionalIndex(directoryType);
     }
     // Creates the DirectoryCorpus object
     public DirectoryCorpus createCorpus() {
+        System.out.println("In create corpus method");
         ServletContext context = getServletContext();
-        Path directoryPath = (Path) context.getAttribute("path");
+        String pathString = (String) context.getAttribute("path");
+
+        Path directoryPath = null;
+        if (pathString != null) {
+            directoryPath = Path.of(pathString);
+            // Now you can use directoryPath as needed
+        } else {
+            // Handle the case where the attribute is not set
+            // For example:
+            System.err.println("Path attribute is not set in the ServletContext.");
+        }
+        System.out.println("Corpus path:" + directoryPath);
         DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(directoryPath, ".json");
         corpus.getDocuments();
+        System.out.println("Corpus size" + corpus.getCorpusSize());
         return corpus;
     }
 

@@ -16,21 +16,23 @@ public class AzureBlobPositionalIndex  implements Index{
     private final String directoryType;
     private final AzureBlobStorageClient client;
     private final String blobIndexName = "default-directory-postings.bin";
+    private final byte[] postingsData;
 
     public AzureBlobPositionalIndex (String directory)
     {
         directoryType = directory;
         client = new AzureBlobStorageClient();
+        System.out.println("Starting file download...");
+        postingsData = client.downloadFile(blobIndexName);
+        System.out.println("Finished file download");
     }
 
     @Override
     public List<Posting> getPostingsWithPositions(String term) throws IOException {
 
-        // Download the postings.bin file from Azure Blob Storage
-        byte[] data = client.downloadFile(blobIndexName);
 
         // Convert the byte array to a DataInputStream
-        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(postingsData);
              DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream)) {
 
             // Get the byte position for the term from the database
@@ -71,11 +73,8 @@ public class AzureBlobPositionalIndex  implements Index{
     @Override
     public List<Posting> getPostings(String term) throws IOException {
 
-        // Download the postings.bin file from Azure Blob Storage
-        byte[] data = client.downloadFile(blobIndexName);
-
         // Convert the byte array to a DataInputStream
-        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(postingsData);
              DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream)) {
 
             PostgresDB database = new PostgresDB(directoryType);

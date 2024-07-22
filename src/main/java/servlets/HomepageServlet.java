@@ -13,6 +13,7 @@ public class HomepageServlet extends HttpServlet {
         setResponseHeaders(response);
         setDefaultPath();
         setDefaultDirectoryType();
+        System.out.println("hi");
     }
 
     /*
@@ -32,10 +33,28 @@ public class HomepageServlet extends HttpServlet {
      */
     public void setDefaultPath() {
         ServletContext context = getServletContext();
-        String servletContextDir = context.getRealPath("/");
-        String projectRoot = ServletUtilities.getProjectRootDir(servletContextDir); // This will give the project root (the directory that contains the pom.xml file).
-        String defaultDirectoryPath = projectRoot + File.separator + "all-nps-sites-extracted";
-        context.setAttribute("path", defaultDirectoryPath); // setAttribute() allows for setting application-scope vars
+        String defaultDirectoryPath;
+
+        // Check if running on Azure or locally
+        String azurePath = System.getenv("AZURE_PATH"); // Environment variable for Azure path
+        if (azurePath != null && !azurePath.isEmpty()) {
+            // Use Azure path if available
+            defaultDirectoryPath = azurePath + "/all-nps-sites-extracted";
+        } else {
+            // Use local path
+
+            String realPath = context.getRealPath("/");
+            defaultDirectoryPath = "C:/Users/agreg/Desktop/Copy of Project/search-engine/all-nps-sites-extracted";
+        }
+
+        // Optionally, check if this path exists
+        File dir = new File(defaultDirectoryPath);
+        if (!dir.exists()) {
+            System.err.println("Directory does not exist: " + defaultDirectoryPath);
+        } else {
+            context.setAttribute("path", defaultDirectoryPath);
+            System.out.println("defaultDirectoryPath = " + defaultDirectoryPath);
+        }
     }
     public void setDefaultDirectoryType(){
         ServletContext context = getServletContext();

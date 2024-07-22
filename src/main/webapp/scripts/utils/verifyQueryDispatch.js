@@ -24,7 +24,7 @@ const setEndpoint = (buttonId) => {
 }
 
 /*
-This method sends a GET request to the endpoint passed as a parameter. In the body of the request, the user-entered query
+This method sends a POST request to the endpoint passed as a parameter. In the body of the request, the user-entered query
 is set, as well as the ranking scheme selected (this will be null for boolean queries). If no errors occur, a call to a method
 that displays the query results will be made.
  */
