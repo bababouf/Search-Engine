@@ -2,7 +2,8 @@ package servlets;
 
 import java.io.*;
 import java.nio.file.Paths;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -10,6 +11,7 @@ import jakarta.servlet.annotation.*;
 @WebServlet(name = "HomepageServlet", value = "/home")
 public class HomepageServlet extends HttpServlet {
 
+    private static Logger logger = LoggerFactory.getLogger(HomepageServlet.class);
    // This servlet is invoked when a GET request is sent to the /home endpoint
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
         setResponseHeaders(response);
@@ -41,7 +43,8 @@ public class HomepageServlet extends HttpServlet {
         // Check if running on Azure or locally
         String azurePath = System.getenv("AZURE_PATH");
 
-        System.out.println("Azure Path: " + azurePath);// Environment variable for Azure path
+        logger.debug("Azure Path: {}", azurePath);
+
         if (azurePath != null && !azurePath.isEmpty()) {
             // Use Azure path if available
             //defaultDirectoryPath = Paths.get(azurePath, "all-nps-sites-extracted").toString();
