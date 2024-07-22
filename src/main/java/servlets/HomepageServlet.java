@@ -43,7 +43,7 @@ public class HomepageServlet extends HttpServlet {
         // Check if running on Azure or locally
         String azurePath = System.getenv("AZURE_PATH");
 
-        logger.debug("Azure Path: {}", azurePath);
+        logger.error("Azure Path: {}", azurePath);
 
         if (azurePath != null && !azurePath.isEmpty()) {
             // Use Azure path if available
