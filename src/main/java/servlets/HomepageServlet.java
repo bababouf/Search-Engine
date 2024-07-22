@@ -1,6 +1,8 @@
 package servlets;
 
 import java.io.*;
+import java.nio.file.Paths;
+
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -42,7 +44,7 @@ public class HomepageServlet extends HttpServlet {
         System.out.println("Azure Path: " + azurePath);// Environment variable for Azure path
         if (azurePath != null && !azurePath.isEmpty()) {
             // Use Azure path if available
-            defaultDirectoryPath = azurePath + "/all-nps-sites-extracted";
+            defaultDirectoryPath = Paths.get(azurePath, "all-nps-sites-extracted").toString();
         } else {
             // Use local path
 
