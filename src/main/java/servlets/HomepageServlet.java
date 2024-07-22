@@ -35,9 +35,11 @@ public class HomepageServlet extends HttpServlet {
         ServletContext context = getServletContext();
         String defaultDirectoryPath;
 
-        System.out.println("HELLO HELLO HELLO????");
+
         // Check if running on Azure or locally
-        String azurePath = System.getenv("AZURE_PATH"); // Environment variable for Azure path
+        String azurePath = System.getenv("AZURE_PATH");
+
+        System.out.println("Azure Path: " + azurePath);// Environment variable for Azure path
         if (azurePath != null && !azurePath.isEmpty()) {
             // Use Azure path if available
             defaultDirectoryPath = azurePath + "/all-nps-sites-extracted";
