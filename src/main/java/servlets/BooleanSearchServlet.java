@@ -29,6 +29,7 @@ public class BooleanSearchServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("In the boolean get");
+        log("hola");
         index = createDiskPositionalIndex();
         corpus = createCorpus();
 
