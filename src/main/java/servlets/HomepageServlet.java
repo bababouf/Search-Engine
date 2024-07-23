@@ -43,7 +43,7 @@ public class HomepageServlet extends HttpServlet {
         // Check if running on Azure or locally
         String azurePath = System.getenv("AZURE_PATH");
 
-        logger.error("Azure Path: {}", azurePath);
+        //logger.error("Azure Path: {}", azurePath);
 
         if (azurePath != null && !azurePath.isEmpty()) {
             // Use Azure path if available
@@ -58,10 +58,10 @@ public class HomepageServlet extends HttpServlet {
         // Optionally, check if this path exists
         File dir = new File(defaultDirectoryPath);
         if (!dir.exists()) {
-            System.err.println("Directory does not exist: " + defaultDirectoryPath);
+            //System.err.println("Directory does not exist: " + defaultDirectoryPath);
         } else {
             context.setAttribute("path", defaultDirectoryPath);
-            System.out.println("defaultDirectoryPath = " + defaultDirectoryPath);
+            //System.out.println("defaultDirectoryPath = " + defaultDirectoryPath);
         }
     }
     public void setDefaultDirectoryType(){

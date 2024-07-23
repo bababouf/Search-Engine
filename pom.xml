@@ -112,14 +112,24 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
+
                     <archive>
                         <manifestFile>${project.basedir}/src/main/resources/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
                     <webResources>
+                        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+                            <encoder>
+                                <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                            </encoder>
+                        </appender>
+                        <root level="debug">
+                            <appender-ref ref="STDOUT" />
+                        </root>
                         <resource>
                             <directory>src/main/resources</directory>
+                            <targetPath>META-INF</targetPath>
                             <includes>
-                                <include>**/*</include>
+                                <include>MANIFEST.MF</include>
                             </includes>
                         </resource>
                     </webResources>
