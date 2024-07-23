@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      AZURE_WEBAPP_NAME: Search-Engine-1718133629013
+      AZURE_WEBAPP_NAME: search-engine-app
       AZURE_WEBAPP_PACKAGE_PATH: ${{ github.workspace }}
       JAVA_VERSION: '17'
       AZURE_WEBAPP_FTPS_CREDENTIALS: ${{ secrets.AZURE_WEBAPP_FTPS_CREDENTIALS }}
