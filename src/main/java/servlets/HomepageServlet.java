@@ -41,29 +41,25 @@ public class HomepageServlet extends HttpServlet {
         ServletContext context = getServletContext();
         String defaultDirectoryPath = "";
 
-
         // Check if running on Azure or locally
         String azurePath = System.getenv("AZURE_PATH");
 
-        //logger.error("Azure Path: {}", azurePath);
-
         if (azurePath != null && !azurePath.isEmpty()) {
             // Use Azure path if available
-            //defaultDirectoryPath = Paths.get(azurePath, "all-nps-sites-extracted").toString();
+            defaultDirectoryPath = azurePath;
         } else {
             // Use local path
 
-            String realPath = context.getRealPath("/");
             defaultDirectoryPath = "C:/Users/agreg/Desktop/Copy of Project/search-engine/all-nps-sites-extracted";
         }
 
         // Optionally, check if this path exists
         File dir = new File(defaultDirectoryPath);
         if (!dir.exists()) {
-            //System.err.println("Directory does not exist: " + defaultDirectoryPath);
+            System.err.println("Directory does not exist: " + defaultDirectoryPath);
         } else {
             context.setAttribute("path", defaultDirectoryPath);
-            //System.out.println("defaultDirectoryPath = " + defaultDirectoryPath);
+            System.out.println("defaultDirectoryPath = " + defaultDirectoryPath);
         }
     }
     public void setDefaultDirectoryType(){
