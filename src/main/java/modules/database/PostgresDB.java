@@ -22,6 +22,7 @@ public class PostgresDB {
         if (conn != null)
         {
             System.out.println("Connected to Postgres database.");
+
         }
         else
         {
