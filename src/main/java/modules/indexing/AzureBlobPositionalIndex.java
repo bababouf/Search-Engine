@@ -20,7 +20,9 @@ public class AzureBlobPositionalIndex  implements Index{
 
     public AzureBlobPositionalIndex (String directory)
     {
+        System.out.println("In azure blob positional index");
         directoryType = directory;
+        System.out.println("Before azure client");
         client = new AzureBlobStorageClient();
         System.out.println("Starting file download...");
         postingsData = client.downloadFile(blobIndexName);
