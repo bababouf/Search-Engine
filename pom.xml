@@ -152,6 +152,7 @@
                                 </includes>
                             </resource>
                         </resources>
+
                     </deployment>
                 </configuration>
             </plugin>
