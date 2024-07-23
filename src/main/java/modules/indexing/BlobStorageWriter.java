@@ -98,6 +98,7 @@ public class BlobStorageWriter {
      */
     public static void writeBytePositions(PositionalInvertedIndex index, List<Long> bytePositions, String databaseName) {
 
+        /*
         // Obtain a list of all the unique terms in the index
         List<String> vocabulary = index.getVocabulary();
         System.out.println("Writing term byte positions to database.");
@@ -132,6 +133,18 @@ public class BlobStorageWriter {
         }
 
         database.commit();
+
+         */
+        List<String> vocabulary = index.getVocabulary();
+        System.out.println("Writing term byte positions to database.");
+
+        PostgresDB database = new PostgresDB(databaseName);
+        database.dropTable();
+        database.createTable();
+        System.out.println("After create table");
+
+        database.insertTermsBatch(vocabulary, bytePositions);
+
     }
 
     /**

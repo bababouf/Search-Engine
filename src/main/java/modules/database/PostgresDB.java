@@ -35,6 +35,9 @@ public class PostgresDB {
      */
     private Connection connect(String databaseName) {
         String envConnectionString = System.getenv("DB_CONNECTION_STRING");
+        System.out.println("DB_CONNECTION_STRING: " + envConnectionString);
+        //String connection = "jdbc:postgresql://search-engine-termdb.postgres.database.azure.com:5432/default_directory?user=bababouf&password=d65Gqpa2?";
+        //string connection = "jdbc:postgresql://search-engine-termdb.postgres.database.azure.com:5432/default_directory?user=bababouf&password=d65Gqpa2?
 
         //String envString = "jdbc:postgresql://bababouf-postgre-server.postgres.database.azure.com:5432/default_directory?user=bababouf&password=d65Gqpa2%3F";
         //String serverName = "bababouf-postgre-server.postgres.database.azure.com:5432";
@@ -53,6 +56,7 @@ public class PostgresDB {
         }
         catch (ClassNotFoundException | SQLException e)
         {
+            e.printStackTrace();
             System.out.println("Failed to connect to PostgreSQL database: " + e.getMessage());
         }
         return conn;
@@ -96,17 +100,37 @@ public class PostgresDB {
         return vocabularyList;
     }
 
-    public void insertTerm(String term, long bytePosition)
+    public void insertTermsBatch(List<String> terms, List<Long> bytePositions)
     {
-        final String SQL = "INSERT INTO byte_positions VALUES (?, ?) ON CONFLICT DO NOTHING";
-        try (PreparedStatement ps = conn.prepareStatement(SQL))
-        {
-            ps.setString(1, term);
-            ps.setLong(2, bytePosition);
-            ps.executeUpdate();
-        }
-        catch (SQLException e)
-        {
+        System.out.println("In the insertTermsBatch method");
+        final String SQL = "INSERT INTO byte_positions (term, byte_position) VALUES (?, ?) ON CONFLICT DO NOTHING";
+        try (PreparedStatement ps = conn.prepareStatement(SQL)) {
+            int batchSize = 2500; // Adjust this based on performance
+            int count = 0;
+
+            for (int i = 0; i < terms.size(); i++) {
+
+                String term = terms.get(i);
+                if (term.length() >= 254) {
+                    term = term.substring(0, 254);
+                }
+                long bytePosition = bytePositions.get(i);
+
+                ps.setString(1, term);
+                ps.setLong(2, bytePosition);
+                ps.addBatch();
+
+                if (++count % batchSize == 0) {
+                    System.out.println("Commiting batch of 2500 terms to DB. ");
+                    ps.executeBatch();
+                    conn.commit(); // Commit the transaction
+                    ps.clearBatch();
+                }
+            }
+
+            ps.executeBatch(); // Execute remaining batch
+            conn.commit(); // Commit the final batch
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
