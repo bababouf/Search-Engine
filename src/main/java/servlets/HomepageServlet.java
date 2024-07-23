@@ -14,10 +14,12 @@ public class HomepageServlet extends HttpServlet {
     private static Logger logger = LoggerFactory.getLogger(HomepageServlet.class);
    // This servlet is invoked when a GET request is sent to the /home endpoint
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
+        logger.error("Error error error");
         setResponseHeaders(response);
         setDefaultPath();
         setDefaultDirectoryType();
         System.out.println("hi");
+
     }
 
     /*
