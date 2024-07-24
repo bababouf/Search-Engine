@@ -1,25 +1,18 @@
 package servlets;
 
-import java.io.*;
-import java.nio.file.Paths;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
 @WebServlet(name = "HomepageServlet", value = "/home")
+
 public class HomepageServlet extends HttpServlet {
 
-    private static Logger logger = LoggerFactory.getLogger(HomepageServlet.class);
    // This servlet is invoked when a GET request is sent to the /home endpoint
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
-        logger.error("Error error error");
         setResponseHeaders(response);
-        setDefaultPath();
+        setDefaultDirectoryPath();
         setDefaultDirectoryType();
-        System.out.println("hi");
-
     }
 
     /*
@@ -33,38 +26,44 @@ public class HomepageServlet extends HttpServlet {
     }
 
     /*
-    This method will set the path to the default corpus "all-nps-sites-extracted". It does this by setting an application-scope variable "path".
-    getServletContext() is a critical method in Jakarta EE applications. It will return an object that represents the entire web application, and
-    provides useful information about the application environment.
-     */
-    public void setDefaultPath() {
-        ServletContext context = getServletContext();
-        String defaultDirectoryPath = "";
-
-        // Check if running on Azure or locally
-        String azurePath = System.getenv("AZURE_PATH");
-        System.out.println("azurePath: " + azurePath);
-        if (azurePath != null && !azurePath.isEmpty()) {
-            // Use Azure path if available
-            defaultDirectoryPath = azurePath;
-        } else {
-            // Use local path
-
-            defaultDirectoryPath = "C:/Users/agreg/Desktop/Copy of Project/search-engine/all-nps-sites-extracted";
-        }
-
-        // Optionally, check if this path exists
-        File dir = new File(defaultDirectoryPath);
-        if (!dir.exists()) {
-            System.err.println("Directory does not exist: " + defaultDirectoryPath);
-        } else {
-            context.setAttribute("path", defaultDirectoryPath);
-            System.out.println("defaultDirectoryPath = " + defaultDirectoryPath);
-        }
-    }
+   This method sets a context variable that specifies the directory that the application will use to query. Since we are
+   in the homepage servlet, this is initially set to the default directory. If the user chooses to upload their own corpus
+   (directory), this context variable will be set to specify that directory. This context variable, which can be accessed
+   across all servlets, allows the application to know which corpus should be used to process queries over.
+    */
     public void setDefaultDirectoryType(){
         ServletContext context = getServletContext();
         context.setAttribute("directoryType", "default_directory");
     }
+
+    /*
+    This method will set the path to the default corpus "all-nps-sites-extracted". The path set depends on whether the
+    application is ran locally or on the Azure hosted server. If running locally, the AZURE_PATH variable that is
+    retrieved will be null and the hardcoded path to the corpus on my filesystem is used.
+     */
+    public void setDefaultDirectoryPath() {
+        ServletContext context = getServletContext();
+        String defaultDirectoryPath = "";
+
+        // Attempt to retrieve AZURE_PATH environment variable
+        String azurePath = System.getenv("AZURE_PATH");
+        System.out.println("AzurePath: " + azurePath);
+
+        // This selection is triggered if the Azure path exists (application is running on Azure server)
+        if (azurePath != null && !azurePath.isEmpty())
+        {
+            defaultDirectoryPath = azurePath;
+        }
+        // This selection is triggered if the application is running locally
+        else
+        {
+            defaultDirectoryPath = "C:/Users/agreg/Desktop/Copy of Project/search-engine/all-nps-sites-extracted";
+        }
+
+        context.setAttribute("path", defaultDirectoryPath);
+        System.out.println("defaultDirectoryPath = " + defaultDirectoryPath);
+
+    }
+
 
 }

@@ -97,52 +97,12 @@ public class BlobStorageWriter {
      * file at that byte position for efficient retrieval of information on that term.
      */
     public static void writeBytePositions(PositionalInvertedIndex index, List<Long> bytePositions, String databaseName) {
-
-        /*
-        // Obtain a list of all the unique terms in the index
-        List<String> vocabulary = index.getVocabulary();
         System.out.println("Writing term byte positions to database.");
 
-        // Create the Postgre database
+        List<String> vocabulary = index.getVocabulary();
         PostgresDB database = new PostgresDB(databaseName);
         database.dropTable();
         database.createTable();
-
-        int count = 0;
-
-        // Loop through each term, adding it and its associated byte position to the database
-        for (int i = 0; i < vocabulary.size(); i++)
-        {
-            String term = vocabulary.get(i);
-            if(term.length() >= 254)
-            {
-                term = term.substring(0, 254);
-            }
-            long bytePosition = bytePositions.get(i);
-            database.insertTerm(term, bytePosition);
-
-            // Commits terms to the database in batches of 1000 (helps with efficiency)
-            if (count == 1000)
-            {
-                System.out.println("Commiting 1000 terms to DB");
-                count = 0;
-                database.commit();
-            }
-
-            count++;
-        }
-
-        database.commit();
-
-         */
-        List<String> vocabulary = index.getVocabulary();
-        System.out.println("Writing term byte positions to database.");
-
-        PostgresDB database = new PostgresDB(databaseName);
-        database.dropTable();
-        database.createTable();
-        System.out.println("After create table");
-
         database.insertTermsBatch(vocabulary, bytePositions);
 
     }

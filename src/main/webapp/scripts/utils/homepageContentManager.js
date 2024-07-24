@@ -3,7 +3,6 @@ This file manages setting and retrieving the homepage content, allowing for the 
 back to the homepage.
  */
 
-
 let initialContent = '';
 
 // Sets the "initialContent" global variable to the parameter passed

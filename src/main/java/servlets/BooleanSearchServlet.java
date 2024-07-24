@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.google.gson.Gson;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -27,24 +26,30 @@ public class BooleanSearchServlet extends HttpServlet {
     public DirectoryCorpus corpus;
     public AzureBlobPositionalIndex index;
 
+    /*
+    This servlet is triggered when a GET request is made to the /search/booleansearch endpoint. Specifically, when the user
+    selects the boolean retrieval mode option, this request is made.
+     */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("In the boolean get");
-        log("hola");
         index = createDiskPositionalIndex();
         corpus = createCorpus();
-
     }
 
-    // This servlet is invoked when POST requests are made to the /search/booleansearch endpoint
+    /*
+    This servlet is invoked when POST requests are made to the /search/booleansearch endpoint. This request is made when
+    the user submits a query in the search bar on the boolean search page.
+     */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("In boolean servlet");
+        // Parses the HTTP request and obtains the query entered in the searchbar by the user
         String query = getQuery(request);
 
-
+        // Calls a method that will obtain the documents that satisfy the user's query
         List<Posting> queryPostings = processBooleanQuery(query, index);
-        // returnTop15Postings(queryPostings);
 
+        // Converts the list of postings into JSON string to be sent to the browser
         String results = setupResults(queryPostings, corpus);
+
+        // Sends the results obtained above to the browser
         ServletUtilities.sendResultsToBrowser(results, response);
     }
 
@@ -53,77 +58,71 @@ public class BooleanSearchServlet extends HttpServlet {
         JsonObject jsonBody = ServletUtilities.parseRequestBody(request);
         return jsonBody.get("query").getAsString();
     }
-    // Creates the DiskPositionalIndex object
+
+    /*
+    This method creates an AzureBlobPositionalIndex object which contains information regarding which corpus is being used,
+    as well as the index representing that corpus
+     */
     public AzureBlobPositionalIndex createDiskPositionalIndex() {
         ServletContext context = getServletContext();
-        String directoryType = (String) context.getAttribute("directoryType");
-        System.out.println("Directory type" + directoryType);
 
+        // Accesses the context variable containing the directory type (indicating which corpus is being used)
+        String directoryType = (String) context.getAttribute("directoryType");
+
+        // Creates the index based on which directory the user is attempting to query
         return new AzureBlobPositionalIndex(directoryType);
     }
-    // Creates the DirectoryCorpus object
-    public DirectoryCorpus createCorpus() {
-        System.out.println("In create corpus method");
-        ServletContext context = getServletContext();
-        String pathString = (String) context.getAttribute("path");
 
-        Path directoryPath = null;
-        if (pathString != null) {
-            directoryPath = Path.of(pathString);
-            // Now you can use directoryPath as needed
-        } else {
-            // Handle the case where the attribute is not set
-            // For example:
-            System.err.println("Path attribute is not set in the ServletContext.");
-        }
+
+    public DirectoryCorpus createCorpus() {
+        ServletContext context = getServletContext();
+
+        // Obtains the context variable containing the path to the corpus that will be queried
+        String pathString = (String) context.getAttribute("path");
+        Path directoryPath = Path.of(pathString);
         System.out.println("Corpus path:" + directoryPath);
+
+        // Creates the DirectoryCorpus object which is used when displaying the results
         DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(directoryPath, ".json");
         corpus.getDocuments();
-        System.out.println("Corpus size" + corpus.getCorpusSize());
         return corpus;
     }
 
     // Returns a list of postings that satisfy the boolean query
     public List<Posting> processBooleanQuery(String query, AzureBlobPositionalIndex index) throws IOException {
         BooleanQueryParser booleanParser = new BooleanQueryParser();
+
+        // Parses the query (see parseQuery method for detailed information on how this is done)
         QueryComponent queryComponent = booleanParser.parseQuery(query);
         List<Posting> queryPostings;
-        if (queryComponent instanceof PhraseLiteral phraseLiteral) {
+
+        // Phrase queries require positions to be examined when determining which postings should be returned
+        if (queryComponent instanceof PhraseLiteral phraseLiteral)
+        {
             queryPostings = phraseLiteral.getPostingsWithPositions(index);
 
-        } else {
+        }
+        // All other query methods do not require positions
+        else
+        {
             queryPostings = queryComponent.getPostings(index);
         }
 
         return queryPostings;
     }
 
-    public List<Posting> returnTop15Postings(List<Posting> queryPostings) {
-        List<Posting> top15Postings = new ArrayList<>();
-
-
-        return top15Postings;
-
-
-    }
-
-    // Returns the application-scope "path" variable
-    public Path getDefaultPath(){
-        ServletContext context = getServletContext();
-        String path = (String) context.getAttribute("path");
-        System.out.println(path);
-        return Paths.get(path);
-    }
-
-
     /*
     Takes the list of postings that was returned from the processBooleanQuery method as a parameter, as well as
     the corpus. For each posting, the title of the document and URL are obtained, and packaged as a "page" object. This
-    method returns a list of pages.
+    method returns a list of pages that are then converted into JSON string to be sent to the browser.
      */
     public String setupResults(List<Posting> queryPostings, DirectoryCorpus corpus) {
+
         List<Page> pages = new ArrayList<>();
-        for (Posting queryPosting : queryPostings) {
+
+        // Traverse through each posting returned in the results (query postings)
+        for (Posting queryPosting : queryPostings)
+        {
             int documentID = queryPosting.getDocumentId();
             Document document = corpus.getDocument(documentID);
             Page page = new Page();

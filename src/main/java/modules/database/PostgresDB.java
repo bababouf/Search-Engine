@@ -8,7 +8,7 @@ import java.util.List;
  * The Postgres database is used to efficiently access the Azure Blob Storage file when information on a term needs to
  * be retrieved. The database contains two attributes; a string term and a long byte position. In this way, each term
  * and its associated starting byte position (in the Azure Blob file) can be stored. It's important to note here that
- * two databases can be created (one for the default corpus, and one for a user-uploaded corpus).
+ * two types of databases can be created (one for the default corpus, and one for a user-uploaded corpus).
  */
 public class PostgresDB {
 
@@ -30,22 +30,14 @@ public class PostgresDB {
         }
     }
 
-    /**
-     * This method connects to the application's Postgres database
+    /*
+    This method obtains the DB connection string from an environment variable (which is set locally and through Azure's
+    portal).
      */
     private Connection connect(String databaseName) {
         String envConnectionString = System.getenv("DB_CONNECTION_STRING");
         System.out.println("DB_CONNECTION_STRING: " + envConnectionString);
-        //String connection = "jdbc:postgresql://search-engine-termdb.postgres.database.azure.com:5432/default_directory?user=bababouf&password=d65Gqpa2?";
-        //string connection = "jdbc:postgresql://search-engine-termdb.postgres.database.azure.com:5432/default_directory?user=bababouf&password=d65Gqpa2?
 
-        //String envString = "jdbc:postgresql://bababouf-postgre-server.postgres.database.azure.com:5432/default_directory?user=bababouf&password=d65Gqpa2%3F";
-        //String serverName = "bababouf-postgre-server.postgres.database.azure.com:5432";
-        //String username = "bababouf";
-        //String password = "d65Gqpa2?"; // Replace this with your actual password
-
-        //jdbc:postgresql://bababouf-postgre-server.postgres.database.azure.com:5432/default_directory
-        //String URL = "jdbc:postgresql://" + serverName + "/" + databaseName;
         Connection conn = null;
 
         try
@@ -62,6 +54,7 @@ public class PostgresDB {
         return conn;
     }
 
+    // Issues a select statement to obtain the byte position of the term passed
     public Long selectTerm(String term) {
 
         final String SQL = "SELECT term, byte_position FROM byte_positions WHERE term = ?";
@@ -82,6 +75,7 @@ public class PostgresDB {
         return null;
     }
 
+    // Retrieves a list of all unique terms stored in the database (representing the corpus vocabulary)
     public List<String> retrieveVocabulary()
     {
         List<String> vocabularyList = new ArrayList<>();
@@ -100,27 +94,34 @@ public class PostgresDB {
         return vocabularyList;
     }
 
+    /*
+    This method efficiently inserts terms into the database in batches of 2500.
+     */
     public void insertTermsBatch(List<String> terms, List<Long> bytePositions)
     {
-        System.out.println("In the insertTermsBatch method");
         final String SQL = "INSERT INTO byte_positions (term, byte_position) VALUES (?, ?) ON CONFLICT DO NOTHING";
-        try (PreparedStatement ps = conn.prepareStatement(SQL)) {
+        try (PreparedStatement ps = conn.prepareStatement(SQL))
+        {
             int batchSize = 2500; // Adjust this based on performance
             int count = 0;
 
-            for (int i = 0; i < terms.size(); i++) {
-
+            for (int i = 0; i < terms.size(); i++)
+            {
                 String term = terms.get(i);
-                if (term.length() >= 254) {
+
+                // Truncates terms over 255 to 254 chars
+                if (term.length() >= 254)
+                {
                     term = term.substring(0, 254);
                 }
-                long bytePosition = bytePositions.get(i);
 
+                long bytePosition = bytePositions.get(i);
                 ps.setString(1, term);
                 ps.setLong(2, bytePosition);
                 ps.addBatch();
 
-                if (++count % batchSize == 0) {
+                if (++count % batchSize == 0)
+                {
                     System.out.println("Commiting batch of 2500 terms to DB. ");
                     ps.executeBatch();
                     conn.commit(); // Commit the transaction
@@ -128,13 +129,19 @@ public class PostgresDB {
                 }
             }
 
-            ps.executeBatch(); // Execute remaining batch
-            conn.commit(); // Commit the final batch
-        } catch (SQLException e) {
+            // Execute the remaining batch
+            ps.executeBatch();
+
+            // Commit the final batch
+            conn.commit();
+        }
+        catch (SQLException e)
+        {
             e.printStackTrace();
         }
     }
 
+    // Commits terms to the database
     public void commit()
     {
         try
@@ -147,6 +154,7 @@ public class PostgresDB {
         }
     }
 
+    // Drops the byte_positions table if it exists
     public void dropTable() {
         if (conn == null)
         {
@@ -168,6 +176,7 @@ public class PostgresDB {
         }
     }
 
+    // Creates the byte_positions table
     public void createTable()
     {
         final String SQL = "CREATE TABLE IF NOT EXISTS byte_positions " +
