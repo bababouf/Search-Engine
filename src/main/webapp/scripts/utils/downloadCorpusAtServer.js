@@ -1,15 +1,24 @@
 
-export const downloadCorpusAtServer = () => {
-    contactServlet();
+export const downloadCorpusAtServer = (buttonId) => {
+
+    if(buttonId === "boolean-button")
+    {
+        contactServlet("booleansearch")
+    }
+    else
+    {
+        contactServlet("rankedsearch")
+    }
+
 }
 
 /*
 The method sends a GET request to the /search/booleansearch endpoint. When the servlet receives this request, it will
 take action to setup the corpus and download the index representing the corpus the user has selected to query.
  */
-const contactServlet = () => {
+const contactServlet = (endpoint) => {
 
-    fetch(`/search/booleansearch`, {
+    fetch(`/search/${endpoint}`, {
         method: 'GET'
     })
         .then(response =>

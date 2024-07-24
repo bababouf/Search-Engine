@@ -5,14 +5,10 @@ import com.google.gson.JsonParser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
-import modules.documents.DirectoryCorpus;
-
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 
 public class ServletUtilities {
 
@@ -24,7 +20,8 @@ public class ServletUtilities {
         BufferedReader reader = request.getReader();
         StringBuilder requestBody = new StringBuilder();
         String line;
-        while ((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null)
+        {
             requestBody.append(line);
         }
 
@@ -43,7 +40,8 @@ public class ServletUtilities {
     // Returns the path to the root directory (directory containing pom.xml)
     public static String getProjectRootDir(String servletContextDir) {
         String currentDir = servletContextDir;
-        while (currentDir != null && !new File(currentDir + File.separator + "pom.xml").exists()) {
+        while (currentDir != null && !new File(currentDir + File.separator + "pom.xml").exists())
+        {
             currentDir = new File(currentDir).getParent();
         }
         return currentDir;

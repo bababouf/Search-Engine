@@ -1,11 +1,10 @@
 package modules.rankingSchemes;
 
 import modules.documents.DirectoryCorpus;
-import modules.indexing.DiskPositionalIndex;
+import modules.indexing.AzureBlobPositionalIndex;
 import modules.misc.Entry;
 import modules.queries.QueryComponent;
 import modules.queries.RankedQueryParser;
-import drivers.DiskPositionalIndexer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,28 +17,15 @@ import java.util.Map;
  */
 public class RankedDispatch {
 
-    private final DiskPositionalIndex onDiskIndex;
+    private final AzureBlobPositionalIndex onDiskIndex;
     private final DirectoryCorpus directoryCorpus;
     private Map<Integer, Double> ADMap = new HashMap<>();
 
-    public RankedDispatch(DiskPositionalIndex index, DirectoryCorpus corpus){
+    public RankedDispatch(AzureBlobPositionalIndex index, DirectoryCorpus corpus){
         onDiskIndex = index;
         directoryCorpus = corpus;
     }
 
-/*
-    public List<QueryComponent> promptUser(){
-        String query = "";
-        do {
-            query = DiskPositionalIndexer.readInQuery();
-            RankedQueryParser rankedParser = new RankedQueryParser();
-            List<QueryComponent> literals = rankedParser.parseQuery(query);
-            return literals;
-
-        }while(query != "exit");
-    }
-
- */
 
     /**
      * Depending on which ranking scheme is passed (strategy), the appropriate calculate method will be called.

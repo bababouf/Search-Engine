@@ -18,14 +18,27 @@ public class AzureBlobPositionalIndex  implements Index{
     // Holds the byte stream containing all the postings in the index
     private final byte[] postingsData;
 
+    // Holds the byte stream containing the document weights
+    private final byte[] documentWeights;
+
+    // Holds the byte stream containing the average tokens across the corpus
+    private final byte[] averageTokens;
+
     public AzureBlobPositionalIndex (String directory)
     {
         directoryType = directory;
         AzureBlobStorageClient client = new AzureBlobStorageClient();
-        String blobIndexName = "default-directory-postings.bin";
 
         // Downloads the Azure Blob Storage file containing the postings
-        postingsData = client.downloadFile(blobIndexName);
+        postingsData = client.downloadFile("default-directory-postings.bin");
+
+        // Downlaods the Azure Blob Storage File containing the document weights
+        documentWeights = client.downloadFile("default-directory-docWeights.bin");
+
+        // Downloads the Azure Blob Storage File containing the double value for the average tokens across the corpus
+        averageTokens = client.downloadFile("default-directory-averageTokens.bin");
+
+        System.out.println("All downloads complete.");
 
     }
 
@@ -133,5 +146,15 @@ public class AzureBlobPositionalIndex  implements Index{
 
     }
 
+    public byte[] getPostingsData() {
+        return postingsData;
+    }
+
+    public byte[] getDocumentWeights() {
+        return documentWeights;
+    }
+    public byte[] getAverageTokens() {
+        return averageTokens;
+    }
 }
 

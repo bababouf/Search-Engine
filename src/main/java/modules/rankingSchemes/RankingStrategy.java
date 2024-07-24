@@ -1,7 +1,7 @@
 package modules.rankingSchemes;
 
 import modules.documents.DirectoryCorpus;
-import modules.indexing.DiskPositionalIndex;
+import modules.indexing.AzureBlobPositionalIndex;
 import modules.misc.Entry;
 import modules.queries.QueryComponent;
 
@@ -21,8 +21,6 @@ import java.util.Map;
  */
 public interface RankingStrategy {
 
-    Map<Integer, Double> calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus);
-
-
-    List<Entry> calculateAccumulatorValue(Map<Integer, Double> ADMap, DiskPositionalIndex onDiskIndex);
+    Map<Integer, Double> calculate(List<QueryComponent> literals, AzureBlobPositionalIndex onDiskIndex, DirectoryCorpus corpus);
+    List<Entry> calculateAccumulatorValue(Map<Integer, Double> ADMap, AzureBlobPositionalIndex onDiskIndex);
 }

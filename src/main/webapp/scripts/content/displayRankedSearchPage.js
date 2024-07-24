@@ -2,6 +2,7 @@ import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
 import {removeMainElements} from "../utils/removeMainElements.js";
 import {createSearchBar} from "./createSearchBar.js";
 import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
+import {downloadCorpusAtServer} from "../utils/downloadCorpusAtServer.js";
 
 /*
 This file contains methods for creating and displaying the "ranked search" page. The HTML to display the page is created,
@@ -14,12 +15,14 @@ let rankedMode = null; // Initially null, this global variable is set when a ran
 
 // Displays the ranked search instructions, as well as a next button to proceed to the ranked search page
 export const displayRankedSearchPageInstructions = (buttonId) => {
+    downloadCorpusAtServer(buttonId);
     removeMainElements();
     const instructions = createRankedInstructions();
     const mainElement = document.querySelector('main');
     mainElement.insertBefore(instructions, mainElement.firstChild);
     const nextButton = document.querySelector('#next-button');
     nextButton.addEventListener('click', () => {
+
         displayRankedSearchPage(buttonId);
     });
 }

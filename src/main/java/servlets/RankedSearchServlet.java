@@ -2,19 +2,16 @@ package servlets;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import drivers.DiskPositionalIndexer;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import modules.documents.DirectoryCorpus;
 import modules.documents.Document;
-import modules.indexing.DiskPositionalIndex;
-import modules.indexing.Posting;
+import modules.indexing.AzureBlobPositionalIndex;
 import modules.misc.Entry;
 import modules.rankingSchemes.*;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -22,8 +19,22 @@ import java.util.List;
 
 @WebServlet(name = "RankedSearchServlet", value = "/search/rankedsearch")
 public class RankedSearchServlet extends HttpServlet {
+    public DirectoryCorpus corpus;
+    public AzureBlobPositionalIndex index;
 
-    private final Path defaultPath = Paths.get("C://Users//agreg//Desktop//Copy of Project//search-engine//all-nps-sites-extracted");
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("In the rankedsearch servlet.");
+        ServletContext context = getServletContext();
+
+        // Accesses the context variable containing the directory type (indicating which corpus is being used)
+        String path = (String) context.getAttribute("path");
+        Path directoryPath = Path.of(path);
+
+        index = new AzureBlobPositionalIndex(path);
+
+        corpus = DirectoryCorpus.loadJsonDirectory(directoryPath, ".json");
+
+    }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -41,8 +52,6 @@ public class RankedSearchServlet extends HttpServlet {
     public String rankedModeDispatch(String mode, String query) {
         List<Entry> top10Ranked = null;
 
-        DiskPositionalIndex index = new DiskPositionalIndex(defaultPath);
-        DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(defaultPath, ".json");
         RankedDispatch rankedAlgorithm = new RankedDispatch(index, corpus);
         System.out.println("Mode: " + mode);
         switch (mode) {
@@ -50,6 +59,7 @@ public class RankedSearchServlet extends HttpServlet {
                 DefaultRanked defaultRanked = new DefaultRanked();
                 rankedAlgorithm.calculate(defaultRanked, query);
                 top10Ranked = rankedAlgorithm.calculateAccumulatorValue(defaultRanked);
+                System.out.println("Retrieved top 10 documents!!!!");
             }
 
             case "tfidf-ranked" -> {

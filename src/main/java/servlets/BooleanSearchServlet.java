@@ -4,6 +4,8 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletContext;
@@ -119,6 +121,7 @@ public class BooleanSearchServlet extends HttpServlet {
     public String setupResults(List<Posting> queryPostings, DirectoryCorpus corpus) {
 
         List<Page> pages = new ArrayList<>();
+        queryPostings = sortPostingsByTermFrequency(queryPostings);
 
         // Traverse through each posting returned in the results (query postings)
         for (Posting queryPosting : queryPostings)
@@ -135,6 +138,16 @@ public class BooleanSearchServlet extends HttpServlet {
         return gson.toJson(pages); // Converts the list of "pages" into JSON
     }
 
+    public List<Posting> sortPostingsByTermFrequency(List<Posting> queryPostings) {
+        // Sort the list in descending order based on termFrequency
+        Collections.sort(queryPostings, new Comparator<Posting>() {
+            @Override
+            public int compare(Posting p1, Posting p2) {
+                return p2.getTermFrequency().compareTo(p1.getTermFrequency());
+            }
+        });
+        return queryPostings;
+    }
     // Encapsulates a document
     public static class Page {
         String title;

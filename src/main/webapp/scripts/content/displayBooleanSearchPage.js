@@ -11,7 +11,7 @@ cards containing acceptable query formats (with examples), a search bar (with a 
 button
  */
 export const displayBooleanSearchPage = (buttonId) => {
-    downloadCorpusAtServer();
+    downloadCorpusAtServer(buttonId);
     removeMainElements();
     const mainElement = document.querySelector('main');
     const instructions = createBooleanInstructions();

@@ -1,14 +1,16 @@
 package modules.rankingSchemes;
 
 import modules.documents.DirectoryCorpus;
-import modules.indexing.DiskPositionalIndex;
+import modules.indexing.AzureBlobPositionalIndex;
+import modules.indexing.AzureBlobStorageClient;
 import modules.indexing.Posting;
 import modules.misc.Entry;
 import modules.misc.EntryComparator;
 import modules.queries.QueryComponent;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.*;
 
 public class WakyRanked implements RankingStrategy{
@@ -18,19 +20,25 @@ public class WakyRanked implements RankingStrategy{
      * by LD. The equation for LD can be found in the readME. Once the final AD value is found, a priority queue to sort
      * the highest ranking documents is used.
      */
-    public List<Entry> calculateAccumulatorValue(Map<Integer, Double> ADMap, DiskPositionalIndex onDiskIndex) {
+    public List<Entry> calculateAccumulatorValue(Map<Integer, Double> ADMap, AzureBlobPositionalIndex onDiskIndex) {
         try {
-            RandomAccessFile documentWeights = new RandomAccessFile(onDiskIndex.pathToWeights, "r");
+            AzureBlobStorageClient client = new AzureBlobStorageClient();
+            String blobWeights = "default-directory-docWeights.bin";
+
+            byte[] documentWeights = client.downloadFile(blobWeights);
             PriorityQueue<Entry> descendingAccumulators = new PriorityQueue<>(new EntryComparator());
-            long startOfFile = documentWeights.getFilePointer();
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(documentWeights);
+            DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
 
             for(Integer ID : ADMap.keySet())
             {
                 Double accumulatorValue = ADMap.get(ID);
 
                 if(accumulatorValue != 0){
-                    documentWeights.seek(startOfFile + 32 * ID);
-                    Double Ld = documentWeights.readDouble();
+                    dataInputStream.skipBytes(32 * ID);
+                    //documentWeights.seek(startOfFile + 32 * ID);
+                    //Double Ld = documentWeights.readDouble();
+                    Double Ld = dataInputStream.readDouble();
                     accumulatorValue = accumulatorValue / Ld;
                     Entry rankedDocument = new Entry(ID, accumulatorValue);
                     descendingAccumulators.add(rankedDocument);
@@ -63,7 +71,7 @@ public class WakyRanked implements RankingStrategy{
      * that term. The equations for wacky ranked are found in the readME file.
      */
     @Override
-    public Map<Integer, Double> calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus) {
+    public Map<Integer, Double> calculate(List<QueryComponent> literals, AzureBlobPositionalIndex onDiskIndex, DirectoryCorpus corpus) {
         double corpusSize = corpus.getCorpusSize();
         // ADMAP maps docIDs to corresponding accumulator value
         Map<Integer, Double> ADMap = new HashMap<>();
@@ -77,9 +85,16 @@ public class WakyRanked implements RankingStrategy{
 
                 for (Posting posting : postingsForTerm) {
                     Integer id = posting.getDocumentId();
-                    RandomAccessFile docWeights = new RandomAccessFile(onDiskIndex.pathToWeights, "r");
-                    docWeights.seek((32 * id) + 24);
-                    Double avgTFTD = docWeights.readDouble();
+                    AzureBlobStorageClient client = new AzureBlobStorageClient();
+                    String blobWeights = "default-directory-docWeights.bin";
+
+                    byte[] documentWeights = client.downloadFile(blobWeights);
+                    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(documentWeights);
+                    DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+                    dataInputStream.skipBytes((32 * id) + 24);
+                    //docWeights.seek((32 * id) + 24);
+                    //Double avgTFTD = docWeights.readDouble();
+                    Double avgTFTD = dataInputStream.readDouble();
                     Double weightOfTermInDocument = (1 + Math.log(posting.getTermFrequency()))/(1 + Math.log(avgTFTD));
 
 

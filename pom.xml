@@ -122,8 +122,6 @@
                     <source>17</source>
                     <target>17</target>
                     <excludes>
-                        <exclude>modules/rankingSchemes/**/*.java</exclude>
-                        <exclude>servlets/RankedSearchServlet.java</exclude>
                         <exclude>servlets/UploadDirServlet.java</exclude>
                     </excludes>
                 </configuration>

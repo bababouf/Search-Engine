@@ -1,14 +1,15 @@
 package modules.rankingSchemes;
 
 import modules.documents.DirectoryCorpus;
-import modules.indexing.DiskPositionalIndex;
+import modules.indexing.AzureBlobPositionalIndex;
 import modules.indexing.Posting;
 import modules.misc.Entry;
 import modules.misc.EntryComparator;
 import modules.queries.QueryComponent;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.*;
 public class DefaultRanked implements RankingStrategy{
 
@@ -17,20 +18,25 @@ public class DefaultRanked implements RankingStrategy{
      * by LD. The equation for LD can be found in the readME. Once the final AD value is found, a priority queue to sort
      * the highest ranking documents is used.
      */
-    public List<Entry> calculateAccumulatorValue(Map<Integer, Double> ADMap, DiskPositionalIndex onDiskIndex){
+    public List<Entry> calculateAccumulatorValue(Map<Integer, Double> ADMap, AzureBlobPositionalIndex onDiskIndex){
 
         try {
-            RandomAccessFile documentWeights = new RandomAccessFile(onDiskIndex.pathToWeights, "r");
-            PriorityQueue<Entry> descendingAccumulators = new PriorityQueue<>(new EntryComparator());
-            long startOfFile = documentWeights.getFilePointer();
 
+            byte[] documentWeights = onDiskIndex.getDocumentWeights();
+            PriorityQueue<Entry> descendingAccumulators = new PriorityQueue<>(new EntryComparator());
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(documentWeights);
+            DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+
+            byteArrayInputStream.mark(0);
             for(Integer ID : ADMap.keySet())
             {
                 Double accumulatorValue = ADMap.get(ID);
 
                 if(accumulatorValue != 0){
-                    documentWeights.seek(startOfFile + 32 * ID);
-                    Double Ld = documentWeights.readDouble();
+
+                    byteArrayInputStream.reset();
+                    dataInputStream.skipBytes(32 * ID);
+                    Double Ld = dataInputStream.readDouble();
                     accumulatorValue = accumulatorValue / Ld;
                     Entry rankedDocument = new Entry(ID, accumulatorValue);
                     descendingAccumulators.add(rankedDocument);
@@ -62,7 +68,7 @@ public class DefaultRanked implements RankingStrategy{
      * docID to accumulatorValue). This is done for each literal (term) in the query, and each document that is found in the posting list for
      * that term. The equations for default ranked are found in the readME file.
      */
-    public Map<Integer, Double> calculate(List<QueryComponent> literals, DiskPositionalIndex onDiskIndex, DirectoryCorpus corpus) {
+    public Map<Integer, Double> calculate(List<QueryComponent> literals, AzureBlobPositionalIndex onDiskIndex, DirectoryCorpus corpus) {
 
         double corpusSize = corpus.getCorpusSize();
         Map<Integer, Double> ADMap = new HashMap<>();
