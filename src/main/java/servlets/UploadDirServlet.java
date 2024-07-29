@@ -46,35 +46,8 @@ public class UploadDirServlet extends HttpServlet {
 
 
     }
-    /*
-    Jakarta EE provides a method called getServletContext that returns the real path of the root
-    directory of a web application. This project uses Maven, however, and when Maven builds the project
-    it compiles the sources code into a WAR (Web Application Archive) and places it in the "target" directory.
-    As a result, getServletContext points to this "target" directory.
-
-    To get to the actual root directory (search-engine) this method will traverse up the tree until it finds
-    the directory where the pom.xml file is. The pom.xml file is in the project root.
-   */
-
-    /*
-     This method gets the absolute path to the project root directory, and creates a directory
-     within it to hold the uploaded files.
-     */
     private void createUploadDirectory() {
-        String servletContextDir = getServletContext().getRealPath("/");
-        String projectRoot = ServletUtilities.getProjectRootDir(servletContextDir);
-        uploadedDirectoryPath = projectRoot + File.separator + "uploaded-dir";
-        File uploadDir = new File(uploadedDirectoryPath);
 
-        if (!uploadDir.exists()) {
-            System.out.println("Directory doesn't exist. Creating directory...");
-            boolean created = uploadDir.mkdirs(); // Create the uploaded-dir folder
-            if (!created) {
-                System.err.println("Failed to create directory.");
-            }
-        } else {
-            System.out.println("Directory already exists.");
-        }
     }
 
     /*

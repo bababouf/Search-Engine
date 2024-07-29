@@ -13,12 +13,14 @@ Removes previous HTML content attached to the main element, and appends the newl
 page.
  */
 export const displaySelectDirectory = () => {
+
     removeMainElements();
     const mainElement = document.querySelector('main');
     const directorySelectionElements = createDirectorySelection();
     mainElement.appendChild(directorySelectionElements); // Appends "select directory" HTML to the main
     appendBackToHomeButton();
-    attachDirectoryListeners(); // Attach event listeners to each of the directory buttons
+    attachDirectoryListeners();
+
 
 }
 

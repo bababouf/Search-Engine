@@ -158,6 +158,17 @@ li a:hover{
     gap: 1rem;
     margin-right: 35px;
 }
+.profile__link {
+    position: absolute;
+    top: 20px; /* Adjust as necessary */
+    right: 20px; /* Adjust as necessary */
+}
+
+.profile__logo {
+    width: 70px; /* Adjust as necessary */
+    height: 50px; /* Adjust as necessary */
+    cursor: pointer;
+}
 
 .card{
     width: 300px;

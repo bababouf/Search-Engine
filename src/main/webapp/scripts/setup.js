@@ -1,6 +1,10 @@
 import { displayDocumentationPage } from "./content/displayDocumentationPage.js";
-import { displaySelectDirectory } from "./content/displaySelectDirectory.js";
-import {captureMainContent, setInitialContent} from "./utils/homepageContentManager.js";
+import { captureMainContent, setInitialContent } from "./utils/homepageContentManager.js";
+
+// Function to check if we're on the homepage
+const isHomePage = () => {
+    return window.location.pathname === '/' || window.location.pathname.endsWith('index.html');
+};
 
 /*
 This file runs when the homepage is initially loaded, creating event listeners for the "Get started" button, as well as
@@ -13,11 +17,20 @@ to home" buttons on other pages to display the homepage content.
  */
 let mainContent = null;
 window.addEventListener('DOMContentLoaded', () => {
+    if (!isHomePage()) {
+       return;
+    }
+    console.log('DOM fully loaded and parsed');
     mainContent = captureMainContent();
-    setInitialContent(mainContent);
-    initializeHomePageEventListeners();
-});
 
+    if (mainContent) {
+        console.log('Main content captured:', mainContent);
+        setInitialContent(mainContent);
+        initializeHomePageEventListeners();
+    } else {
+        console.error('Failed to capture main content');
+    }
+});
 
 /*
 Creates an event listener for the documentation anchor and the "get started" button.
@@ -31,10 +44,10 @@ export const initializeHomePageEventListeners = () => {
 
     const nextButton = document.querySelector('.homepage__get-started');
     nextButton.addEventListener('click', event => {
-        displaySelectDirectory(); // Calls method to handle displaying "select directory" page
+        console.log('Next button clicked');
+        window.location.href = '../html/login.html';
+        //displaySelectDirectory(); // Calls method to handle displaying "select directory" page
     });
 };
-
-
 
 
