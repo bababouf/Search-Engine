@@ -2,14 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    script-src 'self' https://accounts.google.com;
-    style-src 'self' https://accounts.google.com 'unsafe-inline';
-    connect-src 'self' https://accounts.google.com https://idp.example http://localhost:8080;
-    img-src 'self' data: https://accounts.google.com;
-    frame-src 'self' https://accounts.google.com;
-    ">
     <link rel="stylesheet" href="../css/styles.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -27,14 +19,25 @@
 <main>
     <div id="g_id_onload"
          data-client_id="529467941335-rrllroamg3ebfvgp9n9i8qeni04tguca.apps.googleusercontent.com"
+         data-context="signin"
+         data-ux_mode="popup"
          data-callback="handleCredentialResponse"
-         data-use_fedcm_for_prompt="true">
+         data-auto_prompt="false">
+    </div>
+    <div class="flex-column">
+        <h2>Login with Google</h2>
+        <p>Allows for directories to be uploaded and saved for future querying. </p>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="pill"
+             data-theme="filled_black"
+             data-text="continue_with"
+             data-size="large"
+             data-logo_alignment="left">
+        </div>
+    </div>
 
-    </div>
-        <div class="flex-column">
-        <h2>Google Sign In</h2>
-        <div class="g_id_signin" data-type="standard"></div>
-    </div>
+
 
 </main>
 <script type="module" src="/scripts/utils/login.js" defer></script>

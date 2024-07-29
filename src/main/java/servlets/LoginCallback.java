@@ -1,11 +1,11 @@
 package servlets;
 
-import jakarta.servlet.ServletException;
+
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.googleapis.auth.oauth2.GooglePublicKeysManager;
+
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import java.io.IOException;
@@ -20,7 +20,6 @@ public class LoginCallback extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        System.out.println("Hi I'm in the callback");
 
         String idTokenString = request.getParameter("id_token");
 

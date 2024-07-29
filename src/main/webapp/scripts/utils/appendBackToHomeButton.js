@@ -7,7 +7,6 @@ This file contains methods for creating the "back to home" button, which simply 
 export const appendBackToHomeButton = () => {
     const backButton = createBackButton();
     const mainElement = document.querySelector('main');
-    console.log("mainelement: " + mainElement.innerHTML)
     mainElement.appendChild(backButton);
     attachListener(mainElement, backButton);
 }

@@ -26,38 +26,11 @@ window.handleCredentialResponse = function(response) {
         .catch(error => console.error('There was a problem with the fetch operation:', error));
 }
 
-// Initialize Google Identity Services
-window.onload = function() {
-    console.log('Window onload - initializing Google Identity Services');
+window.onload = function () {
     google.accounts.id.initialize({
-        client_id: "529467941335-rrllroamg3ebfvgp9n9i8qeni04tguca.apps.googleusercontent.com",
-        use_fedcm_for_prompt: true,
-        callback: (response) => {
-            console.log('Callback executed');
-            handleCredentialResponse(response);
-        }
+        client_id: '529467941335-rrllroamg3ebfvgp9n9i8qeni04tguca.apps.googleusercontent.com',
+        callback: handleCredentialResponse
     });
-    google.accounts.id.prompt(); // Show the Google Sign-In prompt
-
-    // Optional: Check for existing credentials (e.g., for auto-reauthentication)
-    getCredentials();
+    google.accounts.id.prompt();
 };
 
-// Async function to get credentials using FedCM
-async function getCredentials() {
-    try {
-        const cred = await navigator.credentials.get({
-            identity: {
-                providers: [{
-                    configURL: "https://idp.example/fedcm.json", // Replace with your actual FedCM config URL
-                    clientId: "529467941335-rrllroamg3ebfvgp9n9i8qeni04tguca.apps.googleusercontent.com", // Your client ID
-                }],
-            },
-            mediation: 'optional', // Auto-reauth if possible
-        });
-        console.log('Credentials:', cred);
-        // Handle the credentials here, e.g., send to server or update UI
-    } catch (error) {
-        console.error('Failed to get credentials', error);
-    }
-}
