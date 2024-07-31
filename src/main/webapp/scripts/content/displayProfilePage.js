@@ -7,6 +7,37 @@ export const displayProfilePage = () => {
 
 }
 
+/*
+Makes a GET request to obtain profile information for the user. This includes the user's first name, profile picture URL,
+and a list of uploaded directories.
+ */
+const getProfileInformation = () => {
+    fetch(`/retrieveProfile`, {
+        method: 'GET'
+    })
+        .then(response => {
+            if (!response.ok)
+            {
+                throw new Error('Network response was not ok');
+            }
+
+            return response.text();
+        })
+        .then(profileInfo => {
+
+            // Creates the JSON profile object
+            const profile = JSON.parse(profileInfo);
+
+            // Call method to dynamically create HTML to display profile
+            createProfileInformation(profile);
+
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+
+// Dynamically creates the HTML for profile page
 const createProfileInformation = (profile) => {
 
     let mainElement = document.querySelector('main');
@@ -36,11 +67,17 @@ const createProfileInformation = (profile) => {
     </div>
     `;
 
+    // Dynamically add directory names to "directory-list"
     populateDirectoryList(profile.directories);
+
+    // Add event listeners to each button on the page
     attachDirectoryListeners();
+
+    // Capture main content so that back buttons on other pages take the user back to the profile page
     captureMainContent();
 }
 
+// Dynamically creates HTML for displaying user directories
 const populateDirectoryList = (directories) => {
     let directoryListElement = document.getElementById('directory-list');
 
@@ -60,32 +97,7 @@ const populateDirectoryList = (directories) => {
     }
 }
 
-const getProfileInformation = () => {
-    fetch(`/retrieveProfile`, {
-        method: 'GET'
-    })
-        .then(response => {
-            if (!response.ok)
-            {
-                throw new Error('Network response was not ok');
-            }
-
-            return response.text();
-        })
-        .then(profileInfo => {
-            const profile = JSON.parse(profileInfo);
-            if(profile.directories.length === 0)
-            {
-                console.log("No directories uploaded. ")
-            }
-            createProfileInformation(profile);
-
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-}
-
+// Creates a listener for each button, calling a dispatch method that handles each case
 export const attachDirectoryListeners = () => {
 
     const directoryButtons = document.querySelectorAll('button');
@@ -94,18 +106,20 @@ export const attachDirectoryListeners = () => {
     }));
 }
 
-// Calls the appropriate method for handling each of the directory clicks (default or upload)
+
+// Handles each of the different button clicks
 const dispatchDirectoryButtonClick = (event) => {
-    if (event.target.id === 'default-directory-button') {
-        console.log("In the default directory event listener. ")
-        setDirectoryPathAtServer(); // Contacts servlet so that it knows to use default corpus
+    if (event.target.id === 'default-directory-button')
+    {
+        setDirectoryPathAtServer();
     }
     else
     {
         event.preventDefault();
         const files = document.querySelector('#folderInput').files;
+
+        // Verifies that the files uploaded are either .TXT or .JSON
         verifyUploadedDirectory(files);
-        console.log("Submit button clicked")
     }
 }
 
@@ -119,16 +133,13 @@ const verifyUploadedDirectory = (files) => {
     const arrayOfFiles = [...files];
 
     // Check if every file is either .JSON or .TXT
-    if (arrayOfFiles.every(file => file.name.endsWith('.json')) || arrayOfFiles.every(file => file.name.endsWith('.txt'))) {
-        //displayFilenamesPage(files); // Call method to display filenames
+    if (arrayOfFiles.every(file => file.name.endsWith('.json')) || arrayOfFiles.every(file => file.name.endsWith('.txt')))
+    {
         const uploadDiv = document.querySelector('.upload-div');
         uploadDiv.innerHTML = '';
         const uploadDirectoryHeader = document.createElement('h3');
         uploadDirectoryHeader.textContent = 'Upload Directory'
-
         uploadDiv.appendChild(uploadDirectoryHeader);
-
-
     }
     else
     {

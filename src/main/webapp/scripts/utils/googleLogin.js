@@ -1,11 +1,12 @@
-import { displaySelectDirectory } from "../content/displaySelectDirectory.js";
 import {displayProfilePage} from "../content/displayProfilePage.js";
 
-// Define the callback in the global scope
-// Existing function to handle credential response
+/*
+When a user logs in, an ID token (unique to that session) is generated. This method sends that id token to a servlet
+in a POST request to verify (which pretty much makes sure that the ID has been properly signed by Google and is legitimate.
+If verification succeeds, a method to display the user's profile page is called.
+ */
 window.handleCredentialResponse = function(response) {
 
-    // Example of sending the token to your server
     fetch('/oauth2callback', {
         method: 'POST',
         headers: {
@@ -13,18 +14,25 @@ window.handleCredentialResponse = function(response) {
         },
         body: 'id_token=' + encodeURIComponent(response.credential),
     })
-        .then(response => {
-            if (!response.ok) {
+        .then(response =>
+        {
+            if (!response.ok)
+            {
                 throw new Error('Network response was not ok');
             }
             return response.text();
         })
-        .then(responseText => {
+        .then(responseText =>
+        {
             displayProfilePage();
         })
         .catch(error => console.error('There was a problem with the fetch operation:', error));
 }
 
+/*
+As per the google oauth documentation on the Javascript API: https://developers.google.com/identity/gsi/web/reference/js-reference.
+This sets up the Google Sign In client instance, allowing for the One Tap sign in and Sign In with Google buttons to display.
+ */
 window.onload = function () {
     google.accounts.id.initialize({
         client_id: '529467941335-rrllroamg3ebfvgp9n9i8qeni04tguca.apps.googleusercontent.com',
