@@ -12,17 +12,15 @@
             <li><a href="#">Home</a></li>
             <li><a class="documentation__anchor" href="#">Documentation</a></li>
         </ul>
-        <a href="#" class="profile__link">
-            <img src="/images/profile-icon.png" alt="User Profile" class="profile__logo">
-        </a>
     </header>
 <main>
     <div id="g_id_onload"
          data-client_id="529467941335-rrllroamg3ebfvgp9n9i8qeni04tguca.apps.googleusercontent.com"
          data-context="signin"
          data-ux_mode="popup"
+         data-login_uri="http://localhost:8080/oauth2callback"
          data-callback="handleCredentialResponse"
-         data-auto_prompt="false">
+         data-itp_support="true">
     </div>
     <div class="flex-column">
         <h2>Login with Google</h2>
@@ -37,9 +35,7 @@
         </div>
     </div>
 
-
-
 </main>
-<script type="module" src="/scripts/utils/login.js" defer></script>
+<script type="module" src="/scripts/utils/googleLogin.js" defer></script>
 </body>
 </html>

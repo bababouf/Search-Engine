@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.List;
 
-import drivers.PositionalInvertedIndexer;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -16,7 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import modules.documents.DirectoryCorpus;
-import modules.indexing.DiskIndexWriter;
 import modules.indexing.PositionalInvertedIndex;
 
 /*
@@ -33,8 +31,6 @@ and file contents, and the ability to perform actions like saving the uploaded f
 @MultipartConfig
 @WebServlet(name = "UploadDirServletServlet", value = "/upload")
 public class UploadDirServlet extends HttpServlet {
-
-    private String uploadedDirectoryPath = "";
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

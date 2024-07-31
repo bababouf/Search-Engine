@@ -10,6 +10,7 @@ public class HomepageServlet extends HttpServlet {
 
    // This servlet is invoked when a GET request is sent to the /home endpoint
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("In the home servlet");
         setResponseHeaders(response);
         setDefaultDirectoryPath();
         setDefaultDirectoryType();

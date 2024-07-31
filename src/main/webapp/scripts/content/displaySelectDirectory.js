@@ -52,6 +52,7 @@ const createDirectorySelection = () => {
 // Attaches event listeners to each of the directory buttons
 const attachDirectoryListeners = () => {
     const directoryButtons = document.querySelectorAll('button');
+
     directoryButtons.forEach(button => button.addEventListener('click', event => {
         dispatchDirectoryButtonClick(event);
     }));

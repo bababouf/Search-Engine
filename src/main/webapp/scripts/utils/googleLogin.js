@@ -1,9 +1,9 @@
 import { displaySelectDirectory } from "../content/displaySelectDirectory.js";
+import {displayProfilePage} from "../content/displayProfilePage.js";
 
 // Define the callback in the global scope
 // Existing function to handle credential response
 window.handleCredentialResponse = function(response) {
-    console.log('ID Token: ' + response.credential);
 
     // Example of sending the token to your server
     fetch('/oauth2callback', {
@@ -20,8 +20,7 @@ window.handleCredentialResponse = function(response) {
             return response.text();
         })
         .then(responseText => {
-            console.log('Google sign-in successful, calling displaySelectDirectory');
-            displaySelectDirectory();
+            displayProfilePage();
         })
         .catch(error => console.error('There was a problem with the fetch operation:', error));
 }

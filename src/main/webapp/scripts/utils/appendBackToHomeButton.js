@@ -1,5 +1,5 @@
 import {getInitialContent} from "./homepageContentManager.js";
-import {initializeHomePageEventListeners} from "../setup.js";
+import {attachDirectoryListeners} from "../content/displayProfilePage.js";
 
 /*
 This file contains methods for creating the "back to home" button, which simply displays the homepage when clicked.
@@ -26,8 +26,10 @@ const createBackButton = () => {
 // Attaches an event listener to the "back to home" button
 const attachListener = (mainElement, backButton) => {
     backButton.addEventListener('click', event => {
-        mainElement.innerHTML = getInitialContent(); // Sets the main element HTML to that of the initial homepage content
-        initializeHomePageEventListeners(); // Reinitializes the homepage event listeners
+
+        mainElement.innerHTML = getInitialContent();
+        attachDirectoryListeners();
+
     });
 }
 

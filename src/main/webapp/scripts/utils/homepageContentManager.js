@@ -12,11 +12,12 @@ export const setInitialContent = (content) => {
 
 // Returns the "initialContent" global variable
 export const getInitialContent = () => {
-    return initialContent;
+
+    return initialContent
 }
 
 // Captures the innerHTML of the main element. This is all the content on the homepage (besides header content)
 export const captureMainContent = () => {
     const mainElement = document.querySelector('main');
-    return mainElement.innerHTML;
+    setInitialContent(mainElement.innerHTML);
 };
