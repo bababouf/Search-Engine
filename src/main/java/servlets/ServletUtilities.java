@@ -39,10 +39,15 @@ public class ServletUtilities {
 
     // Returns the path to the root directory (directory containing pom.xml)
     public static String getProjectRootDir(String servletContextDir) {
-        String currentDir = servletContextDir;
-        while (currentDir != null && !new File(currentDir + File.separator + "pom.xml").exists())
-        {
+        String currentDir = "C:/Users/agreg/Desktop/Copy of Project/search-engine";
+        while (currentDir != null && !new File(currentDir + File.separator + "pom.xml").exists()) {
+            System.out.println("Checking directory: " + currentDir); // Debug statement
             currentDir = new File(currentDir).getParent();
+        }
+        if (currentDir == null) {
+            System.out.println("Reached the top of the directory hierarchy without finding pom.xml");
+        } else {
+            System.out.println("Found pom.xml in directory: " + currentDir); // Debug statement
         }
         return currentDir;
     }

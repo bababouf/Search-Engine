@@ -38,6 +38,16 @@ window.onload = function () {
         client_id: '529467941335-rrllroamg3ebfvgp9n9i8qeni04tguca.apps.googleusercontent.com',
         callback: handleCredentialResponse
     });
+
+    // Render the Google Sign-In button
+    google.accounts.id.renderButton(
+        document.getElementById('buttonDiv'),  // Ensure you have a div with this id in your HTML
+        { theme: 'outline', size: 'large' }  // Customize the button as needed
+    );
+
+    // Prompt the One Tap sign-in
     google.accounts.id.prompt();
 };
+
+
 

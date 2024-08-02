@@ -20,7 +20,7 @@ public class BlobStorageWriter {
      * It writes the metadata and postings lists of terms in binary format, using gap encoding for document IDs and
      * term positions to optimize storage space.
      */
-    public static List<Long> serializeAndUploadIndex(PositionalInvertedIndex index, AzureBlobStorageClient blobStorageClient) throws IOException, SQLException {
+    public static List<Long> serializeAndUploadIndex(PositionalInvertedIndex index, AzureBlobStorageClient blobStorageClient, String blobFilename) throws IOException, SQLException {
 
         // Will save the starting byte position for each term
         List<Long> bytePositions = new ArrayList<>();
@@ -32,7 +32,6 @@ public class BlobStorageWriter {
              DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream))
 
         {
-            String blobFileName = "default-directory-postings.bin";
             List<String> vocabulary = index.getVocabulary();
 
             // Loop through each term in the index
@@ -79,7 +78,7 @@ public class BlobStorageWriter {
 
             // Upload the byte array to Azure Blob Storage
             byte[] data = byteArrayOutputStream.toByteArray();
-            blobStorageClient.uploadFile(blobFileName, data);
+            blobStorageClient.uploadFile(blobFilename, data);
 
             System.out.println("Upload postings.bin to Azure Blob Storage complete.");
         } catch (IOException e) {

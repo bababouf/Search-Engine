@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../css/styles.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script type = "module" src="../scripts/utils/googleLogin.js"></script>
 </head>
 <body>
     <header class="hero__container">
@@ -14,28 +15,13 @@
         </ul>
     </header>
 <main>
-    <div id="g_id_onload"
-         data-client_id="529467941335-rrllroamg3ebfvgp9n9i8qeni04tguca.apps.googleusercontent.com"
-         data-context="signin"
-         data-ux_mode="popup"
-         data-login_uri="http://localhost:8080/oauth2callback"
-         data-callback="handleCredentialResponse"
-         data-itp_support="true">
-    </div>
     <div class="flex-column">
-        <h2>Login with Google</h2>
-        <p>Allows for directories to be uploaded and saved for future querying. </p>
-        <div class="g_id_signin"
-             data-type="standard"
-             data-shape="pill"
-             data-theme="filled_black"
-             data-text="continue_with"
-             data-size="large"
-             data-logo_alignment="left">
-        </div>
+        <h2>Sign in Using Google</h2>
+        <div id="buttonDiv"></div>
+        <p>Allows for directories to be uploaded and saved for future querying.</p>
     </div>
 
 </main>
-<script type="module" src="/scripts/utils/googleLogin.js" defer></script>
+
 </body>
 </html>

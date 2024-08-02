@@ -38,6 +38,7 @@ public class LoginCallback extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+
         // Get the ID token parameter from the request body
         String idTokenString = request.getParameter("id_token");
 

@@ -179,7 +179,7 @@ li a:hover{
 }
 
 .loading-spinner {
-    margin-top: 5rem;
+    margin-top: 2rem;
     width: 48px;
     height: 48px;
     border: 5px solid darkslategray;

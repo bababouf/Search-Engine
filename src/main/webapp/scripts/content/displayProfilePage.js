@@ -117,10 +117,55 @@ const dispatchDirectoryButtonClick = (event) => {
     {
         event.preventDefault();
         const files = document.querySelector('#folderInput').files;
-
         // Verifies that the files uploaded are either .TXT or .JSON
-        verifyUploadedDirectory(files);
+        if(verifyUploadedDirectory(files) === true)
+        {
+
+            console.log("Lookin good.")
+            const uploadDiv = document.querySelector(".upload-div");
+            const uploadDirText = document.createElement("h3");
+            uploadDirText.textContent = "Upload Directory";
+
+            const loadingSpinner = createLoadingSpinner();
+            uploadDiv.innerHTML = '';
+            uploadDiv.appendChild(uploadDirText);
+            uploadDiv.appendChild(loadingSpinner);
+
+            console.log("before the convert to form data");
+            const formData = convertToFormData(files);
+            console.log("After the convert to form data");
+            sendToServlet(formData);
+
+            // contact UploadDirServlet
+            // refactor UploadDirServlet to handle indexing and "uploading" file to blob container "user-uploaded-directories"
+            // refactor UploadDirServlet to handle storing the directory in another blob container
+        }
+        else
+        {
+            const uploadDiv = document.querySelector(".upload-div");
+
+            if(document.querySelector("#error-message") === null)
+            {
+                const errorMessage = createErrorMessage();
+                uploadDiv.appendChild(errorMessage);
+            }
+
+
+        }
+
     }
+}
+
+// Creates the HTML for a "loading" spinner that is displayed while the uploaded directory is being indexed
+const createLoadingSpinner = () => {
+    const loadingDiv = document.createElement('div');
+    loadingDiv.classList.add('flex-column');
+    loadingDiv.innerHTML = `
+            <span class="loading-spinner"></span>
+            <p>Indexing...</p>
+            `
+    return loadingDiv;
+
 }
 
 /*
@@ -135,25 +180,58 @@ const verifyUploadedDirectory = (files) => {
     // Check if every file is either .JSON or .TXT
     if (arrayOfFiles.every(file => file.name.endsWith('.json')) || arrayOfFiles.every(file => file.name.endsWith('.txt')))
     {
-        const uploadDiv = document.querySelector('.upload-div');
-        uploadDiv.innerHTML = '';
-        const uploadDirectoryHeader = document.createElement('h3');
-        uploadDirectoryHeader.textContent = 'Upload Directory'
-        uploadDiv.appendChild(uploadDirectoryHeader);
-    }
-    else
-    {
-        const errorMsg = createErrorMessage();
-        mainElement.insertBefore(errorMsg, mainElement.firstChild); // Insert error message as first element attached to main
+        return true;
     }
 }
 
 // Creates HTML for the error message that is displayed if improper filetypes are uploaded
 const createErrorMessage = () => {
     const errorMsg = document.createElement('p');
+    errorMsg.id = "error-message";
     errorMsg.textContent = 'Directory must contain all .TXT files or all .JSON files. ';
     errorMsg.style.textAlign = 'center';
     errorMsg.style.color = 'red';
 
     return errorMsg;
 }
+
+/*
+This method converts the list of files to form data allows for easy/fast transfer of files to servlet. This is necessary
+for the servlet to process each of the files.
+ */
+const convertToFormData = (files) => {
+    const formData = new FormData();
+
+    // Extract directory name from the first file path
+    const fullPath = files[0].webkitRelativePath;
+    const directoryName = fullPath.split('/')[0];
+    formData.append('directoryName', directoryName);
+
+
+
+    for (const file of files)
+    {
+        formData.append('folderInput', file,  file.webkitRelativePath);
+    }
+
+    return formData;
+}
+
+const sendToServlet = (formData) => {
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(responseText => {
+            console.log(responseText);
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+};

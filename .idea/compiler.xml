@@ -3,7 +3,6 @@
   <component name="CompilerConfiguration">
     <excludeFromCompile>
       <directory url="file://$USER_HOME$/IdeaProjects/search-engine" includeSubdirectories="true" />
-      <file url="file://$PROJECT_DIR$/src/main/java/servlets/UploadDirServlet.java" />
     </excludeFromCompile>
     <annotationProcessing>
       <profile name="Maven default annotation processors profile" enabled="true">
