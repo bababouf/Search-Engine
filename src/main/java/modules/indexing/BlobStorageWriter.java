@@ -20,7 +20,7 @@ public class BlobStorageWriter {
      * It writes the metadata and postings lists of terms in binary format, using gap encoding for document IDs and
      * term positions to optimize storage space.
      */
-    public static List<Long> serializeAndUploadIndex(PositionalInvertedIndex index, AzureBlobStorageClient blobStorageClient, String blobFilename) throws IOException, SQLException {
+    public static List<Long> serializeAndUploadIndex(PositionalInvertedIndex index, AzureBlobStorageClient blobStorageClient) throws IOException, SQLException {
 
         // Will save the starting byte position for each term
         List<Long> bytePositions = new ArrayList<>();
@@ -78,7 +78,8 @@ public class BlobStorageWriter {
 
             // Upload the byte array to Azure Blob Storage
             byte[] data = byteArrayOutputStream.toByteArray();
-            blobStorageClient.uploadFile(blobFilename, data);
+
+            blobStorageClient.uploadFile("postings.bin", data);
 
             System.out.println("Upload postings.bin to Azure Blob Storage complete.");
         } catch (IOException e) {
@@ -177,9 +178,7 @@ public class BlobStorageWriter {
      * This method serializes and uploads a single value representing the average tokens in a document to an Azure Blob
      * Storage file.
      */
-    public void serializeAndUploadAverageTokens(double averageTokens) {
-        AzureBlobStorageClient blobStorageClient = new AzureBlobStorageClient();
-        String blobFileName = "default-directory-averageTokens.bin";
+    public byte[] serializeAverageTokens(double averageTokens) {
 
         try (
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -188,13 +187,13 @@ public class BlobStorageWriter {
             dataOutputStream.writeDouble(averageTokens);
 
             // Upload the byte array to Azure Blob Storage
-            byte[] documentWeights = byteArrayOutputStream.toByteArray();
-            blobStorageClient.uploadFile(blobFileName, documentWeights);
+            return byteArrayOutputStream.toByteArray();
 
         }
         catch (IOException e)
         {
             e.printStackTrace();
+            return new byte[0];
         }
     }
 

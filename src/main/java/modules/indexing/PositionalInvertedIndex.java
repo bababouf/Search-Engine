@@ -10,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * A PositionalInvertedIndex is creating during the indexing process, and contains a hashmap mapping every unique term
@@ -82,13 +83,12 @@ public class PositionalInvertedIndex implements Index {
      * meta-data about each document that is critical for ranked retrieval. This includes the number of tokens, bytes, and
      * the positions of each term in the document. Methods are called to write this data to an Azure Blob Storage file.
      */
-    public static PositionalInvertedIndex indexCorpus(DocumentCorpus corpus) throws IOException
+    public static PositionalInvertedIndex indexCorpus(DocumentCorpus corpus, AzureBlobStorageClient blobStorageClient) throws IOException
     {
         System.out.println("Indexing...");
         NonBasicTokenProcessor processor = new NonBasicTokenProcessor();
         PositionalInvertedIndex positionalIndex = new PositionalInvertedIndex();
         BlobStorageWriter blobStorageWriter = new BlobStorageWriter();
-        AzureBlobStorageClient blobStorageClient = new AzureBlobStorageClient();
 
         int initialBufferSize = 20 * 1024 * 1024;
         // ByteArrayOutputStream to accumulate all document weights
@@ -99,10 +99,12 @@ public class PositionalInvertedIndex implements Index {
         // Tracks the total number of tokens across the entire corpus; used to determine average tokens per document
         double corpusTokenCount = 0;
 
+
         // Loop through each of the documents in the corpus
         for (Document document : corpus.getDocuments())
         {
 
+            System.out.println("Looping through document: " + document.getId());
             // Each of the integers below is tracked; this is critical meta-data used in ranked retrieval
             int currentDocumentTokens = 0;
             int currentDocumentBytes = 0;
@@ -144,20 +146,21 @@ public class PositionalInvertedIndex implements Index {
             // The meta-data is written to Azure Blob Storage to be retrieved during querying
             byte[] documentWeights = blobStorageWriter.serializeDocumentWeights(termFrequency, currentDocumentTokens, currentDocumentBytes);
 
+            System.out.println("DocumentWeightLength: " + documentWeights.length);
             dataOutputStream.write(documentWeights);
         }
 
 
         byte[] accumulatedData = byteArrayOutputStream.toByteArray();
-        blobStorageClient.uploadFile("default-directory-docWeights.bin", accumulatedData);
+        blobStorageClient.uploadFile("doc-weights.bin", accumulatedData);
 
-        System.out.println("Upload docWeights.bin to Azure Blob Storage complete.");
 
         // As a final step, once all documents are processed, the average tokens per document is calculated
         double averageTokens = corpusTokenCount / corpus.getCorpusSize();
 
         // Average tokens is appended to the same Azure Blob Storage file containing all the meta-data
-        blobStorageWriter.serializeAndUploadAverageTokens(averageTokens);
+        byte[] serializedAverageTokens = blobStorageWriter.serializeAverageTokens(averageTokens);
+        blobStorageClient.uploadFile("average-tokens.bin", serializedAverageTokens);
 
         System.out.println("Indexing Complete. \n");
         return positionalIndex;

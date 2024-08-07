@@ -94,7 +94,7 @@ public class DirectoryCorpus implements DocumentCorpus {
 
 		for (Path file : allFiles)
 		{
-			// Use the registered factory for the file's extension.
+			System.out.println("Found file. " + file.getFileName());
 			result.put(nextId, factories.get(getFileExtension(file)).createFileDocument(file, nextId));
 			nextId++;
 		}
@@ -106,6 +106,7 @@ public class DirectoryCorpus implements DocumentCorpus {
 	 */
 	private Iterable<Path> findFiles() throws IOException
 	{
+		System.out.println("Finding all text files!!");
 		List<Path> allFiles = new ArrayList<>();
 		
 		// First discover all the files in the directory that match the filter.
@@ -127,6 +128,7 @@ public class DirectoryCorpus implements DocumentCorpus {
 				String extension = getFileExtension(file);
 				if (fileFilter.test(file.toString()) && factories.containsKey(extension))
 				{
+					System.out.println("Found text file " + file.getFileName());
 					allFiles.add(file);
 				}
 				return FileVisitResult.CONTINUE;

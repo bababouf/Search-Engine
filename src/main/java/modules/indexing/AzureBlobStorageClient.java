@@ -1,6 +1,7 @@
 package modules.indexing;
 
 import com.azure.storage.blob.*;
+import com.azure.storage.blob.models.BlobContainerItem;
 import com.azure.storage.blob.models.BlobItem;
 
 import java.io.ByteArrayInputStream;
@@ -8,40 +9,46 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-This class is used to connect and obtain a client for accessing Azure Blob Storage
- */
+
 public class AzureBlobStorageClient {
 
-    private final BlobContainerClient containerClient;
+    private final BlobServiceClient serviceClient;
+    private BlobContainerClient containerClient;
 
-    // Obtains the client after accessing an environment variable containing the connection string
+
     public AzureBlobStorageClient() {
         String connectionString = System.getenv("AZURE_STORAGE_CONNECTION_STRING");
-        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
-
-        /*
-        After connecting to the storage account using the conn string, the following will connect to the specific container
-        where the indexing files live
-         */
-        String containerName = "se-indexing-files";
-        this.containerClient = blobServiceClient.getBlobContainerClient(containerName);
+        this.serviceClient = new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
     }
-
-    public AzureBlobStorageClient(String containerName) {
+    public AzureBlobStorageClient(String containerName)
+    {
         String connectionString = System.getenv("AZURE_STORAGE_CONNECTION_STRING");
-        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
-
-        /*
-        After connecting to the storage account using the conn string, the following will connect to the specific container
-        where the indexing files live
-         */
-
-        this.containerClient = blobServiceClient.getBlobContainerClient(containerName);
+        this.serviceClient = new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
+        this.containerClient = this.serviceClient.getBlobContainerClient(containerName);
     }
+
+    public BlobContainerClient createContainer(String containerName){
+        BlobContainerClient client = serviceClient.getBlobContainerClient(containerName);
+
+        if(client.exists()){
+            this.containerClient = null;
+        }
+        else
+        {
+            this.containerClient = serviceClient.createBlobContainerIfNotExists(containerName);
+        }
+        return containerClient;
+    }
+
+    public BlobContainerClient getContainerClient()
+    {
+        return containerClient;
+    }
+
 
     // Uploads data that is passed to the method to a specific blob
-    public void uploadFile(String blobFileName, byte[] data) {
+    public void uploadFile(String blobFileName, byte[] data)
+    {
         BlobClient blobClient = containerClient.getBlobClient(blobFileName);
         blobClient.upload(new ByteArrayInputStream(data), data.length, true);
     }
@@ -54,22 +61,15 @@ public class AzureBlobStorageClient {
         return outputStream.toByteArray();
     }
 
-    public List<String> getUserDirectories(String hashedID) {
-        List<String> directories = new ArrayList<>();
+    public List<String> listContainers() {
+        List<String> containerNames = new ArrayList<>();
 
-        // List all blobs in the container
-        for (BlobItem blobItem : containerClient.listBlobs()) {
-            String blobName = blobItem.getName();
-
-            // Check if the blob name starts with the hashed ID followed by "!"
-            if (blobName.startsWith(hashedID + "!")) {
-                // Extract the directory name part
-                String directoryName = blobName.substring((hashedID + "!").length());
-                directories.add(directoryName);
-            }
+        // List all containers in the storage account
+        for (BlobContainerItem containerItem : serviceClient.listBlobContainers()) {
+            containerNames.add(containerItem.getName());
         }
 
-        return directories;
+        return containerNames;
     }
 
 

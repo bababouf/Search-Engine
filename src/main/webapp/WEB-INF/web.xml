@@ -3,4 +3,33 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
+
+    <!-- Define the servlet -->
+    <servlet>
+        <servlet-name>HomepageServlet</servlet-name>
+        <servlet-class>servlets.HomepageServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LoginCallback</servlet-name>
+        <servlet-class>servlets.LoginCallback</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UploadDirServlet</servlet-name>
+        <servlet-class>servlets.UploadDirServlet</servlet-class>
+    </servlet>
+
+    <!-- Map the servlet to a URL pattern -->
+    <servlet-mapping>
+        <servlet-name>HomepageServlet</servlet-name>
+        <url-pattern>/home</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginCallback</servlet-name>
+        <url-pattern>/oauth2callback</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UploadDirServlet</servlet-name>
+        <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+
 </web-app>

@@ -19,12 +19,11 @@ import java.util.Scanner;
  */
 public class AzureBlobPositionalIndexer {
 
-    public static String defaultDirectoryBlobFilename = "default-directory-postings.bin";
     public static void main(String[] args) throws SQLException, IOException
     {
         Scanner readIn = new Scanner(System.in);
         Path absolutePathToCorpus = readInPath(readIn);
-        buildIndex(absolutePathToCorpus);
+        buildIndex(absolutePathToCorpus, "se-indexing-files");
     }
 
     /**
@@ -47,14 +46,15 @@ public class AzureBlobPositionalIndexer {
      * terms begin in the index blob file) will be stored in a Postgres database. This allows for efficient lookup of terms
      * when processing queries.
      */
-    public static void buildIndex(Path absolutePathToCorpus)
+    public static void buildIndex(Path absolutePathToCorpus, String containerName)
     {
         try
         {
             DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(absolutePathToCorpus, ".json");
-            PositionalInvertedIndex index = PositionalInvertedIndex.indexCorpus(corpus);
-            AzureBlobStorageClient blobStorageClient = new AzureBlobStorageClient();
-            List<Long> bytePositions = BlobStorageWriter.serializeAndUploadIndex(index, blobStorageClient, defaultDirectoryBlobFilename);
+            AzureBlobStorageClient blobStorageClient = new AzureBlobStorageClient(containerName);
+            PositionalInvertedIndex index = PositionalInvertedIndex.indexCorpus(corpus, blobStorageClient);
+
+            List<Long> bytePositions = BlobStorageWriter.serializeAndUploadIndex(index, blobStorageClient);
             BlobStorageWriter.writeBytePositions(index, bytePositions, "default_directory");
 
         }

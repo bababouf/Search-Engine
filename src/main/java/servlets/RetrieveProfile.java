@@ -2,6 +2,7 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
@@ -33,8 +34,10 @@ public class RetrieveProfile extends HttpServlet {
         String uniqueID = (String) session.getAttribute("uniqueID");
         List<String> userDirectories = (List<String>) session.getAttribute("userDirectories");
 
+        List<String> directoryNames = getDirectoryNames(userDirectories);
+
         // Store all of this information in a Profile object
-        Profile userProfile = new Profile(uniqueID, firstName, profileURL, userDirectories);
+        Profile userProfile = new Profile(uniqueID, firstName, profileURL, directoryNames);
 
         // Send the profile object (converted to a JSON string) to the browser
         PrintWriter out = response.getWriter();
@@ -62,6 +65,25 @@ public class RetrieveProfile extends HttpServlet {
             directories = userDirectories;
         }
 
+    }
+
+    public List<String> getDirectoryNames(List<String> userDirectories)
+    {
+        List<String> directoryNames = new ArrayList<String>();
+        for (String userDirectory : userDirectories) {
+
+            try {
+                System.out.println("Directory: " + userDirectory);
+                String directoryName = userDirectory.substring(userDirectory.indexOf("-") + 1);
+                directoryNames.add(directoryName);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
+        }
+        return directoryNames;
     }
 
 

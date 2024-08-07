@@ -27,7 +27,7 @@ public class AzureBlobPositionalIndex  implements Index{
     public AzureBlobPositionalIndex (String directory)
     {
         directoryType = directory;
-        AzureBlobStorageClient client = new AzureBlobStorageClient();
+        AzureBlobStorageClient client = new AzureBlobStorageClient("se-indexing-files");
 
         // Downloads the Azure Blob Storage file containing the postings
         postingsData = client.downloadFile("default-directory-postings.bin");

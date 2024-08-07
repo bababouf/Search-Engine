@@ -12,7 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+import java.util.ArrayList;
+import org.apache.commons.codec.binary.Base32;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,10 +43,8 @@ public class LoginCallback extends HttpServlet {
         // Get the ID token parameter from the request body
         String idTokenString = request.getParameter("id_token");
 
-        if (idTokenString != null && !idTokenString.isEmpty())
-        {
-            try
-            {
+        if (idTokenString != null && !idTokenString.isEmpty()) {
+            try {
                 // Verify the ID token (https://developers.google.com/identity/gsi/web/guides/verify-google-id-token)
                 GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                         new NetHttpTransport(),
@@ -55,19 +54,21 @@ public class LoginCallback extends HttpServlet {
 
                 GoogleIdToken idToken = verifier.verify(idTokenString);
 
-                if (idToken != null)
-                {
+                if (idToken != null) {
                     GoogleIdToken.Payload payload = idToken.getPayload();
 
                     // Obtain the unique user id
                     String userId = payload.getSubject();
 
                     // Hash the id and encode with base64
-                    String hashedID = base64Hash(userId);
+                    String hashedID = base32Hash(userId);
 
                     // Connect to Azure Storage and find user directories associated with the hashed ID
-                    AzureBlobStorageClient client = new AzureBlobStorageClient("user-uploaded-directories");
-                    List<String> userDirectories = client.getUserDirectories(hashedID);
+                    AzureBlobStorageClient client = new AzureBlobStorageClient();
+                    //List<String> userDirectories = client.getUserDirectories(hashedID);
+
+                    List<String> containerNames = client.listContainers();
+                    List<String> userDirectories = getUserDirectories(hashedID, containerNames);
 
                     // Get basic user information to display on profile page
                     String firstName = (String) payload.get("given_name");
@@ -82,39 +83,52 @@ public class LoginCallback extends HttpServlet {
                     // If this point was reached, the token has been verified and the response status can be set to 500
                     response.setStatus(HttpServletResponse.SC_OK);
                     response.getWriter().write("Login successful");
-                }
-                else
-                {
+                } else {
                     // Failed to verify token or something else happened
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid ID token");
                 }
-            }
-            catch (GeneralSecurityException e)
-            {
+            } catch (GeneralSecurityException e) {
                 e.printStackTrace();
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to verify ID token");
             }
-        }
-        else
-        {
+        } else {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No ID token parameter");
         }
     }
 
-    // Hashes the token id obtained after verification, and then encodes with base 64
-    public String base64Hash(String input){
-
-        try
-        {
+    // Hashes the token id obtained after verification, and then encodes with base 32
+    public String base32Hash(String input) {
+        try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
-            return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
-        }
-        catch (NoSuchAlgorithmException e)
-        {
+
+            // Truncate the hash to 16 bytes
+            byte[] truncatedHash = new byte[16];
+            System.arraycopy(hash, 0, truncatedHash, 0, 16);
+
+            // Base32 encode the truncated hash
+            Base32 base32 = new Base32();
+            String encoded = base32.encodeAsString(truncatedHash).toLowerCase();
+
+            // Remove any padding characters if present
+            encoded = encoded.replaceAll("=", "");
+
+            return encoded;
+        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-
     }
 
+    public List<String> getUserDirectories(String uniqueID, List<String> containerNames)
+    {
+        List<String> userDirectories = new ArrayList<>();
+        for(String containerName : containerNames)
+        {
+            if(containerName.contains(uniqueID))
+            {
+                userDirectories.add(containerName);
+            }
+        }
+        return userDirectories;
+    }
 }

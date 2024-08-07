@@ -229,7 +229,7 @@ const sendToServlet = (formData) => {
             return response.text();
         })
         .then(responseText => {
-            console.log(responseText);
+            displayProfilePage();
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);

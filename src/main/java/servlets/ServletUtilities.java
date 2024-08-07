@@ -51,13 +51,7 @@ public class ServletUtilities {
         }
         return currentDir;
     }
-    // Returns the filename (file1.txt) from the part that was passed
-    public static String getFileName(Part part) {
-        String filename = part.getSubmittedFileName();
-        System.out.println(filename);
-        String[] parts = filename.split("/");
-        return parts[parts.length - 1];
-
-    }
+    // Utility method to extract file name from part headers
 
 }
+
