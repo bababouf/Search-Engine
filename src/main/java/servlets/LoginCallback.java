@@ -18,16 +18,16 @@ import java.util.Collections;
 import java.util.List;
 
 /*
-    The main purpose of this servlet is to verify the token it receives from the browser as per the google documentation
+    The main purpose of this servlet is to verify the token it receives from the browser as per the Google documentation
     found here: https://developers.google.com/identity/gsi/web/guides/verify-google-id-token.
 
     Once the token is verified, several pieces of information are saved in an HTTPSession object (which will be used to
     display user information on the profile page). The HTTPSession object can be accessed across servlets, and contains
     user information including first name, profile picture, and a unique ID that differentiates users.
 
-     Since the unique ID is over 250 characters long, it is hashed and encoded in Base64 to shorten it down to around 30
-     characters. Lastly, in order to display user directories (directories a user has previously uploaded on their account)
-     a method getUserDirectories(hashedID) is called. Each of these pieces of user information is saved in separate HTTPSession
+     Since the unique ID is over 250 characters long, it is hashed and encoded in Base32 to shorten it down. Lastly, in order
+     to display user directories (directories a user has previously uploaded on their account) a method getUserDirectories(hashedID)
+     is called. Each of these pieces of user information is saved in separate HTTPSession
      variables.
      */
 
@@ -39,12 +39,13 @@ public class LoginCallback extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-
         // Get the ID token parameter from the request body
         String idTokenString = request.getParameter("id_token");
 
-        if (idTokenString != null && !idTokenString.isEmpty()) {
-            try {
+        if (idTokenString != null && !idTokenString.isEmpty())
+        {
+            try
+            {
                 // Verify the ID token (https://developers.google.com/identity/gsi/web/guides/verify-google-id-token)
                 GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                         new NetHttpTransport(),
@@ -54,21 +55,18 @@ public class LoginCallback extends HttpServlet {
 
                 GoogleIdToken idToken = verifier.verify(idTokenString);
 
-                if (idToken != null) {
+                if (idToken != null)
+                {
                     GoogleIdToken.Payload payload = idToken.getPayload();
 
                     // Obtain the unique user id
                     String userId = payload.getSubject();
 
-                    // Hash the id and encode with base64
-                    String hashedID = base32Hash(userId);
+                    // Hash the id and encode with base32
+                    String hashedID = hashAndEncodeID(userId);
 
-                    // Connect to Azure Storage and find user directories associated with the hashed ID
-                    AzureBlobStorageClient client = new AzureBlobStorageClient();
-                    //List<String> userDirectories = client.getUserDirectories(hashedID);
-
-                    List<String> containerNames = client.listContainers();
-                    List<String> userDirectories = getUserDirectories(hashedID, containerNames);
+                    // Obtain the directories associated with the user's ID
+                    List<String> userDirectories = ServletUtilities.getUserDirectories(hashedID);
 
                     // Get basic user information to display on profile page
                     String firstName = (String) payload.get("given_name");
@@ -83,24 +81,32 @@ public class LoginCallback extends HttpServlet {
                     // If this point was reached, the token has been verified and the response status can be set to 500
                     response.setStatus(HttpServletResponse.SC_OK);
                     response.getWriter().write("Login successful");
-                } else {
+                }
+                else
+                {
                     // Failed to verify token or something else happened
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid ID token");
                 }
-            } catch (GeneralSecurityException e) {
+            }
+            catch (GeneralSecurityException e)
+            {
                 e.printStackTrace();
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to verify ID token");
             }
-        } else {
+        }
+        else
+        {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No ID token parameter");
         }
     }
 
     // Hashes the token id obtained after verification, and then encodes with base 32
-    public String base32Hash(String input) {
-        try {
+    public String hashAndEncodeID(String uniqueID) {
+        try
+        {
+            // Hash the user ID using SHA-256
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            byte[] hash = digest.digest(uniqueID.getBytes(StandardCharsets.UTF_8));
 
             // Truncate the hash to 16 bytes
             byte[] truncatedHash = new byte[16];
@@ -114,21 +120,11 @@ public class LoginCallback extends HttpServlet {
             encoded = encoded.replaceAll("=", "");
 
             return encoded;
-        } catch (NoSuchAlgorithmException e) {
+        }
+        catch (NoSuchAlgorithmException e)
+        {
             throw new RuntimeException(e);
         }
     }
 
-    public List<String> getUserDirectories(String uniqueID, List<String> containerNames)
-    {
-        List<String> userDirectories = new ArrayList<>();
-        for(String containerName : containerNames)
-        {
-            if(containerName.contains(uniqueID))
-            {
-                userDirectories.add(containerName);
-            }
-        }
-        return userDirectories;
-    }
 }

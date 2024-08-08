@@ -58,7 +58,7 @@ public class HomepageServlet extends HttpServlet {
         // This selection is triggered if the application is running locally
         else
         {
-            defaultDirectoryPath = "C:/Users/agreg/Desktop/Copy of Project/search-engine/all-nps-sites-extracted";
+            defaultDirectoryPath = "C:/Users/agreg/Desktop/CopyOfProject/search-engine/all-nps-sites-extracted";
         }
 
         context.setAttribute("path", defaultDirectoryPath);

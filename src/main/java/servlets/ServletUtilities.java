@@ -5,10 +5,14 @@ import com.google.gson.JsonParser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import modules.indexing.AzureBlobStorageClient;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServletUtilities {
 
@@ -39,7 +43,7 @@ public class ServletUtilities {
 
     // Returns the path to the root directory (directory containing pom.xml)
     public static String getProjectRootDir(String servletContextDir) {
-        String currentDir = "C:/Users/agreg/Desktop/Copy of Project/search-engine";
+        String currentDir = "C:/Users/agreg/Desktop/CopyOfProject/search-engine";
         while (currentDir != null && !new File(currentDir + File.separator + "pom.xml").exists()) {
             System.out.println("Checking directory: " + currentDir); // Debug statement
             currentDir = new File(currentDir).getParent();
@@ -51,7 +55,26 @@ public class ServletUtilities {
         }
         return currentDir;
     }
-    // Utility method to extract file name from part headers
+
+    public static List<String> getUserDirectories(String uniqueID){
+
+        // Connect to Azure Storage and find user directories associated with the hashed ID
+        AzureBlobStorageClient client = new AzureBlobStorageClient();
+
+        // Obtain the directories associated with the user ID
+        List<String> containerNames = client.listContainers();
+
+        List<String> userDirectories = new ArrayList<>();
+        for(String containerName : containerNames)
+        {
+            if(containerName.contains(uniqueID))
+            {
+                userDirectories.add(containerName);
+            }
+        }
+        return userDirectories;
+    }
+
 
 }
 

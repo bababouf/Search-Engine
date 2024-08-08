@@ -1,7 +1,6 @@
 import {setDirectoryPathAtServer} from "../utils/setDirectoryPathAtServer.js";
 import {captureMainContent} from "../utils/homepageContentManager.js";
 
-
 export const displayProfilePage = () => {
     getProfileInformation();
 
@@ -81,14 +80,17 @@ const createProfileInformation = (profile) => {
 const populateDirectoryList = (directories) => {
     let directoryListElement = document.getElementById('directory-list');
 
+    // In the case no directories were found
     if (directories.length === 0)
     {
         let noDirectoriesFound = document.createElement('p');
         noDirectoriesFound.textContent = "No directories found.";
         directoryListElement.appendChild(noDirectoriesFound);
     }
+    // One or more directories were found
     else
     {
+        // Create a paragraph element for each directory found
         directories.forEach(directory => {
             let directoryElement = document.createElement('p');
             directoryElement.textContent = directory;
@@ -117,11 +119,11 @@ const dispatchDirectoryButtonClick = (event) => {
     {
         event.preventDefault();
         const files = document.querySelector('#folderInput').files;
-        // Verifies that the files uploaded are either .TXT or .JSON
+
+        // The files uploaded have a valid file extension and can continue to uploading process
         if(verifyUploadedDirectory(files) === true)
         {
 
-            console.log("Lookin good.")
             const uploadDiv = document.querySelector(".upload-div");
             const uploadDirText = document.createElement("h3");
             uploadDirText.textContent = "Upload Directory";
@@ -131,25 +133,23 @@ const dispatchDirectoryButtonClick = (event) => {
             uploadDiv.appendChild(uploadDirText);
             uploadDiv.appendChild(loadingSpinner);
 
-            console.log("before the convert to form data");
+            // Converts files to form data so that they can be sent to the servlet
             const formData = convertToFormData(files);
-            console.log("After the convert to form data");
             sendToServlet(formData);
 
-            // contact UploadDirServlet
-            // refactor UploadDirServlet to handle indexing and "uploading" file to blob container "user-uploaded-directories"
-            // refactor UploadDirServlet to handle storing the directory in another blob container
+
         }
+        // User attempted to upload a directory containing one or more invalid file extensions
         else
         {
             const uploadDiv = document.querySelector(".upload-div");
 
+            // Display error message if it isn't already displayed
             if(document.querySelector("#error-message") === null)
             {
                 const errorMessage = createErrorMessage();
                 uploadDiv.appendChild(errorMessage);
             }
-
 
         }
 
@@ -174,7 +174,6 @@ error message is displayed to the user. If the directory is accepted, a call to 
 were uploaded is made
  */
 const verifyUploadedDirectory = (files) => {
-    const mainElement = document.querySelector('main');
     const arrayOfFiles = [...files];
 
     // Check if every file is either .JSON or .TXT
@@ -207,8 +206,7 @@ const convertToFormData = (files) => {
     const directoryName = fullPath.split('/')[0];
     formData.append('directoryName', directoryName);
 
-
-
+    // Append each file to form data object
     for (const file of files)
     {
         formData.append('folderInput', file,  file.webkitRelativePath);

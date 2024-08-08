@@ -30,7 +30,7 @@ window.handleCredentialResponse = function(response) {
 }
 
 /*
-As per the google oauth documentation on the Javascript API: https://developers.google.com/identity/gsi/web/reference/js-reference.
+As per the Google oauth 2.0 documentation on the Javascript API: https://developers.google.com/identity/gsi/web/reference/js-reference.
 This sets up the Google Sign In client instance, allowing for the One Tap sign in and Sign In with Google buttons to display.
  */
 window.onload = function () {
@@ -41,8 +41,8 @@ window.onload = function () {
 
     // Render the Google Sign-In button
     google.accounts.id.renderButton(
-        document.getElementById('buttonDiv'),  // Ensure you have a div with this id in your HTML
-        { theme: 'outline', size: 'large' }  // Customize the button as needed
+        document.getElementById('buttonDiv'),
+        { theme: 'outline', size: 'large' }
     );
 
     // Prompt the One Tap sign-in

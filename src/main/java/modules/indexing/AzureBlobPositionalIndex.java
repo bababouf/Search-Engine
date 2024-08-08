@@ -57,6 +57,7 @@ public class AzureBlobPositionalIndex  implements Index{
 
             // Get the byte position for the term from the database
             PostgresDB database = new PostgresDB(directoryType);
+            database.setTableName("byte_positions");
             Long bytePosition = database.selectTerm(term);
 
             // Skip to the byte position of the term's postings
@@ -107,6 +108,7 @@ public class AzureBlobPositionalIndex  implements Index{
 
             // Get the byte position for the term from the database
             PostgresDB database = new PostgresDB(directoryType);
+            database.setTableName("byte_positions");
             Long bytePosition = database.selectTerm(term);
             List<Posting> postings = new ArrayList<>();
 
@@ -142,6 +144,7 @@ public class AzureBlobPositionalIndex  implements Index{
     // Simply returns a list of the unique vocabulary terms found in the corpus
     public List<String> getVocabulary() {
         PostgresDB database = new PostgresDB(directoryType);
+        database.setTableName("byte_positions");
         return database.retrieveVocabulary();
 
     }

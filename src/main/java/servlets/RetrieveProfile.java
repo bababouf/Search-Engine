@@ -28,7 +28,7 @@ public class RetrieveProfile extends HttpServlet {
         // Obtain the HTTPSession object
         HttpSession session = request.getSession();
 
-        // Obtain the necessary user information from the session variables
+        // Obtain user information from session variables
         String firstName = (String) session.getAttribute("firstName");
         String profileURL = (String) session.getAttribute("profileURL");
         String uniqueID = (String) session.getAttribute("uniqueID");
@@ -43,6 +43,8 @@ public class RetrieveProfile extends HttpServlet {
         PrintWriter out = response.getWriter();
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
+        // Convert profile object to a JSON string to send in the HTTP response
         Gson gson = new Gson();
         String jsonResponse = gson.toJson(userProfile);
         out.print(jsonResponse);
@@ -67,12 +69,18 @@ public class RetrieveProfile extends HttpServlet {
 
     }
 
+    /*
+    Returns the directory names which is done by creating a substring starting at the index after the first occurence
+    of a "-" (each uploaded directory is stored with the identifier built by concatenating uniqueID + "-" + directory name)
+     */
     public List<String> getDirectoryNames(List<String> userDirectories)
     {
         List<String> directoryNames = new ArrayList<String>();
-        for (String userDirectory : userDirectories) {
+        for (String userDirectory : userDirectories)
+        {
 
-            try {
+            try
+            {
                 System.out.println("Directory: " + userDirectory);
                 String directoryName = userDirectory.substring(userDirectory.indexOf("-") + 1);
                 directoryNames.add(directoryName);
@@ -81,7 +89,6 @@ public class RetrieveProfile extends HttpServlet {
             {
                 e.printStackTrace();
             }
-
         }
         return directoryNames;
     }
