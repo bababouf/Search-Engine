@@ -4,28 +4,41 @@ import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
 import {removeMainElements} from "../utils/removeMainElements.js";
 import {downloadCorpusAtServer} from "../utils/downloadCorpusAtServer.js";
 
+
+let queryMode = '';
+export const displayInstructionsAndLoadingSpinner = (buttonId) => {
+    removeMainElements();
+    queryMode = buttonId;
+    const mainElement = document.querySelector('main');
+    const instructions = createBooleanInstructions();
+    mainElement.insertBefore(instructions, mainElement.firstChild);
+    const loadingSpinner = createLoadingSpinner();
+    mainElement.appendChild(loadingSpinner);
+    downloadCorpusAtServer(buttonId);
+}
 /*
 This file contains methods for creating and displaying the "boolean search" page. The HTML to display the page is
 created, and an event listener is attached to the "submit query" button. The HTML for the page consists of instructions,
 cards containing acceptable query formats (with examples), a search bar (with a submit button), and the "back to home"
 button
  */
-export const displayBooleanSearchPage = (buttonId) => {
-    downloadCorpusAtServer(buttonId);
+export const displayBooleanSearchPage = () => {
     removeMainElements();
     const mainElement = document.querySelector('main');
     const instructions = createBooleanInstructions();
+    mainElement.insertBefore(instructions, mainElement.firstChild);
     const queryFormats = createAcceptableQueryFormats();
     const searchBar = createSearchBar();
 
-    mainElement.insertBefore(instructions, mainElement.firstChild);
     mainElement.appendChild(queryFormats);
     mainElement.appendChild(searchBar);
     appendBackToHomeButton();
 
-    attachQuerySubmitListener(buttonId);
+    attachQuerySubmitListener(queryMode);
 
 }
+
+
 
 // Creates the HTML for the boolean retrieval instructions
 const createBooleanInstructions = () => {
@@ -39,6 +52,18 @@ const createBooleanInstructions = () => {
     `;
 
     return instructions;
+}
+
+const createLoadingSpinner = () => {
+    const loadingDiv = document.createElement('div');
+    loadingDiv.classList.add('flex-column');
+    loadingDiv.id = "loading-spinner";
+    loadingDiv.innerHTML = `
+            <span class="loading-spinner"></span>
+            <p> Downloading Directory...</p>
+            `
+    return loadingDiv;
+
 }
 
 // Creates HTML for the accepted query formats

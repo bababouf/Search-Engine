@@ -11,6 +11,7 @@ import java.util.zip.ZipOutputStream;
 
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -128,13 +129,18 @@ public class UploadDirServlet extends HttpServlet {
         HttpSession session = request.getSession();
         session.setAttribute("directoryName", directoryName);
 
+        int count = 0;
         for (Part part : request.getParts())
         {
             String fileName = getFileName(part);
 
-            if (fileName != null && !fileName.isEmpty())
+            if (fileName != null && !fileName.isEmpty() && count == 0)
             {
                 String filePath = uploadedDirectoryPath + File.separator + fileName;
+                String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+                ServletContext context = getServletContext();
+                context.setAttribute("fileExtension", fileExtension);
+                count++;
                 try
                 {
                     part.write(filePath);
@@ -178,24 +184,21 @@ public class UploadDirServlet extends HttpServlet {
     public void buildAndStoreIndexFiles(String uploadedDirectory, String containerName) throws IOException, SQLException {
 
         // Connects to blob storage client
-        AzureBlobStorageClient blobStorageClient = new AzureBlobStorageClient();
-
-        // Connects to the container client associated with the passed container name
-        BlobContainerClient containerClient = blobStorageClient.createContainer(containerName);
+        AzureBlobStorageClient blobStorageClient = new AzureBlobStorageClient(containerName);
 
         List<Long> bytePositions = null;
         PositionalInvertedIndex index = null;
-        if (containerClient != null) {
-            // Retrieves the absolute path the the uploaded directory containing the user's uploaded files
-            Path absolutePathToDirectory = Paths.get(uploadedDirectory).toAbsolutePath();
 
-            // Creates the corpus object that will be used in the indexing process
-            DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(absolutePathToDirectory, ".json");
+        // Retrieves the absolute path the the uploaded directory containing the user's uploaded files
+        Path absolutePathToDirectory = Paths.get(uploadedDirectory).toAbsolutePath();
 
-            // Creates the index and meta data files; stores files in blob storage
-            index = PositionalInvertedIndex.indexCorpus(corpus, blobStorageClient);
-            bytePositions = BlobStorageWriter.serializeAndUploadIndex(index, blobStorageClient);
-        }
+        // Creates the corpus object that will be used in the indexing process
+        DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(absolutePathToDirectory, ".json");
+
+        // Creates the index and meta data files; stores files in blob storage
+        index = PositionalInvertedIndex.indexCorpus(corpus, blobStorageClient);
+        bytePositions = BlobStorageWriter.serializeAndUploadIndex(index, blobStorageClient);
+
 
         writeBytePositions(index, "user_directory", bytePositions, containerName);
 
@@ -305,7 +308,7 @@ public class UploadDirServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String uniqueID = (String) session.getAttribute("uniqueID");
 
-        List<String> userDirectories = ServletUtilities.getUserDirectories(uniqueID);
+        List<ServletUtilities.Directory> userDirectories = ServletUtilities.getUserDirectories(uniqueID);
         session.setAttribute("userDirectories", userDirectories);
     }
 
@@ -323,4 +326,5 @@ public class UploadDirServlet extends HttpServlet {
         }
         file.delete();
     }
+
 }

@@ -1,6 +1,6 @@
 import {removeMainElements} from "../utils/removeMainElements.js";
 import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
-import {displayBooleanSearchPage} from "./displayBooleanSearchPage.js";
+import {displayBooleanSearchPage, displayInstructionsAndLoadingSpinner} from "./displayBooleanSearchPage.js";
 import {displayRankedSearchPageInstructions} from "./displayRankedSearchPage.js";
 
 /*
@@ -59,7 +59,7 @@ const queryModeDispatch = (event) => {
     const buttonId = event.currentTarget.id;
 
     if (buttonId === 'boolean-button') {
-        displayBooleanSearchPage(buttonId);
+        displayInstructionsAndLoadingSpinner(buttonId);
     }
     else if (event.currentTarget.id === 'ranked-button')
     {

@@ -66,7 +66,7 @@ public class LoginCallback extends HttpServlet {
                     String hashedID = hashAndEncodeID(userId);
 
                     // Obtain the directories associated with the user's ID
-                    List<String> userDirectories = ServletUtilities.getUserDirectories(hashedID);
+                    List<ServletUtilities.Directory> userDirectories = ServletUtilities.getUserDirectories(hashedID);
 
                     // Get basic user information to display on profile page
                     String firstName = (String) payload.get("given_name");

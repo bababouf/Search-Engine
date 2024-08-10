@@ -1,8 +1,37 @@
-import {setDirectoryPathAtServer} from "../utils/setDirectoryPathAtServer.js";
+import {
+    setDefaultDirectoryAtServer,
+    setUserUploadedDirectoryAtServer
+} from "../utils/setDirectorySelectionAtServer.js";
 import {captureMainContent} from "../utils/homepageContentManager.js";
+import {attachHeaderAnchorListeners} from "../utils/attachHeaderAnchorListeners.js";
+
 
 export const displayProfilePage = () => {
+    createHeaderAnchorElements();
+    attachHeaderAnchorListeners();
     getProfileInformation();
+
+
+}
+
+const createHeaderAnchorElements = () => {
+
+    if(document.querySelector("#home__anchor") == null && document.querySelector("#documentation__anchor") == null)
+    {
+        const heroNavbar = document.querySelector(".hero__navbar");
+
+        const homeAnchor = document.createElement('li');
+        homeAnchor.innerHTML = `
+        <a id="home__anchor" href="#"> Home </a>
+    `;
+        heroNavbar.appendChild(homeAnchor);
+
+        const documentationAnchor = document.createElement('li');
+        documentationAnchor.innerHTML = `
+        <a id="documentation__anchor" href="#"> Documentation </a>
+    `;
+        heroNavbar.appendChild(documentationAnchor);
+    }
 
 }
 
@@ -47,7 +76,7 @@ const createProfileInformation = (profile) => {
     <div class = "card-container">
     <div class="card">
         <h3> Current Directories </h3>
-        <div id="directory-list"></div>
+        <div id="directory-div"></div>
     </div>
     <div class="card flex-column upload-div">
         <h3> Upload Directory </h3> 
@@ -66,6 +95,7 @@ const createProfileInformation = (profile) => {
     </div>
     `;
 
+    //initializeHomePageEventListeners();
     // Dynamically add directory names to "directory-list"
     populateDirectoryList(profile.directories);
 
@@ -76,32 +106,65 @@ const createProfileInformation = (profile) => {
     captureMainContent();
 }
 
+const handleDirectorySelection = (directoryID) => {
+    setUserUploadedDirectoryAtServer(directoryID);
+
+}
+
 // Dynamically creates HTML for displaying user directories
 const populateDirectoryList = (directories) => {
-    let directoryListElement = document.getElementById('directory-list');
+    let directoryDiv = document.getElementById('directory-div');
 
     // In the case no directories were found
     if (directories.length === 0)
     {
         let noDirectoriesFound = document.createElement('p');
         noDirectoriesFound.textContent = "No directories found.";
-        directoryListElement.appendChild(noDirectoriesFound);
+        directoryDiv.appendChild(noDirectoriesFound);
     }
     // One or more directories were found
     else
     {
+        let count = 0;
         // Create a paragraph element for each directory found
         directories.forEach(directory => {
-            let directoryElement = document.createElement('p');
-            directoryElement.textContent = directory;
-            directoryListElement.appendChild(directoryElement);
+            let directoryID = directory.containerName;
+            console.log("ContainerName: " + directoryID)
+            let directoryUL = document.createElement('ul');
+            let directoryElement = document.createElement('li');
+            let directoryLink = document.createElement('a');
+
+            directoryLink.id = directoryID;
+            directoryLink.className = "directory";
+
+            directoryLink.href = "#";
+            directoryLink.textContent = directory.name;
+
+            // Attach the event listener here
+            directoryLink.addEventListener('click', () => {
+                console.log("ContainerName: " + directoryID);
+                handleDirectorySelection(directoryID);
+            });
+
+            directoryElement.appendChild(directoryLink);
+            directoryUL.appendChild(directoryElement);
+            directoryDiv.appendChild(directoryUL);
         });
     }
 }
 
+
 // Creates a listener for each button, calling a dispatch method that handles each case
 export const attachDirectoryListeners = () => {
 
+    const directoryLinks = document.querySelectorAll('.directory');
+    directoryLinks.forEach(link => {
+        link.addEventListener('click', event => {
+            event.preventDefault();
+            const directoryID = event.target.id;
+            handleDirectorySelection(directoryID);
+        });
+    });
     const directoryButtons = document.querySelectorAll('button');
     directoryButtons.forEach(button => button.addEventListener('click', event => {
         dispatchDirectoryButtonClick(event);
@@ -113,7 +176,7 @@ export const attachDirectoryListeners = () => {
 const dispatchDirectoryButtonClick = (event) => {
     if (event.target.id === 'default-directory-button')
     {
-        setDirectoryPathAtServer();
+        setDefaultDirectoryAtServer();
     }
     else
     {
@@ -123,11 +186,9 @@ const dispatchDirectoryButtonClick = (event) => {
         // The files uploaded have a valid file extension and can continue to uploading process
         if(verifyUploadedDirectory(files) === true)
         {
-
             const uploadDiv = document.querySelector(".upload-div");
             const uploadDirText = document.createElement("h3");
             uploadDirText.textContent = "Upload Directory";
-
             const loadingSpinner = createLoadingSpinner();
             uploadDiv.innerHTML = '';
             uploadDiv.appendChild(uploadDirText);
@@ -136,8 +197,6 @@ const dispatchDirectoryButtonClick = (event) => {
             // Converts files to form data so that they can be sent to the servlet
             const formData = convertToFormData(files);
             sendToServlet(formData);
-
-
         }
         // User attempted to upload a directory containing one or more invalid file extensions
         else
@@ -160,6 +219,7 @@ const dispatchDirectoryButtonClick = (event) => {
 const createLoadingSpinner = () => {
     const loadingDiv = document.createElement('div');
     loadingDiv.classList.add('flex-column');
+    loadingDiv.id = "loading-spinner";
     loadingDiv.innerHTML = `
             <span class="loading-spinner"></span>
             <p>Indexing...</p>

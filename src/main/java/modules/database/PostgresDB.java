@@ -18,8 +18,11 @@ public class PostgresDB {
 
     public PostgresDB(String databaseName) {
         directory = databaseName;
+        if(databaseName.equals("default_directory")) {
+            setTableName("se-indexing-files");
+        }
 
-        conn = connect(directory); // Pass directory to the connect method
+        conn = connect(); // Pass directory to the connect method
         if (conn != null) {
             System.out.println("Connected to Postgres database.");
         } else {
@@ -35,8 +38,16 @@ public class PostgresDB {
     This method obtains the DB connection string from an environment variable (which is set locally and through Azure's
     portal).
     */
-    private Connection connect(String databaseName) {
-        String envConnectionString = System.getenv("DB_CONNECTION_STRING");
+    private Connection connect() {
+        String envConnectionString = "";
+        if(directory.equals("default_directory")) {
+            envConnectionString = System.getenv("DB_CONNECTION_STRING_DEFAULT");
+        }
+        else{
+            envConnectionString = System.getenv("DB_CONNECTION_STRING_USER");
+        }
+
+
         System.out.println("DB_CONNECTION_STRING: " + envConnectionString);
 
         Connection conn = null;

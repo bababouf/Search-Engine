@@ -13,34 +13,36 @@ import java.util.List;
 public class AzureBlobPositionalIndex  implements Index{
 
     // The directory type contains a string indicating which corpus will be queried
-    private final String directoryType;
+    private String directoryType;
 
     // Holds the byte stream containing all the postings in the index
-    private final byte[] postingsData;
+    private byte[] postingsData;
 
     // Holds the byte stream containing the document weights
-    private final byte[] documentWeights;
+    private byte[] documentWeights;
 
     // Holds the byte stream containing the average tokens across the corpus
-    private final byte[] averageTokens;
+    private byte[] averageTokens;
 
-    public AzureBlobPositionalIndex (String directory)
-    {
+    private final String tableName;
+
+    public AzureBlobPositionalIndex (String directory, String containerName, String queryMode) throws IOException {
         directoryType = directory;
-        AzureBlobStorageClient client = new AzureBlobStorageClient("se-indexing-files");
 
-        // Downloads the Azure Blob Storage file containing the postings
-        postingsData = client.downloadFile("default-directory-postings.bin");
+        if(containerName.equals("se-indexing-files"))
+        {
+            tableName = "byte_positions";
+        }
+        else
+        {
+            tableName = containerName;
+        }
 
-        // Downlaods the Azure Blob Storage File containing the document weights
-        documentWeights = client.downloadFile("default-directory-docWeights.bin");
-
-        // Downloads the Azure Blob Storage File containing the double value for the average tokens across the corpus
-        averageTokens = client.downloadFile("default-directory-averageTokens.bin");
-
-        System.out.println("All downloads complete.");
+        downloadFiles(queryMode, containerName);
 
     }
+
+
 
     /*
     This method is necessary for processing phrase queries, where the position a term appears in a document is relevant.
@@ -57,7 +59,7 @@ public class AzureBlobPositionalIndex  implements Index{
 
             // Get the byte position for the term from the database
             PostgresDB database = new PostgresDB(directoryType);
-            database.setTableName("byte_positions");
+            database.setTableName(tableName);
             Long bytePosition = database.selectTerm(term);
 
             // Skip to the byte position of the term's postings
@@ -108,7 +110,7 @@ public class AzureBlobPositionalIndex  implements Index{
 
             // Get the byte position for the term from the database
             PostgresDB database = new PostgresDB(directoryType);
-            database.setTableName("byte_positions");
+            database.setTableName(tableName);
             Long bytePosition = database.selectTerm(term);
             List<Posting> postings = new ArrayList<>();
 
@@ -139,6 +141,22 @@ public class AzureBlobPositionalIndex  implements Index{
         }
     }
 
+    public void downloadFiles(String queryMode, String containerName) throws IOException
+    {
+
+        System.out.println("In the download files. ");
+        System.out.println("ContainerName: " + containerName);
+        AzureBlobStorageClient client = new AzureBlobStorageClient(containerName);
+        postingsData = client.downloadFile("postings.bin");
+        System.out.println("Downloaded postings data. ");
+        if (queryMode.equals("ranked"))
+        {
+            System.out.println("Shouldnt be in here");
+            documentWeights = client.downloadFile("doc-weights.bin");
+            averageTokens = client.downloadFile("average-tokens.bin");
+        }
+
+    }
 
     @Override
     // Simply returns a list of the unique vocabulary terms found in the corpus
@@ -149,9 +167,6 @@ public class AzureBlobPositionalIndex  implements Index{
 
     }
 
-    public byte[] getPostingsData() {
-        return postingsData;
-    }
 
     public byte[] getDocumentWeights() {
         return documentWeights;

@@ -1,3 +1,4 @@
+import {displayBooleanSearchPage} from "../content/displayBooleanSearchPage.js";
 
 export const downloadCorpusAtServer = (buttonId) => {
 
@@ -32,6 +33,10 @@ const contactServlet = (endpoint) => {
         .then(responseText =>
         {
             console.log("Successfully contacted servlet")
+            const loadingSpinner = document.querySelector("#loading-spinner");
+            loadingSpinner.remove();
+            displayBooleanSearchPage();
+
         })
         .catch(error =>
         {

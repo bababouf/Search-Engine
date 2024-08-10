@@ -4,6 +4,7 @@
     <excludeFromCompile>
       <directory url="file://$USER_HOME$/IdeaProjects/search-engine" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/src/main/java/modules/rankingSchemes" includeSubdirectories="true" />
+      <file url="file://$PROJECT_DIR$/src/main/java/servlets/RankedSearchServlet.java" />
     </excludeFromCompile>
     <annotationProcessing>
       <profile name="Maven default annotation processors profile" enabled="true">

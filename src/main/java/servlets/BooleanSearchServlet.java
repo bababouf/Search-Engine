@@ -1,18 +1,21 @@
 package servlets;
 
 import java.io.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
 import com.google.gson.Gson;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import modules.documents.DirectoryCorpus;
 import modules.documents.Document;
 import modules.indexing.AzureBlobPositionalIndex;
+import modules.indexing.AzureBlobStorageClient;
 import modules.indexing.Posting;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.*;
@@ -65,30 +68,105 @@ public class BooleanSearchServlet extends HttpServlet {
     This method creates an AzureBlobPositionalIndex object which contains information regarding which corpus is being used,
     as well as the index representing that corpus
      */
-    public AzureBlobPositionalIndex createDiskPositionalIndex() {
+    public AzureBlobPositionalIndex createDiskPositionalIndex() throws IOException {
+
+        System.out.println("In the create positional index");
         ServletContext context = getServletContext();
 
+        String queryMode = (String) context.getAttribute("queryMode");
         // Accesses the context variable containing the directory type (indicating which corpus is being used)
         String directoryType = (String) context.getAttribute("directoryType");
 
+        String containerName = (String) context.getAttribute("containerName");
+
         // Creates the index based on which directory the user is attempting to query
-        return new AzureBlobPositionalIndex(directoryType);
+        return new AzureBlobPositionalIndex(directoryType, containerName, queryMode);
     }
 
 
     public DirectoryCorpus createCorpus() {
         ServletContext context = getServletContext();
+        String directoryType = (String) context.getAttribute("directoryType");
 
-        // Obtains the context variable containing the path to the corpus that will be queried
-        String pathString = (String) context.getAttribute("path");
-        Path directoryPath = Path.of(pathString);
-        System.out.println("Corpus path:" + directoryPath);
-
-        // Creates the DirectoryCorpus object which is used when displaying the results
-        DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(directoryPath, ".json");
+        if (directoryType == "default_directory") {
+            corpus = handleDefaultCorpusCreation(context);
+        } else {
+            corpus = handleUploadedCorpusCreation(context);
+        }
         corpus.getDocuments();
+        System.out.println("After Corpus Creation, number of files found: " + corpus.getCorpusSize());
         return corpus;
     }
+
+    public DirectoryCorpus handleDefaultCorpusCreation(ServletContext context) {
+        String pathString = (String) context.getAttribute("directoryPath");
+        System.out.println("Path string: " + pathString);
+        Path absolutePathToCorpus = Paths.get(pathString).toAbsolutePath();
+        System.out.println("Absolute path: " + absolutePathToCorpus);
+        return DirectoryCorpus.loadJsonDirectory(absolutePathToCorpus, ".json");
+
+    }
+    public DirectoryCorpus handleUploadedCorpusCreation(ServletContext context) {
+        String containerName = (String) context.getAttribute("containerName");
+        AzureBlobStorageClient client = new AzureBlobStorageClient(containerName);
+
+        // Download the zip file as a byte array
+        byte[] serializedCorpus = client.downloadFile("zipped-directory.zip");
+
+        // Create a temporary directory to unzip the contents
+        Path tempDirectory;
+        try {
+            tempDirectory = Files.createTempDirectory("unzippedCorpus");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create temporary directory", e);
+        }
+
+        String fileExtension = null;
+
+        // Unzip the downloaded file into the temporary directory
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(serializedCorpus);
+             ZipInputStream zis = new ZipInputStream(bais)) {
+            ZipEntry zipEntry;
+            while ((zipEntry = zis.getNextEntry()) != null) {
+                if (!zipEntry.isDirectory()) {
+                    Path filePath = tempDirectory.resolve(zipEntry.getName());
+
+                    System.out.println("Filename: " + filePath);
+                    // Ensure the parent directories exist
+                    Files.createDirectories(filePath.getParent());
+
+                    // Write the unzipped file to the temporary directory
+                    try (OutputStream os = Files.newOutputStream(filePath)) {
+                        byte[] buffer = new byte[1024];
+                        int len;
+                        while ((len = zis.read(buffer)) > 0) {
+                            os.write(buffer, 0, len);
+                        }
+                    }
+
+                    // Get the file extension of the first file
+                    if (fileExtension == null) {
+                        String fileName = filePath.getFileName().toString();
+                        fileExtension = fileName.substring(fileName.lastIndexOf("."));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to unzip the file", e);
+        }
+
+        System.out.println("File extension: " + fileExtension);
+        if(Objects.equals(fileExtension, ".json")) {
+            System.out.println("We should be in here or big issue. ");
+            corpus = DirectoryCorpus.loadJsonDirectory(tempDirectory, ".json");
+        }
+        else{
+            System.out.println("No way we in here");
+            corpus = DirectoryCorpus.loadTextDirectory(tempDirectory, ".txt");
+    }
+        return corpus;
+}
+
 
     // Returns a list of postings that satisfy the boolean query
     public List<Posting> processBooleanQuery(String query, AzureBlobPositionalIndex index) throws IOException {

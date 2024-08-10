@@ -19,11 +19,14 @@ import java.util.Scanner;
  */
 public class AzureBlobPositionalIndexer {
 
+    // The name of the Azure Blob Storage container that holds default corpus files
+    public static String defaultCorpusContainer = "se-indexing-files";
+
     public static void main(String[] args) throws SQLException, IOException
     {
         Scanner readIn = new Scanner(System.in);
         Path absolutePathToCorpus = readInPath(readIn);
-        buildIndex(absolutePathToCorpus, "se-indexing-files");
+        buildIndex(absolutePathToCorpus, defaultCorpusContainer);
     }
 
     /**
@@ -33,8 +36,7 @@ public class AzureBlobPositionalIndexer {
     {
         System.out.print("Enter corpus path: ");
         String pathString = readIn.next();
-        Path path = Paths.get(pathString);
-        path = path.toAbsolutePath();
+        Path path = Paths.get(pathString).toAbsolutePath();
         System.out.println("Absolute path from read in: " + path);
         return path;
     }
@@ -52,11 +54,11 @@ public class AzureBlobPositionalIndexer {
         {
             DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(absolutePathToCorpus, ".json");
             AzureBlobStorageClient blobStorageClient = new AzureBlobStorageClient(containerName);
-            PositionalInvertedIndex index = PositionalInvertedIndex.indexCorpus(corpus, blobStorageClient);
 
+
+            PositionalInvertedIndex index = PositionalInvertedIndex.indexCorpus(corpus, blobStorageClient);
             List<Long> bytePositions = BlobStorageWriter.serializeAndUploadIndex(index, blobStorageClient);
             BlobStorageWriter.writeBytePositions(index, bytePositions, "default_directory");
-
         }
         catch (IOException | SQLException e)
         {

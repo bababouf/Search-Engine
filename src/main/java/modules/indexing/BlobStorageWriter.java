@@ -20,7 +20,8 @@ public class BlobStorageWriter {
      * It writes the metadata and postings lists of terms in binary format, using gap encoding for document IDs and
      * term positions to optimize storage space.
      */
-    public static List<Long> serializeAndUploadIndex(PositionalInvertedIndex index, AzureBlobStorageClient blobStorageClient) throws IOException, SQLException {
+    public static List<Long> serializeAndUploadIndex(PositionalInvertedIndex index, AzureBlobStorageClient blobStorageClient) throws IOException, SQLException
+    {
 
         // Will save the starting byte position for each term
         List<Long> bytePositions = new ArrayList<>();
@@ -82,7 +83,9 @@ public class BlobStorageWriter {
             blobStorageClient.uploadFile("postings.bin", data);
 
             System.out.println("Upload postings.bin to Azure Blob Storage complete.");
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
         }
 
@@ -96,11 +99,13 @@ public class BlobStorageWriter {
      * term to first be looked up in the Postgres database, finding the starting byte position, and then accessing the blob
      * file at that byte position for efficient retrieval of information on that term.
      */
-    public static void writeBytePositions(PositionalInvertedIndex index, List<Long> bytePositions, String databaseName) {
+    public static void writeBytePositions(PositionalInvertedIndex index, List<Long> bytePositions, String databaseName)
+    {
         System.out.println("Writing term byte positions to database.");
 
         List<String> vocabulary = index.getVocabulary();
         PostgresDB database = new PostgresDB(databaseName);
+
         database.dropTable();
         database.createTable();
         database.insertTermsBatch(vocabulary, bytePositions);
@@ -114,7 +119,8 @@ public class BlobStorageWriter {
      * that is calculated represents the Euclidean Norm of a document. This allows for a consistent measure of document
      * length that allows for comparing documents of different lengths.
      */
-    public byte[] serializeDocumentWeights(Map<String, Integer> termFrequency, int documentTokens, int bytes) {
+    public byte[] serializeDocumentWeights(Map<String, Integer> termFrequency, int documentTokens, int bytes)
+    {
 
         //ByteArrayOutputStream is the underlying stream that DataOutputStream will be writing to.
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -178,7 +184,8 @@ public class BlobStorageWriter {
      * This method serializes and uploads a single value representing the average tokens in a document to an Azure Blob
      * Storage file.
      */
-    public byte[] serializeAverageTokens(double averageTokens) {
+    public byte[] serializeAverageTokens(double averageTokens)
+    {
 
         try (
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

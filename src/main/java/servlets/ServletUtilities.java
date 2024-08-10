@@ -56,7 +56,7 @@ public class ServletUtilities {
         return currentDir;
     }
 
-    public static List<String> getUserDirectories(String uniqueID){
+    public static List<Directory> getUserDirectories(String uniqueID){
 
         // Connect to Azure Storage and find user directories associated with the hashed ID
         AzureBlobStorageClient client = new AzureBlobStorageClient();
@@ -64,17 +64,33 @@ public class ServletUtilities {
         // Obtain the directories associated with the user ID
         List<String> containerNames = client.listContainers();
 
-        List<String> userDirectories = new ArrayList<>();
+        List<Directory> userDirectories = new ArrayList<>();
         for(String containerName : containerNames)
         {
             if(containerName.contains(uniqueID))
             {
-                userDirectories.add(containerName);
+                String directoryName = containerName.substring(containerName.indexOf("-") + 1);
+                Directory directory = new Directory(containerName, directoryName);
+                userDirectories.add(directory);
+
             }
         }
         return userDirectories;
     }
 
+    public static class Directory {
+        String containerName;
+        String name;
+
+
+        Directory(String containerName, String name)
+        {
+            this.containerName = containerName;
+            this.name = name;
+
+        }
+
+    }
 
 }
 

@@ -32,12 +32,12 @@ public class RetrieveProfile extends HttpServlet {
         String firstName = (String) session.getAttribute("firstName");
         String profileURL = (String) session.getAttribute("profileURL");
         String uniqueID = (String) session.getAttribute("uniqueID");
-        List<String> userDirectories = (List<String>) session.getAttribute("userDirectories");
+        List<ServletUtilities.Directory> userDirectories = (List<ServletUtilities.Directory>) session.getAttribute("userDirectories");
 
-        List<String> directoryNames = getDirectoryNames(userDirectories);
+        //List<String> directoryNames = getDirectoryNames(userDirectories);
 
         // Store all of this information in a Profile object
-        Profile userProfile = new Profile(uniqueID, firstName, profileURL, directoryNames);
+        Profile userProfile = new Profile(uniqueID, firstName, profileURL, userDirectories);
 
         // Send the profile object (converted to a JSON string) to the browser
         PrintWriter out = response.getWriter();
@@ -57,9 +57,9 @@ public class RetrieveProfile extends HttpServlet {
         String id;
         String firstname;
         String url;
-        List<String> directories;
+        List<ServletUtilities.Directory> directories;
 
-        Profile(String uniqueID, String firstName, String profileURL, List<String> userDirectories)
+        Profile(String uniqueID, String firstName, String profileURL, List<ServletUtilities.Directory> userDirectories)
         {
             firstname = firstName;
             url = profileURL;

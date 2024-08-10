@@ -30,7 +30,7 @@ public class RankedSearchServlet extends HttpServlet {
         String path = (String) context.getAttribute("path");
         Path directoryPath = Path.of(path);
 
-        index = new AzureBlobPositionalIndex(path);
+        //index = new AzureBlobPositionalIndex(path, );
 
         corpus = DirectoryCorpus.loadJsonDirectory(directoryPath, ".json");
 

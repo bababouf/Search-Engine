@@ -42,7 +42,7 @@ window.onload = function () {
     // Render the Google Sign-In button
     google.accounts.id.renderButton(
         document.getElementById('buttonDiv'),
-        { theme: 'outline', size: 'large' }
+        { theme: 'filled_black', size: 'large', text: 'continue_with', shape: 'pill'}
     );
 
     // Prompt the One Tap sign-in

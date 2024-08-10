@@ -150,6 +150,7 @@
                     <excludes>
                         <exclude>modules/rankingSchemes/**</exclude>
                         <exclude>servlets/rankedSearchServlet.java</exclude>
+
                     </excludes>
                 </configuration>
             </plugin>

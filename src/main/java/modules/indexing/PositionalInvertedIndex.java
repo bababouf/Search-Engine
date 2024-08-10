@@ -150,10 +150,9 @@ public class PositionalInvertedIndex implements Index {
             dataOutputStream.write(documentWeights);
         }
 
-
+        // Upload the doc-weights to Azure Blob storage
         byte[] accumulatedData = byteArrayOutputStream.toByteArray();
         blobStorageClient.uploadFile("doc-weights.bin", accumulatedData);
-
 
         // As a final step, once all documents are processed, the average tokens per document is calculated
         double averageTokens = corpusTokenCount / corpus.getCorpusSize();
@@ -172,7 +171,8 @@ public class PositionalInvertedIndex implements Index {
      * This method takes as a parameter a single term, and returns the posting list
      */
     @Override
-    public List<Posting> getPostings(String term) {
+    public List<Posting> getPostings(String term)
+    {
         List<Posting> postingsForTerm = invertedIndex.get(term);
 
         // If the posting list is null, return an empty array
@@ -188,7 +188,8 @@ public class PositionalInvertedIndex implements Index {
     }
 
     @Override
-    public List<Posting> getPostingsWithPositions(String term) {
+    public List<Posting> getPostingsWithPositions(String term)
+    {
 
         return null;
     }
@@ -196,7 +197,8 @@ public class PositionalInvertedIndex implements Index {
     /**
      * Returns the sorted vocabulary list of terms.
      */
-    public List<String> getVocabulary() {
+    public List<String> getVocabulary()
+    {
         List<String> sortedVocabulary = new ArrayList<>(vocabulary);
         Collections.sort(sortedVocabulary);
         return sortedVocabulary;

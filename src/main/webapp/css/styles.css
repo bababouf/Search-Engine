@@ -5,6 +5,7 @@ body{
     font-family: Roboto, 'Open Sans', system-ui;
     line-height: 2rem;
     text-align: center;
+
     background-color: #121212;
     color: white;
 }
@@ -16,8 +17,15 @@ p{
 }
 
 h1{
-    color:white;
-    font-size: 3rem;
+    color: lightslategray;
+    font-size: 4rem;
+    font-weight: 600;
+    text-shadow:
+            0.03em 0 white,
+            0 0.03em white,
+            -0.03em 0 white,
+            0 -0.03em white;
+
 
 }
 
@@ -27,7 +35,7 @@ h2{
 }
 
 h3{
-    color: beige;
+    color: lightslategray;
     font-size: 2rem;
     margin: 15px 0;
 }
@@ -35,6 +43,12 @@ h4{
     text-align: center;
 }
 
+.login-div{
+    margin-top: 5rem;
+}
+#buttonDiv{
+    padding: 2rem 2rem 0rem 2rem;
+}
 button{
     cursor: pointer;
     height: 35px;
@@ -59,6 +73,11 @@ li, a{
     text-decoration: none;
     list-style-type: none;
     color: white;
+    text-shadow:
+            0.06em 0 lightslategray,
+            0 0.06em lightslategray,
+            -0.06em 0 lightslategray,
+            0 -0.06em lightslategray;
 }
 
 li a:hover{
@@ -143,9 +162,9 @@ li a:hover{
 
 .hero__container{
     padding: 60px 0;
-    background-image: url(../images/barberry.jpg);
+    background-image: url(../images/pattern.jpg);
     background-size: cover;
-    border-bottom: 5px solid #666;
+    border-bottom: 5px solid white;
     position: sticky;
     top: 0;
 }
@@ -153,8 +172,8 @@ li a:hover{
 .hero__navbar{
     display: flex;
     justify-content: center;
-    font-style: italic;
-    font-size: 1.1rem;
+
+    font-size: 1.3rem;
     gap: 1rem;
     margin-right: 35px;
 }
