@@ -1,26 +1,31 @@
-import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
-import {createSearchBar} from "./createSearchBar.js";
-import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
+import {
+    attachBackToHomeListener,
+    createBackToHomeButton
+} from "../components/createBackToHomeButton.js";
+import {createSearchBar} from "../components/createSearchBar.js";
 import {removeMainElements} from "../utils/removeMainElements.js";
-import {downloadCorpusAtServer} from "../utils/downloadCorpusAtServer.js";
+import {downloadCorpus} from "../utils/configureServlet.js";
+import {sendQueryToServlet} from "../utils/contactServlet.js";
+import {createLoadingSpinner} from "../components/createLoadingSpinner.js";
 
 
 let queryMode = '';
+
+// Displays the instructions and loading spinner
 export const displayInstructionsAndLoadingSpinner = (buttonId) => {
     removeMainElements();
     queryMode = buttonId;
     const mainElement = document.querySelector('main');
     const instructions = createBooleanInstructions();
-    mainElement.insertBefore(instructions, mainElement.firstChild);
     const loadingSpinner = createLoadingSpinner();
+    mainElement.insertBefore(instructions, mainElement.firstChild);
     mainElement.appendChild(loadingSpinner);
-    downloadCorpusAtServer(buttonId);
+    downloadCorpus(buttonId);
 }
 /*
-This file contains methods for creating and displaying the "boolean search" page. The HTML to display the page is
-created, and an event listener is attached to the "submit query" button. The HTML for the page consists of instructions,
-cards containing acceptable query formats (with examples), a search bar (with a submit button), and the "back to home"
-button
+The HTML to display the page is created, and an event listener is attached to the "submit query" button. The HTML for
+the page consists of instructions,cards containing acceptable query formats (with examples), a search bar (with a submit
+button), and the "back to home" button.
  */
 export const displayBooleanSearchPage = () => {
     removeMainElements();
@@ -32,13 +37,12 @@ export const displayBooleanSearchPage = () => {
 
     mainElement.appendChild(queryFormats);
     mainElement.appendChild(searchBar);
-    appendBackToHomeButton();
-
+    const backToHomeButton = createBackToHomeButton();
+    attachBackToHomeListener(mainElement, backToHomeButton)
+    mainElement.appendChild(backToHomeButton);
     attachQuerySubmitListener(queryMode);
 
 }
-
-
 
 // Creates the HTML for the boolean retrieval instructions
 const createBooleanInstructions = () => {
@@ -54,17 +58,6 @@ const createBooleanInstructions = () => {
     return instructions;
 }
 
-const createLoadingSpinner = () => {
-    const loadingDiv = document.createElement('div');
-    loadingDiv.classList.add('flex-column');
-    loadingDiv.id = "loading-spinner";
-    loadingDiv.innerHTML = `
-            <span class="loading-spinner"></span>
-            <p> Downloading Directory...</p>
-            `
-    return loadingDiv;
-
-}
 
 // Creates HTML for the accepted query formats
 const createAcceptableQueryFormats = () => {
@@ -106,6 +99,16 @@ const attachQuerySubmitListener = (buttonId) => {
     const form = document.querySelector('#search-form');
     form.addEventListener('submit', (event) => {
         event.preventDefault();
-        verifyQueryDispatch(buttonId);
+        let endpoint = '';
+        if (buttonId === 'boolean-button')
+        {
+            endpoint = '/booleansearch';
+        }
+        else if (buttonId === 'ranked-button')
+        {
+            endpoint = '/rankedsearch';
+        }
+
+        sendQueryToServlet(endpoint, null, buttonId);
     });
 }

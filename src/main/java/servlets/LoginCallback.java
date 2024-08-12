@@ -6,13 +6,11 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import modules.indexing.AzureBlobStorageClient;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import org.apache.commons.codec.binary.Base32;
 import java.util.Collections;
 import java.util.List;
@@ -27,8 +25,7 @@ import java.util.List;
 
      Since the unique ID is over 250 characters long, it is hashed and encoded in Base32 to shorten it down. Lastly, in order
      to display user directories (directories a user has previously uploaded on their account) a method getUserDirectories(hashedID)
-     is called. Each of these pieces of user information is saved in separate HTTPSession
-     variables.
+     is called. Each of these pieces of user information is saved in separate HTTPSession variables.
      */
 
 @WebServlet(name = "LoginCallback", value = "/oauth2callback")

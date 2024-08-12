@@ -1,5 +1,5 @@
 import {removeMainElements} from "../utils/removeMainElements.js";
-import {createSidebar} from "./createSidebar.js";
+import {createSidebar} from "../components/createSidebar.js";
 
 // Creates the documentation page
 export const displayDocumentationPage = (event) => {
@@ -64,7 +64,7 @@ const createTechnologyStackSection = () => {
         employed, with user interactions triggering various scripts to dynamically modify the content without reloading the page.
         The back-end follows the Jakarta EE (Java) specification and uses the Jersey Server implementation for its REST API. 
         </p>
-        <img class="arch-diagram" src="../../images/arch-diagram.png" height="430" width="800" >
+        <img class="arch-diagram" src="../../../../../target/Search-Engine-1.0-SNAPSHOT/images/arch-diagram.png" height="430" width="800" >
         <p>
         The REST API handles processing queries and communicates with a MYSQL database to make responses as efficient as possible. 
         Maven is used as a build automation tool, streamlining development by managing dependencies, compiling source code, and 
@@ -91,7 +91,7 @@ const createIndexingSection = () => {
         given corpus, the time it takes to retrieve search results for individual queries is significantly decreased. 
         </p>
         <h4>Indexing Flowchart</h4>
-        <img src="../../images/indexing_flowchart.png" width = "1200">
+        <img src="../../../../../target/Search-Engine-1.0-SNAPSHOT/images/indexing_flowchart.png" width = "1200">
         <p>
         During indexing, each document is examined word by word. Every word is transformed to its base form (stemmed) to ensure consistency 
         when indexing variations of the same word. These base terms are then stored in a hashmap, each associated with a list of postings. 
@@ -145,7 +145,7 @@ const createBooleanSection = () => {
         "goose." Additionally, Boolean retrieval accepts phrase queries, which are enclosed in double quotes. Documents matching a phrase query must contain the exact phrase 
         within the text.
         </p>
-        <img class="arch-diagram" src="../../images/boolean-diagram.png" height="400" width="500">
+        <img class="arch-diagram" src="../../../../../target/Search-Engine-1.0-SNAPSHOT/images/boolean-diagram.png" height="400" width="500">
         <p>
         Since boolean queries can be fairly complex and can consist of many terms, the first step is to break down a query into it's individual components. A query that only 
         contains one term is simple, and would only contain a single component representing that term. However, more complex queries may involve AND'ing together certain terms, 
@@ -193,7 +193,7 @@ const createRankedSection = () => {
         the terms in documents, as well as the terms in the query. Similar to how the QueryComponent interface class was used in indexing, the RankingStrategy interface class 
         is implemented by each of the ranking scheme classes (the concrete classes). 
         </p>
-        <img src="../../images/ranking-strategy-diagram.png" height="400" width="1000">
+        <img src="../../../../../target/Search-Engine-1.0-SNAPSHOT/images/ranking-strategy-diagram.png" height="400" width="1000">
         <p>
         The two pieces of information passed to the servlet that handles ranked queries is the user's query and the ranking scheme that the user selected. A dispatch class is used 
         to call the appropriate calculate method for the selected ranking scheme. This dispatch class is called RankedDispatch. 

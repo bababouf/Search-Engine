@@ -37,12 +37,13 @@ public class UploadDirServlet extends HttpServlet {
             // Create a temporary directory in the project root to hold uploaded files
             String uploadedDirectory = createTemporaryUploadDirectory();
 
+            System.out.println("Uploaded directory: " + uploadedDirectory);
             // Store files sent across HTTP in the temporary directory
             handleUploadingFiles(request, uploadedDirectory);
 
             // Create the container name (unique ID + "-" + directoryName)
             String containerName = setContainerName(request);
-
+            System.out.println("Container name: " + containerName);
             // Creates the index and stores all files in the Azure Blob container (using the container name created above)
             buildAndStoreIndexFiles(uploadedDirectory, containerName);
 
@@ -134,13 +135,13 @@ public class UploadDirServlet extends HttpServlet {
         {
             String fileName = getFileName(part);
 
-            if (fileName != null && !fileName.isEmpty() && count == 0)
+            if (fileName != null && !fileName.isEmpty())
             {
                 String filePath = uploadedDirectoryPath + File.separator + fileName;
-                String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
-                ServletContext context = getServletContext();
-                context.setAttribute("fileExtension", fileExtension);
-                count++;
+                //String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+                //ServletContext context = getServletContext();
+                //context.setAttribute("fileExtension", fileExtension);
+                //count++;
                 try
                 {
                     part.write(filePath);
@@ -151,6 +152,8 @@ public class UploadDirServlet extends HttpServlet {
                     System.err.println("Error saving file " + fileName + ": " + e.getMessage());
                 }
             }
+
+
         }
     }
 

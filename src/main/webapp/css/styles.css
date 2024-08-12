@@ -46,22 +46,32 @@ h4{
 .login-div{
     margin-top: 5rem;
 }
-#buttonDiv{
+
+#google-login{
     padding: 2rem 2rem 0rem 2rem;
+}
+
+.back-to-home-button{
+
+    color: darkslategrey;
+    box-shadow: inset 0 0 0 3px white;
+    background-color: white;
+
 }
 button{
     cursor: pointer;
     height: 35px;
     font-size: .8rem;
+    font-weight: 600;
     border-radius: 15px;
     border: 1px solid transparent;
     letter-spacing: 2px;
     min-width: 110px;
     color: beige;
-    box-shadow: inset 0 0 0 2px beige;
+    box-shadow: inset 0 0 0 3px beige;
     background-color: transparent;
     transition-duration: .2s;
-    margin: 25px 0;
+    margin: 10px 0;
 }
 
 button:hover{
@@ -106,13 +116,6 @@ li a:hover{
     margin: 0 10rem;
 }
 
-.card-container{
-    display: flex;
-    justify-content: center;
-    gap: 5rem;
-    margin: 0 3rem;
-}
-
 
 /* COMPONENTS */
 
@@ -123,7 +126,6 @@ li a:hover{
     position: fixed;
     height: 100vh;
     width: 200px;
-
 
 }
 
@@ -188,6 +190,14 @@ li a:hover{
     height: 50px; /* Adjust as necessary */
     cursor: pointer;
 }
+
+.card-container{
+    display: flex;
+    justify-content: center;
+    gap: 5rem;
+    margin: 0 3rem;
+}
+
 
 .card{
     width: 400px;

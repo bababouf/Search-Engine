@@ -36,9 +36,15 @@ public class AzureBlobStorageClient {
     {
         String connectionString = System.getenv("AZURE_STORAGE_CONNECTION_STRING");
         this.serviceClient = new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
+
         this.containerClient = this.serviceClient.getBlobContainerClient(containerName);
+        if(!this.containerClient.exists())
+        {
+            this.containerClient = serviceClient.createBlobContainer(containerName);
+        }
     }
 
+    
     // Returns the container client
     public BlobContainerClient getContainerClient()
     {

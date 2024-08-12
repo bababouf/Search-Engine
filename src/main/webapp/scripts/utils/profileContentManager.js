@@ -1,6 +1,6 @@
 /*
-This file manages setting and retrieving the homepage content, allowing for the "back to home" button to take the user
-back to the homepage.
+This file manages setting and retrieving the profile page content, allowing for the "back to home" button to take the user
+back to the profile page.
  */
 
 let initialContent = '';

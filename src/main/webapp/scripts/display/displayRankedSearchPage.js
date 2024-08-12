@@ -1,8 +1,9 @@
-import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
+
 import {removeMainElements} from "../utils/removeMainElements.js";
-import {createSearchBar} from "./createSearchBar.js";
-import {verifyQueryDispatch} from "../utils/verifyQueryDispatch.js";
-import {downloadCorpusAtServer} from "../utils/downloadCorpusAtServer.js";
+import {createSearchBar} from "../components/createSearchBar.js";
+import {attachBackToHomeListener, createBackToHomeButton} from "../components/createBackToHomeButton.js";
+import {downloadCorpus} from "../utils/configureServlet.js";
+import {sendQueryToServlet} from "../utils/contactServlet.js";
 
 /*
 This file contains methods for creating and displaying the "ranked search" page. The HTML to display the page is created,
@@ -15,7 +16,7 @@ let rankedMode = null; // Initially null, this global variable is set when a ran
 
 // Displays the ranked search instructions, as well as a next button to proceed to the ranked search page
 export const displayRankedSearchPageInstructions = (buttonId) => {
-    downloadCorpusAtServer(buttonId);
+    downloadCorpus(buttonId);
     removeMainElements();
     const instructions = createRankedInstructions();
     const mainElement = document.querySelector('main');
@@ -63,7 +64,10 @@ export const displayRankedSearchPage = (buttonId) => {
     mainElement.appendChild(header);
     mainElement.appendChild(rankedModes);
     mainElement.appendChild(searchBar);
-    appendBackToHomeButton();
+    const backToHomeButton = createBackToHomeButton();
+    attachBackToHomeListener(mainElement, backToHomeButton);
+    mainElement.appendChild(backToHomeButton);
+
     toggleModeSelection();
     attachQuerySubmitListener(buttonId);
 }
@@ -121,8 +125,15 @@ const attachQuerySubmitListener = (buttonId) => {
             createErrorMessage();
 
         } else {
-            console.log(`button id ${buttonId}`)
-            verifyQueryDispatch(buttonId, rankedMode);
+            let endpoint = '';
+            if (buttonId === 'boolean-button')
+            {
+                endpoint = '/booleansearch';
+            } else if (buttonId === 'ranked-button')
+            {
+                endpoint = '/rankedsearch';
+            }
+            sendQueryToServlet(endpoint, rankedMode, buttonId);
             rankedMode = null;
         }
 

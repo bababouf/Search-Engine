@@ -32,28 +32,12 @@ public class ServletUtilities {
         return JsonParser.parseString(requestBody.toString()).getAsJsonObject();
     }
 
-
     // This method writes the JSON data to the response stream, and sends the data to the browser
     public static void sendResultsToBrowser(String results, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         out.println(results);
         out.flush();
-    }
-
-    // Returns the path to the root directory (directory containing pom.xml)
-    public static String getProjectRootDir(String servletContextDir) {
-        String currentDir = "C:/Users/agreg/Desktop/CopyOfProject/search-engine";
-        while (currentDir != null && !new File(currentDir + File.separator + "pom.xml").exists()) {
-            System.out.println("Checking directory: " + currentDir); // Debug statement
-            currentDir = new File(currentDir).getParent();
-        }
-        if (currentDir == null) {
-            System.out.println("Reached the top of the directory hierarchy without finding pom.xml");
-        } else {
-            System.out.println("Found pom.xml in directory: " + currentDir); // Debug statement
-        }
-        return currentDir;
     }
 
     public static List<Directory> getUserDirectories(String uniqueID){
@@ -72,7 +56,6 @@ public class ServletUtilities {
                 String directoryName = containerName.substring(containerName.indexOf("-") + 1);
                 Directory directory = new Directory(containerName, directoryName);
                 userDirectories.add(directory);
-
             }
         }
         return userDirectories;

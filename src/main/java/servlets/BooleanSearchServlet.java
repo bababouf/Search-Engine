@@ -73,7 +73,7 @@ public class BooleanSearchServlet extends HttpServlet {
         System.out.println("In the create positional index");
         ServletContext context = getServletContext();
 
-        String queryMode = (String) context.getAttribute("queryMode");
+        String queryMode = "boolean";
         // Accesses the context variable containing the directory type (indicating which corpus is being used)
         String directoryType = (String) context.getAttribute("directoryType");
 

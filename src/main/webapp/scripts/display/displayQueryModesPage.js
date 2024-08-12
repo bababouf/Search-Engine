@@ -1,6 +1,9 @@
 import {removeMainElements} from "../utils/removeMainElements.js";
-import {appendBackToHomeButton} from "../utils/appendBackToHomeButton.js";
-import {displayBooleanSearchPage, displayInstructionsAndLoadingSpinner} from "./displayBooleanSearchPage.js";
+import {
+    attachBackToHomeListener,
+    createBackToHomeButton
+} from "../components/createBackToHomeButton.js";
+import {displayInstructionsAndLoadingSpinner} from "./displayBooleanSearchPage.js";
 import {displayRankedSearchPageInstructions} from "./displayRankedSearchPage.js";
 
 /*
@@ -13,7 +16,11 @@ export const displayQueryModesPage = () => {
     const modesDiv = createQueryModes();
 
     mainElement.appendChild(modesDiv);
-    appendBackToHomeButton();
+
+    const backToHomeButton = createBackToHomeButton();
+    attachBackToHomeListener(mainElement, backToHomeButton);
+    mainElement.appendChild(backToHomeButton);
+    //appendBackToHomeButton();
     attachModeButtonListeners();
 }
 

@@ -1,5 +1,8 @@
 import {removeMainElements} from "../utils/removeMainElements.js";
-import {appendBackToSearchButton} from "../utils/appendBackToSearchButton.js";
+import {
+    attachBackToSearchListener,
+    createBackToSearchButton
+} from "../components/createBackToSearchButton.js";
 
 
 /*
@@ -21,10 +24,12 @@ export const displayQueryResultsPage = (response, buttonId) => {
 
     const numberOfResultsMsg = document.createElement('h3');
     numberOfResultsMsg.textContent = `Displaying ${listOfResults.length} results for query. `;
-
     mainElement.appendChild(numberOfResultsMsg);
+    const backToSearchButton = createBackToSearchButton();
+    attachBackToSearchListener(mainElement, backToSearchButton, buttonId);
+    mainElement.appendChild(backToSearchButton);
     mainElement.appendChild(resultsDiv);
-    appendBackToSearchButton(buttonId);
+    
 }
 
 // Creates HTML to be displayed when no results are found
