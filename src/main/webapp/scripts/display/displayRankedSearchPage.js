@@ -1,9 +1,8 @@
-
 import {removeMainElements} from "../utils/removeMainElements.js";
 import {createSearchBar} from "../components/createSearchBar.js";
 import {attachBackToHomeListener, createBackToHomeButton} from "../components/createBackToHomeButton.js";
-import {downloadCorpus} from "../utils/configureServlet.js";
-import {sendQueryToServlet} from "../utils/contactServlet.js";
+import {contactServlet, sendQueryToServlet} from "../utils/contactServlet.js";
+import {createLoadingSpinner} from "../components/createLoadingSpinner.js";
 
 /*
 This file contains methods for creating and displaying the "ranked search" page. The HTML to display the page is created,
@@ -13,25 +12,34 @@ ranked search page is displayed.
  */
 
 let rankedMode = null; // Initially null, this global variable is set when a ranking scheme is selected
+const endpoint = '/rankedsearch';
 
 // Displays the ranked search instructions, as well as a next button to proceed to the ranked search page
-export const displayRankedSearchPageInstructions = (buttonId) => {
-    downloadCorpus(buttonId);
+export const displayRankedInstructions = () =>
+{
+
     removeMainElements();
     const instructions = createRankedInstructions();
+    const loadingSpinner = createLoadingSpinner();
     const mainElement = document.querySelector('main');
     mainElement.insertBefore(instructions, mainElement.firstChild);
-    const nextButton = document.querySelector('#next-button');
-    nextButton.addEventListener('click', () => {
 
-        displayRankedSearchPage(buttonId);
+    const nextButton = document.querySelector('#next-button');
+    nextButton.addEventListener('click', () =>
+    {
+        removeMainElements();
+        mainElement.appendChild(loadingSpinner);
+        contactServlet(endpoint)
+
     });
+
 }
 
 // Creates HTMl for ranked retrieval instructions
-const createRankedInstructions = () => {
+const createRankedInstructions = () =>
+{
     const instructions = document.createElement('div');
-    instructions.classList.add('overview');
+    instructions.classList.add("center-content");
     instructions.classList.add('margin-horizontal-10rem');
     instructions.innerHTML = `
         <h2>Instructions</h2>
@@ -52,7 +60,8 @@ const createRankedInstructions = () => {
 }
 
 // When the next button is clicked, the ranked modes, search bar, and back button are displayed
-export const displayRankedSearchPage = (buttonId) => {
+export const displayRankedSearchPage = () =>
+{
     removeMainElements();
     const mainElement = document.querySelector('main');
     const rankedModes = createRankedModes();
@@ -65,15 +74,16 @@ export const displayRankedSearchPage = (buttonId) => {
     mainElement.appendChild(rankedModes);
     mainElement.appendChild(searchBar);
     const backToHomeButton = createBackToHomeButton();
-    attachBackToHomeListener(mainElement, backToHomeButton);
     mainElement.appendChild(backToHomeButton);
+    attachBackToHomeListener();
 
     toggleModeSelection();
-    attachQuerySubmitListener(buttonId);
+    attachQuerySubmitListener();
 }
 
 // Creates HTML for the various ranked retrieval modes the user can select from
-const createRankedModes = () => {
+const createRankedModes = () =>
+{
 
     const rankedModes = document.createElement('div');
     rankedModes.classList.add('card-container');
@@ -102,38 +112,40 @@ const createRankedModes = () => {
 }
 
 // Creates a listener on each ranked mode button that will toggle (select) one of the ranked modes at a time
-const toggleModeSelection = () => {
+const toggleModeSelection = () =>
+{
     const rankModeButtons = document.querySelectorAll('.ranked-button');
-    rankModeButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
+    rankModeButtons.forEach(button =>
+    {
+        button.addEventListener('click', (event) =>
+        {
             document.querySelector?.(".active")?.classList?.remove('active'); // Deselects the previously selected ranked mode (if there was one)
             event.currentTarget.classList.add('active'); // Selects the new mode
             rankedMode = event.currentTarget.id;
             console.log(`selecting ${event.currentTarget.id}`)
         })
     })
+
 }
 
 // Creates listener for submitting a query
-const attachQuerySubmitListener = (buttonId) => {
+const attachQuerySubmitListener = () =>
+{
+    console.log("in the submit query listener")
     const form = document.querySelector('#search-form');
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', (event) =>
+    {
         event.preventDefault();
 
         // Creates error message if no mode was selected
-        if (rankedMode === null) {
+        if (rankedMode === null)
+        {
             createErrorMessage();
-
-        } else {
-            let endpoint = '';
-            if (buttonId === 'boolean-button')
-            {
-                endpoint = '/booleansearch';
-            } else if (buttonId === 'ranked-button')
-            {
-                endpoint = '/rankedsearch';
-            }
-            sendQueryToServlet(endpoint, rankedMode, buttonId);
+        }
+        else
+        {
+            console.log("hi")
+            sendQueryToServlet(endpoint, rankedMode);
             rankedMode = null;
         }
 
@@ -141,7 +153,8 @@ const attachQuerySubmitListener = (buttonId) => {
 }
 
 // Creates the HTML and CSS for the error message that will be displayed if no mode was selected
-const createErrorMessage = () => {
+const createErrorMessage = () =>
+{
     const errorMsg = document.createElement('p');
     errorMsg.textContent = 'Please select a ranked mode before submitting a query. ';
     errorMsg.style.color = '#880808';

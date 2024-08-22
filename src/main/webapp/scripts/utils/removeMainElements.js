@@ -1,7 +1,8 @@
 // Removes all the main elements from the DOM
-export const removeMainElements = () => {
+export const removeMainElements = () =>
+{
     const mainElement = document.querySelector('main');
-    if(mainElement)
+    if (mainElement)
     {
         mainElement.innerHTML = '';
     }

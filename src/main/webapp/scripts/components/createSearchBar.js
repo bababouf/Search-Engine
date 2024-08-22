@@ -2,7 +2,8 @@
 Creates HTML for a search bar (and submit button). This search bar is used on the boolean query page and the ranked
 query page.
  */
-export const createSearchBar = () => {
+export const createSearchBar = () =>
+{
 
     const searchDiv = document.createElement('div');
     searchDiv.classList.add('search-div');

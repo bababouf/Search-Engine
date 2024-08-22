@@ -3,7 +3,8 @@ import {displayBooleanSearchPage} from "../display/displayBooleanSearchPage.js";
 
 
 // Creates HTML for the "back-to-search" button
-export const createBackToSearchButton = () => {
+export const createBackToSearchButton = () =>
+{
     const backButtonContainer = document.createElement('div');
     backButtonContainer.classList.add('back-button-container');
     backButtonContainer.innerHTML = `
@@ -15,16 +16,17 @@ export const createBackToSearchButton = () => {
 }
 
 // Attaches eventListener for "back-to-search" button
-export const attachBackToSearchListener = (mainElement, backButton, buttonId) => {
-    backButton.addEventListener('click', event => {
-        if(buttonId === 'ranked-button')
+export const attachBackToSearchListener = (mainElement, backButton, endpoint) =>
+{
+    backButton.addEventListener('click', event =>
+    {
+        if (endpoint === '/rankedsearch')
         {
-            displayRankedSearchPage(buttonId);
+            displayRankedSearchPage();
         }
-        else if(buttonId === 'boolean-button')
+        else
         {
-            console.log("Displaying boolean search button")
-            displayBooleanSearchPage(buttonId);
+            displayBooleanSearchPage();
         }
 
     });

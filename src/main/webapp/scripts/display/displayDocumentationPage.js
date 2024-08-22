@@ -2,13 +2,15 @@ import {removeMainElements} from "../utils/removeMainElements.js";
 import {createSidebar} from "../components/createSidebar.js";
 
 // Creates the documentation page
-export const displayDocumentationPage = (event) => {
+export const displayDocumentationPage = (event) =>
+{
 
     removeMainElements();
     const sidebar = createSidebar();
     const introSection = createIntroductionSection();
     const techSection = createTechnologyStackSection();
     const indexingSection = createIndexingSection();
+    const storageSection = createStorageSection();
     const booleanSection = createBooleanSection();
     const rankedSection = createRankedSection();
     const mainElement = document.querySelector('main');
@@ -22,6 +24,7 @@ export const displayDocumentationPage = (event) => {
     docsContainer.appendChild(introSection);
     docsContainer.appendChild(techSection);
     docsContainer.appendChild(indexingSection);
+    docsContainer.appendChild(storageSection);
     docsContainer.appendChild(booleanSection);
     docsContainer.appendChild(rankedSection);
     flexContainer.appendChild(docsContainer);
@@ -30,15 +33,17 @@ export const displayDocumentationPage = (event) => {
 }
 
 // Creates the HTML for the introduction section
-const createIntroductionSection = () => {
+const createIntroductionSection = () =>
+{
     const introSection = document.createElement('div');
-    introSection.classList.add('documentation');
+
     introSection.innerHTML = `
-        <h2 id="documentation__intro-section" class="section"> Introduction </h2>
+        <h3 id="documentation__intro-section" class="section site__h3"> Introduction </h3>
         <p> 
         This web application functions as a search engine and indexer, enabling users to search a default set of documents or 
         upload and query their own collections. The default collection includes 30,000 webpages scraped from NPS.org (National 
-        Park Service pages). If users upload their own collection, it must consist entirely of either .TXT or .JSON files.
+        Park Service pages). If users upload their own collection, it must consist entirely of either .TXT or .JSON files. The 
+        directory must be <= 50 MB, and a limit of 3 directories per user is set.
         </p>
         <p>
         After selecting the corpus, the user can choose between two query modes: boolean retrieval or ranked retrieval. 
@@ -54,90 +59,97 @@ const createIntroductionSection = () => {
 }
 
 // Creates HTML for the technology section
-const createTechnologyStackSection = () => {
+const createTechnologyStackSection = () =>
+{
     const techSection = document.createElement('div');
-    techSection.classList.add('documentation');
+
     techSection.innerHTML = `
-        <h2 id="documentation__tech-stack-section" class="section">Application Architecture</h2>
+        <h3 id="documentation__tech-stack-section" class="section site__h3">Application Architecture</h3>
         <p>
-        The front end of the application is built using vanilla JavaScript, CSS, and HTML. A single HTML page (index.html) is 
-        employed, with user interactions triggering various scripts to dynamically modify the content without reloading the page.
-        The back-end follows the Jakarta EE (Java) specification and uses the Jersey Server implementation for its REST API. 
+        The front end of the application is built using vanilla JavaScript, CSS, and HTML. Only two HTML pages are used; one
+        for the homepage, and one to display the Google Login. All other pages are dynamically created through removing and 
+        appending elements to the document's main section. The back-end follows the Jakarta EE (Java) specification and uses 
+        the Jersey Server implementation for its REST API. 
         </p>
-        <img class="arch-diagram" src="../../../../../target/Search-Engine-1.0-SNAPSHOT/images/arch-diagram.png" height="430" width="800" >
+        <img class="arch-diagram" src="../../images/arch-diagram.png" height="500" width="1000" >
         <p>
-        The REST API handles processing queries and communicates with a MYSQL database to make responses as efficient as possible. 
-        Maven is used as a build automation tool, streamlining development by managing dependencies, compiling source code, and 
-        packaging the application.
+        The REST API handles processing queries and communicates with a Postgres database to make responses as efficient as possible. 
+        There are two databases used; one contains the default corpus and a single table, and the other contains a separate
+        table for each of the uploaded directories (where the table name is the unique identifier built from the hashed user ID and directory
+        name). Maven is used as a build automation tool, streamlining development by managing dependencies, compiling source code, and 
+        packaging the application. A GitHub Actions workflow has been implemented to enable continuous integration and continuous deployment (CI/CD) 
+        for the project. This workflow automatically builds and deploys the application to the Azure App Service whenever changes are pushed to the 
+        remote repository. By leveraging this automated process, all updates to the codebase are seamlessly reflected in the Azure-hosted application, 
+        ensuring that the live environment stays up-to-date with the latest developments.
         </p>
-        <p>
-        The web application is deployed using Microsoft's Azure App Service. This is a platform as a service (PaaS) which provides complete 
-        managed hosting of the application (meaning Microsoft's hardware is being used as the server). 
-        </p>
-        <br>
+       
         
     `;
     return techSection;
 }
 
 // Creates HTML for the indexing section
-const createIndexingSection = () => {
+const createIndexingSection = () =>
+{
     const indexingSection = document.createElement('div');
-    indexingSection.classList.add('documentation');
+
     indexingSection.innerHTML = `
-        <h2 id="documentation__indexing-section" class="section">Indexing</h2>
+        <h3 id="documentation__indexing-section" class="section site__h3">Indexing</h3>
         <p> 
         Creating an index is crucial for speeding up the search engine's response time. By investing time upfront to build an index for a 
         given corpus, the time it takes to retrieve search results for individual queries is significantly decreased. 
         </p>
         <h4>Indexing Flowchart</h4>
-        <img src="../../../../../target/Search-Engine-1.0-SNAPSHOT/images/indexing_flowchart.png" width = "1200">
+        <img src="../../images/indexing_flowchart.png" width = "1200">
         <p>
-        During indexing, each document is examined word by word. Every word is transformed to its base form (stemmed) to ensure consistency 
-        when indexing variations of the same word. These base terms are then stored in a hashmap, each associated with a list of postings. 
-        Each posting contains the document's ID, which uniquely identifies the term within the corpus, along with a list of positions where the term occurs in that document.<br>
+        During the indexing process, each document is analyzed word by word. Every word is stemmed, reducing it to its base 
+        form to ensure that variations of the same word are consistently indexed. These base terms are stored in a hashmap, 
+        with each term linked to a list of postings. Each posting includes the document's unique ID within the corpus and a 
+        list of positions where the term appears in that document.
         </p>
         <p>
-        The index itself is stored in a binary file. When writing terms to disk, a specific sequence is followed: document frequency, document ID, 
-        number of positions, and the positions themselves. To streamline term lookup during queries, we store the byte position of each term in a 
-        MySQL table, which consists of two columns: the term and its corresponding position. 
+        As the index is being constructed, metadata about the directory—such as document weights and the average number of tokens 
+        per document—is also collected. Once the index and metadata files are complete, they are serialized and stored in an Azure 
+        Blob Storage container. The container name is generated using a hashed user ID and the corpus name to ensure uniqueness. 
+        For each uploaded directory, a new container is created to store all these files.
         </p>
-        <h3>Critical Classes</h3>
-        <p>
-        This section will provide the method signature and an explanation for the important classes shown in the indexing flowchart above.  <br>
-        Each method signature is clickable, and will open up the code for a given method in a new tab.  
-        </p>
-        <p>
-        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/text/NonBasicTokenProcessor.java#L20" target="_blank"> 1. modules.text.NonBasicTokenProcessor.processToken(token)</a></em></strong><br>
-        This method is invoked for each token (an individual term) in every document. Each term undergoes stemming and is converted to lowercase. If the term is hyphenated, 
-        it is split into its individual components, and each component is then stemmed and converted to lowercase. The processed term is then returned from the method.
-        </p>
-        <p>
-        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/indexing/PositionalInvertedIndex.java#L30" target="_blank"> 2. modules.indexing.PositionalInvertedIndex.addTerm(term, documentID, position)</a></em></strong><br>
-        The <em>addTerm</em> method will add a single term from a single documentID one position at a time. A term can appear in many documents, and it can appear many times 
-        in a single document. This method is invoked for every processed token that was returned in the previous <em>processToken</em> method.
-        </p>
-        <p>
-        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/indexing/DiskIndexWriter.java#L134" target="_blank"> 3. modules.indexing.DiskIndexWriter.writeDocumentWeights(termFrequencyMap, absolutePathToIndex, ID, documentTokens, bytes)</a></em></strong><br>
-        Once the last term in a document is processed and added to the hashmap, this method stores important information obtained from each document. These include 
-        the length of the document (used to normalize very short documents/very long documents), the number of tokens, number of ASCII bytes, and the average term 
-        frequency of terms in the document. This information is important for calculating document rankings in the ranked retrieval mode. 
+       
+    `;
+    return indexingSection;
+}
+
+const createStorageSection = () =>
+{
+    const indexingSection = document.createElement('div');
+
+    indexingSection.innerHTML = `
+        <h3 id="documentation__storage-section" class="section site__h3"> Storage Details </h3>
+        <p> 
+        As described earlier, after the in-memory hashmap is created, it is serialized along with the metadata files and 
+        uploaded to a designated container in Azure Blob Storage. Each container, representing a unique directory, contains 
+        four .bin files: postings.bin (the serialized hashmap), and two other .bin files for document weights and average token 
+        metadata. Additionally, a .zip file holds the original directory files.
         </p>
         <p>
-        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/indexing/DiskIndexWriter.java#L176" target="_blank"> 4. modules.indexing.DiskIndexWriter.writeAverageTokensForCorpus(String pathToDocWeights, double averageTokens)</a></em></strong><br>
-        After all documents have been processed, the <em>writeAverageTokensForCorpus</em> is called to write the average number of tokens to the end of the 
-        docWeights.bin file. 
+        Following the upload, a PostgreSQL database is created to facilitate efficient term lookups within the postings.bin file. 
+        The database table contains two columns: the term and its corresponding byte position within postings.bin. There are two 
+        databases—one for the default directory and one for user-uploaded directories. For each uploaded directory, a new table with 
+        a unique identifier is created. When a user selects a directory to query, the corresponding table is accessed, allowing for 
+        efficient term lookups and retrieval of associated postings. 
         </p>
+     
+       
     `;
     return indexingSection;
 }
 
 // Creates HTML for the boolean section
-const createBooleanSection = () => {
+const createBooleanSection = () =>
+{
     const booleanSection = document.createElement('div');
-    booleanSection.classList.add('documentation');
+
     booleanSection.innerHTML = `
-        <h2 id="documentation__boolean-section" class="section"> Boolean Retrieval </h2>
+        <h3 id="documentation__boolean-section" class="section site__h3"> Boolean Retrieval </h3>
         <p>
         Boolean retrieval is a classic model in information retrieval that uses Boolean logic to match documents to a user's query. This approach employs the AND and 
         OR operators. Terms separated by a space are combined using AND, while terms separated by a "+" are combined using OR. A query can have multiple AND conditions 
@@ -145,7 +157,7 @@ const createBooleanSection = () => {
         "goose." Additionally, Boolean retrieval accepts phrase queries, which are enclosed in double quotes. Documents matching a phrase query must contain the exact phrase 
         within the text.
         </p>
-        <img class="arch-diagram" src="../../../../../target/Search-Engine-1.0-SNAPSHOT/images/boolean-diagram.png" height="400" width="500">
+        <img class="arch-diagram" src="../../images/boolean-diagram.png" height="400" width="500">
         <p>
         Since boolean queries can be fairly complex and can consist of many terms, the first step is to break down a query into it's individual components. A query that only 
         contains one term is simple, and would only contain a single component representing that term. However, more complex queries may involve AND'ing together certain terms, 
@@ -156,26 +168,7 @@ const createBooleanSection = () => {
         that implement the QueryComponent interface) include the following classes: ORQuery, ANDQuery, PhraseLiteral, and TermLiteral. The example on the left shows how a query might 
         be decomposed; each subquery (group of terms split up by the "+") are AND'd together, and then an ORQuery is created to obtain the final results list. 
         </p>
-        <h3>Critical Classes</h3>
-        <p>
-        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/queries/BooleanQueryParser.java#L42" target="_blank"> 1. modules.queries.BooleanQueryParser.parseQuery(query)</a></em></strong><br>
-        The <em>parseQuery</em>  method accepts a raw query as a string parameter. The query is scanned to identify segments separated by "+" signs, which represent terms to be 
-        OR'd. Each segment is processed as a subquery. 
-        </p>
-        <p>
-        For each subquery segment, multiple literals (terms) are combined into an AndQuery component. If a subquery contains only one literal, a TermLiteral component is created. 
-        This component is then added to a list of components. 
-        </p>
-        <p> 
-        After processing all subqueries, a list of components is created. If the list contains only one component, the method returns that single QueryComponent. If the list contains 
-        multiple components, the method returns an OrQuery containing those components.
-        </p>
-        <p>
-        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/queries/QueryComponent.java#L20" target="_blank"> 2. modules.queries.QueryComponent.getPostings(index)</a></em></strong><br>
-        Each of the concrete classes will implement a getPostings method, which takes as a parameter the index. Depending on which class is implementing the method, it can look widely 
-        different. For example, the getPostings method for the ANDQuery class will take the intersection of two or more terms. In contrast, the ORQuery class will implement a method that 
-        takes the union of two or more terms. The final list of documents is then returned from these methods.
-        </p>
+        
         
     `;
     return booleanSection;
@@ -183,36 +176,35 @@ const createBooleanSection = () => {
 }
 
 // Creates HTML for the ranked section
-const createRankedSection = () => {
+const createRankedSection = () =>
+{
     const rankedSection = document.createElement('div');
-    rankedSection.classList.add('documentation');
+
     rankedSection.innerHTML = `
-        <h2 id="documentation__ranked-section" class="section"> Ranked Retrieval </h2>
+        <h3 id="documentation__ranked-section" class="section site__h3"> Ranked Retrieval </h3>
         <p>
-        As mentioned above, one of several different ranking schemes can be selected for the ranked retrieval mode. Each ranking scheme varies in how weights are calculated for 
-        the terms in documents, as well as the terms in the query. Similar to how the QueryComponent interface class was used in indexing, the RankingStrategy interface class 
-        is implemented by each of the ranking scheme classes (the concrete classes). 
+        In ranked retrieval, the documents of a corpus are ranked based on their suspected relevance to a given query. A 
+        basic ranking scheme may look to term frequency as an indicator for relevant documents. For example if a user entered 
+        "dogs", intuitively, it might make sense to rank the documents where dog appears frequently higher than those in which 
+        it doesn't. However, it soon becomes apparent that not all terms in the query are equal. If the query was instead "the dogs", 
+        a document with frequent use of "the" (and no mention of dogs) might rank higher than a document actually talking about dogs. 
+        Thus, for each of the schemes below, weights are given for both the terms in the query and the terms in each document.
         </p>
-        <img src="../../../../../target/Search-Engine-1.0-SNAPSHOT/images/ranking-strategy-diagram.png" height="400" width="1000">
         <p>
-        The two pieces of information passed to the servlet that handles ranked queries is the user's query and the ranking scheme that the user selected. A dispatch class is used 
-        to call the appropriate calculate method for the selected ranking scheme. This dispatch class is called RankedDispatch. 
+        One of several different ranking schemes can be selected for the ranked retrieval mode. Each ranking scheme varies in how weights are calculated for 
+        the terms in documents, as well as the terms in the query. Below shows how these weights, the weight of the term in the query (Wqt), the weight of the
+        term in the document (Wdt), and the document normalizing value (Ld). The "Ld" value accounts for varying document lengths.
+        </p>
+        <p><em> Default </em></p>
+        <img class="ranked" src="../../images/default-ranked.png" height="150" width="200">
+        <p><em> TF-IDF </em></p>
+        <img class="ranked" src="../../images/tfidf-ranked.png" height="150" width="200">
+        <p><em> Okapi BM25 </em></p>
+        <img class="ranked" src="../../images/okapi-ranked.png" height="150" width="200">
+        <p><em> Wacky </em></p>
+        <img class="ranked" src="../../images/wacky-ranked.png" height="150" width="200">
         
-        </p>
-        <h3>Critical Classes</h3>
-        <p>
-        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/rankingSchemes/RankedDispatch.java#L25" target="_blank"> 1. modules.rankingSchemes.RankedDispatch(index, corpus)</a></em></strong><br>
-        The first step in processing a ranked query is to configure the system so that it knows which corpus is being queried (since the user could have uploaded their own, 
-        or chosen to query the default NPS corpus). An object of the RankedDispatch class is instantiated by simply calling the constructor and passing it the index and corpus. 
-        </p>
-        <p>
-        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/rankingSchemes/RankedDispatch.java#L45" target="_blank"> 2. modules.rankingSchemes.RankedDispatch.calculate(rankingScheme, query)</a></em></strong><br>
-        Once the RankedDispatch class is instantiated, the calculate method can be called, passing to it an instance of the ranking scheme class being used, as well as the query 
-        string. Before calculations can be done, several preprocessing steps are done to lowercase and split the query by whitespace into its individual terms. The 
-        RankedQueryParser.parseQuery method takes care of this. After parsing, a list of QueryComponents is returned
-        </p>
-        <p>
-        <strong><em><a href="https://github.com/bababouf/Search-Engine/blob/test-branch/src/main/java/modules/rankingSchemes/RankedDispatch.java#L45" target="_blank"> 2. modules.rankingSchemes.RankedDispatch.calculateAccumulatorValue(rankingScheme, query)</a></em></strong><br>
+        
         </p>
         
         

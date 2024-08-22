@@ -1,0 +1,190 @@
+
+/* LOGIN PAGE */
+
+#google-login{
+    padding: 2rem 2rem 0 2rem;
+}
+
+/* SITE PAGE STYLES */
+
+.site__hero-container{
+    background-image: url(../images/nature.jpg);
+    background-size: cover;
+    background-position: top;
+    height: 200px; /* Adjust this based on the height of your image */
+    position: sticky; /* Ensure this container is the positioning context */
+    border-bottom: 3px solid #262626;
+    top: 0;
+    box-sizing: border-box;
+}
+
+.site__title-and-anchors{
+    padding: 30px;
+}
+
+.site__h1{
+    color: azure;
+    font-size: 3.5rem;
+    font-weight: 900;
+    font-style: italic;
+    margin-left: auto;
+    margin-right: auto;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: white;
+}
+
+.site__h2{
+
+}
+
+.site__h3{
+
+}
+
+.site__hero-anchors{
+    display: flex;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 420px;
+    font-size: 1.3rem;
+    gap: 4rem;
+}
+
+.site__profile-logo {
+    width: 150px; /* Adjust as necessary */
+    height: 100px; /* Adjust as necessary */
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.site__boolean-container{
+    padding-top: 40px;
+}
+
+.site__boolean-instructions{
+    width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.site__results-header{
+    position: sticky;
+    top: 200px;
+    padding: 20px;
+    z-index: 1000;
+    background-color: #262626;
+    margin: 0;
+}
+
+/* COMPONENTS */
+
+
+.sidebar {
+
+    background-color: rgb(30, 30, 30);
+    padding-top: 20px;
+    position: fixed;
+    height: 100vh;
+    width: 200px;
+
+}
+
+.sidebar a {
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 18px;
+    color: white;
+    display: block;
+}
+
+.sidebar a:hover {
+    background-color: #575757;
+}
+.search-div{
+    margin-top: 15px;
+}
+.search-box {
+    padding: 10px;
+    width: 80px;
+    height: 80px;
+    border: 4px solid lightsteelblue;
+    border-radius: 50px;
+    box-sizing: border-box;
+    font-size: 26px;
+    color: black;
+    outline: none;
+    transition: .5s;
+}
+
+.box:hover input{
+    width: 450px;
+    background: azure;
+    border-radius: 10px;
+}
+
+
+.error-message{
+    color: #880808;
+}
+
+.loading-spinner {
+    margin-top: 2rem;
+    width: 48px;
+    height: 48px;
+    border: 5px solid lightsteelblue;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.upload-corpus-div{
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.result-link{
+    color: darkslategray;
+}
+
+.active{
+    color: #fff;
+    background-color: lightslategray;
+}
+
+.documentation{
+    margin-left: 200px;
+    text-align: left;
+    padding: 0rem 4rem;
+}
+
+.documentation p{
+    text-align: left;
+    overflow: hidden;
+}
+.arch-diagram{
+    margin: 0px 100px;
+}
+
+.section {
+    scroll-margin-top: 200px; /* Adjust this value to the height of your fixed header */
+    margin: 2rem 0rem;
+
+}
+.ranked{
+    margin: 0px 200px;
+}
+
+

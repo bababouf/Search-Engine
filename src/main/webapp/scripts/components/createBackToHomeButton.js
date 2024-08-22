@@ -2,7 +2,8 @@ import {getInitialContent} from "../utils/profileContentManager.js";
 import {attachProfileListeners} from "../display/displayProfilePage.js";
 
 // Creates the HTML for the "back to home" button
-export const createBackToHomeButton = () => {
+export const createBackToHomeButton = () =>
+{
     const backButtonContainer = document.createElement('div');
     backButtonContainer.classList.add('back-button-container');
     backButtonContainer.innerHTML = `
@@ -13,12 +14,14 @@ export const createBackToHomeButton = () => {
 }
 
 // Attaches an event listener to the "back to home" button
-export const attachBackToHomeListener = (mainElement, backButton) => {
-    backButton.addEventListener('click', event => {
-
+export const attachBackToHomeListener = () =>
+{
+    const mainElement = document.querySelector("main");
+    const backButton = document.querySelector('.back-to-home-button');
+    backButton.addEventListener('click', event =>
+    {
         mainElement.innerHTML = getInitialContent();
         attachProfileListeners();
-
     });
 }
 
