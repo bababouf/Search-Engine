@@ -3,6 +3,7 @@ package modules.text;
 import opennlp.tools.stemmer.PorterStemmer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.lang.Character.isLetterOrDigit;
@@ -10,7 +11,8 @@ import static java.lang.Character.isLetterOrDigit;
 /**
  * This class offers further processing to tokens that are passed to its processToken function.
  */
-public class NonBasicTokenProcessor implements TokenProcessor {
+public class NonBasicTokenProcessor implements TokenProcessor
+{
 
     /**
      * This function will first check the token passed to it is hyphenated. If so, it will split on each hyphen (if more than one)
@@ -18,7 +20,8 @@ public class NonBasicTokenProcessor implements TokenProcessor {
      */
 
     @Override
-    public List<String> processToken(String token) {
+    public List<String> processToken(String token)
+    {
         if (token == null || token.isEmpty())
         {
             return new ArrayList<>();
@@ -32,16 +35,14 @@ public class NonBasicTokenProcessor implements TokenProcessor {
      * This method will split a token that contains hyphens by the hyphens, adding each of the individual terms (as well
      * as the full hyphenated term without the hyphens) to the term list
      */
-    private List<String> splitToken(String token) {
+    private List<String> splitToken(String token)
+    {
         List<String> termList = new ArrayList<>();
         if (token.contains("-"))
         {
             // Split the token by hyphens and add to term list
             String[] terms = token.split("-");
-            for (String term : terms)
-            {
-                termList.add(term);
-            }
+            Collections.addAll(termList, terms);
             // Add the full hyphenated term, removing the hyphens
             termList.add(token.replace("-", ""));
         }
@@ -57,7 +58,8 @@ public class NonBasicTokenProcessor implements TokenProcessor {
     /**
      * This method will stem and lowercase each of the terms passed to it
      */
-    private List<String> processTerms(List<String> termList) {
+    private List<String> processTerms(List<String> termList)
+    {
         List<String> termListLowercase = new ArrayList<>();
 
         for (String term : termList)

@@ -10,27 +10,34 @@ import java.util.List;
  * and its associated starting byte position (in the Azure Blob file) can be stored. It's important to note here that
  * two types of databases can be created (one for the default corpus, and one for a user-uploaded corpus).
  */
-public class PostgresDB {
+public class PostgresDB
+{
 
     private static Connection conn;
     public String directory;
     public String tableName;
 
-    public PostgresDB(String databaseName) {
+    public PostgresDB(String databaseName)
+    {
         directory = databaseName;
-        if(databaseName.equals("default_directory")) {
+        if (databaseName.equals("default_directory"))
+        {
             setTableName("se-indexing-files");
         }
 
         conn = connect(); // Pass directory to the connect method
-        if (conn != null) {
+        if (conn != null)
+        {
             System.out.println("Connected to Postgres database.");
-        } else {
+        }
+        else
+        {
             System.out.println("Failed to connect to Postgres database.");
         }
     }
 
-    public void setTableName(String tableName) {
+    public void setTableName(String tableName)
+    {
         this.tableName = "\"" + tableName + "\""; // Quote the table name
     }
 
@@ -38,12 +45,15 @@ public class PostgresDB {
     This method obtains the DB connection string from an environment variable (which is set locally and through Azure's
     portal).
     */
-    private Connection connect() {
+    private Connection connect()
+    {
         String envConnectionString = "";
-        if(directory.equals("default_directory")) {
+        if (directory.equals("default_directory"))
+        {
             envConnectionString = System.getenv("DB_CONNECTION_STRING_DEFAULT");
         }
-        else{
+        else
+        {
             envConnectionString = System.getenv("DB_CONNECTION_STRING_USER");
         }
 
@@ -52,11 +62,14 @@ public class PostgresDB {
 
         Connection conn = null;
 
-        try {
+        try
+        {
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(envConnectionString);
             conn.setAutoCommit(false);
-        } catch (ClassNotFoundException | SQLException e) {
+        }
+        catch (ClassNotFoundException | SQLException e)
+        {
             e.printStackTrace();
             System.out.println("Failed to connect to PostgreSQL database: " + e.getMessage());
         }
@@ -64,15 +77,20 @@ public class PostgresDB {
     }
 
     // Issues a select statement to obtain the byte position of the term passed
-    public Long selectTerm(String term) {
+    public Long selectTerm(String term)
+    {
         final String SQL = "SELECT term, byte_position FROM " + tableName + " WHERE term = ?";
-        try (PreparedStatement c = conn.prepareStatement(SQL)) {
+        try (PreparedStatement c = conn.prepareStatement(SQL))
+        {
             c.setString(1, term);
             ResultSet rs = c.executeQuery();
-            if (rs.next()) {
+            if (rs.next())
+            {
                 return rs.getLong("byte_position");
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             e.printStackTrace();
         }
 
@@ -80,15 +98,20 @@ public class PostgresDB {
     }
 
     // Retrieves a list of all unique terms stored in the database (representing the corpus vocabulary)
-    public List<String> retrieveVocabulary() {
+    public List<String> retrieveVocabulary()
+    {
         List<String> vocabularyList = new ArrayList<>();
         final String SQL = "SELECT term FROM " + tableName;
         try (PreparedStatement preparedStatement = conn.prepareStatement(SQL);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-            while (resultSet.next()) {
+             ResultSet resultSet = preparedStatement.executeQuery())
+        {
+            while (resultSet.next())
+            {
                 vocabularyList.add(resultSet.getString("term"));
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             e.printStackTrace();
         }
         return vocabularyList;
@@ -97,17 +120,21 @@ public class PostgresDB {
     /*
     This method efficiently inserts terms into the database in batches of 2500.
     */
-    public void insertTermsBatch(List<String> terms, List<Long> bytePositions) {
+    public void insertTermsBatch(List<String> terms, List<Long> bytePositions)
+    {
         final String SQL = "INSERT INTO " + tableName + " (term, byte_position) VALUES (?, ?) ON CONFLICT DO NOTHING";
-        try (PreparedStatement ps = conn.prepareStatement(SQL)) {
+        try (PreparedStatement ps = conn.prepareStatement(SQL))
+        {
             int batchSize = 2500; // Adjust this based on performance
             int count = 0;
 
-            for (int i = 0; i < terms.size(); i++) {
+            for (int i = 0; i < terms.size(); i++)
+            {
                 String term = terms.get(i);
 
                 // Truncates terms over 255 to 254 chars
-                if (term.length() >= 254) {
+                if (term.length() >= 254)
+                {
                     term = term.substring(0, 254);
                 }
 
@@ -116,7 +143,8 @@ public class PostgresDB {
                 ps.setLong(2, bytePosition);
                 ps.addBatch();
 
-                if (++count % batchSize == 0) {
+                if (++count % batchSize == 0)
+                {
                     System.out.println("Committing batch of 2500 terms to DB.");
                     ps.executeBatch();
                     conn.commit(); // Commit the transaction
@@ -129,31 +157,42 @@ public class PostgresDB {
 
             // Commit the final batch
             conn.commit();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             e.printStackTrace();
         }
     }
 
     // Commits terms to the database
-    public void commit() {
-        try {
+    public void commit()
+    {
+        try
+        {
             conn.commit();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             e.printStackTrace();
         }
     }
 
     // Drops the byte_positions table if it exists
-    public void dropTable() {
-        if (conn == null) {
+    public void dropTable()
+    {
+        if (conn == null)
+        {
             System.err.println("Connection is null.");
             return;
         }
         final String SQL = "DROP TABLE IF EXISTS " + tableName;
-        try (Statement statement = conn.createStatement()) {
+        try (Statement statement = conn.createStatement())
+        {
             statement.executeUpdate(SQL);
             conn.commit();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             System.err.println("SQLException: " + e.getMessage());
             System.err.println("SQLState: " + e.getSQLState());
             System.err.println("VendorError: " + e.getErrorCode());
@@ -162,15 +201,19 @@ public class PostgresDB {
     }
 
     // Creates the byte_positions table
-    public void createTable() {
+    public void createTable()
+    {
         final String SQL = "CREATE TABLE IF NOT EXISTS " + tableName +
                 " (term VARCHAR(255) NOT NULL, " +
                 " byte_position BIGINT, " +
                 " PRIMARY KEY (term))";
-        try (Statement statement = conn.createStatement()) {
+        try (Statement statement = conn.createStatement())
+        {
             statement.executeUpdate(SQL);
             conn.commit();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             e.printStackTrace();
         }
     }
