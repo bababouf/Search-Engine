@@ -3,6 +3,7 @@ package servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -19,10 +20,12 @@ LoginCallback servlet).
  */
 @MultipartConfig
 @WebServlet(name = "retrieveProfile", value = "/retrieveProfile")
-public class RetrieveProfile extends HttpServlet {
+public class RetrieveProfile extends HttpServlet
+{
 
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
 
         // Obtain the HTTPSession object
         HttpSession session = request.getSession();
@@ -52,7 +55,8 @@ public class RetrieveProfile extends HttpServlet {
     }
 
     // Used to store all the user information that will be displayed in the user profile page
-    public static class Profile {
+    public static class Profile
+    {
         String id;
         String firstname;
         String url;
