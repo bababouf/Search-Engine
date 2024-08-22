@@ -29,12 +29,14 @@ import java.util.List;
      */
 
 @WebServlet(name = "LoginCallback", value = "/oauth2callback")
-public class LoginCallback extends HttpServlet {
+public class LoginCallback extends HttpServlet
+{
 
     private static final String CLIENT_ID = "529467941335-rrllroamg3ebfvgp9n9i8qeni04tguca.apps.googleusercontent.com";
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException
+    {
 
         // Get the ID token parameter from the request body
         String idTokenString = request.getParameter("id_token");
@@ -98,7 +100,8 @@ public class LoginCallback extends HttpServlet {
     }
 
     // Hashes the token id obtained after verification, and then encodes with base 32
-    public String hashAndEncodeID(String uniqueID) {
+    public String hashAndEncodeID(String uniqueID)
+    {
         try
         {
             // Hash the user ID using SHA-256

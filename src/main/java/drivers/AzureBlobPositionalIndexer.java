@@ -2,6 +2,7 @@ package drivers;
 
 import modules.documents.DirectoryCorpus;
 import modules.indexing.*;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,7 +18,8 @@ import java.util.Scanner;
  * In addition to the index being stored, two other Azure Blob files will be created that store meta-data needed for processing
  * queries.
  */
-public class AzureBlobPositionalIndexer {
+public class AzureBlobPositionalIndexer
+{
 
     // The name of the Azure Blob Storage container that holds default corpus files
     public static String defaultCorpusContainer = "se-indexing-files";

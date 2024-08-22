@@ -17,7 +17,8 @@ import java.util.logging.Logger;
  * to a list of postings. A posting simply contains the documentID, a list of positions within the document where the term
  * appears, and the total count of the occurences of the term in the document.
  */
-public class PositionalInvertedIndex implements Index {
+public class PositionalInvertedIndex implements Index
+{
 
     private final HashMap<String, List<Posting>> invertedIndex;
     private final List<String> vocabulary;
@@ -25,7 +26,8 @@ public class PositionalInvertedIndex implements Index {
     /**
      * Constructs a PositionalInvertedIndex; contains a Hashmap and a vocabulary list
      */
-    public PositionalInvertedIndex() {
+    public PositionalInvertedIndex()
+    {
         invertedIndex = new HashMap<>();
         vocabulary = new ArrayList<>();
     }
@@ -35,7 +37,8 @@ public class PositionalInvertedIndex implements Index {
      * discovered position to the terms posting list. If not, a new Posting will be created, and the first position will
      * be added to that Posting's position list.
      */
-    public void addTerm(String term, int documentId, int position) {
+    public void addTerm(String term, int documentId, int position)
+    {
         List<Posting> postingList = invertedIndex.get(term);
 
         // The posting list is null when no occurrences for the term passed have been discovered thus far

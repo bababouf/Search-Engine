@@ -147,11 +147,6 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
-                    <excludes>
-                        <exclude>modules/rankingSchemes/**</exclude>
-                        <exclude>servlets/rankedSearchServlet.java</exclude>
-
-                    </excludes>
                 </configuration>
             </plugin>
             <plugin>

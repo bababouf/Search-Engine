@@ -1,6 +1,7 @@
 package modules.indexing;
 
 import modules.database.PostgresDB;
+
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -10,10 +11,11 @@ import java.util.List;
 /**
  * This class contains methods to interact and obtain postings from the Azure Blob Storage index
  */
-public class AzureBlobPositionalIndex  implements Index{
+public class AzureBlobPositionalIndex implements Index
+{
 
     // The directory type contains a string indicating which corpus will be queried
-    private String directoryType;
+    private final String directoryType;
 
     // Holds the byte stream containing all the postings in the index
     private byte[] postingsData;
@@ -26,10 +28,11 @@ public class AzureBlobPositionalIndex  implements Index{
 
     private final String tableName;
 
-    public AzureBlobPositionalIndex (String directory, String containerName, String queryMode) throws IOException {
+    public AzureBlobPositionalIndex(String directory, String containerName, String queryMode) throws IOException
+    {
         directoryType = directory;
 
-        if(containerName.equals("se-indexing-files"))
+        if (containerName.equals("se-indexing-files"))
         {
             tableName = "byte_positions";
         }
@@ -43,7 +46,6 @@ public class AzureBlobPositionalIndex  implements Index{
     }
 
 
-
     /*
     This method is necessary for processing phrase queries, where the position a term appears in a document is relevant.
     The postings data that is retrieved from Azure Blob Storage is stored as a byte array. The PostgresDB contains information
@@ -51,11 +53,13 @@ public class AzureBlobPositionalIndex  implements Index{
     the term begins at). This allows for fast retrieval of data for each term.
      */
     @Override
-    public List<Posting> getPostingsWithPositions(String term) throws IOException {
+    public List<Posting> getPostingsWithPositions(String term) throws IOException
+    {
 
         // Convert the byte array to a DataInputStream
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(postingsData);
-             DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream)) {
+             DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream))
+        {
 
             // Get the byte position for the term from the database
             PostgresDB database = new PostgresDB(directoryType);
@@ -102,11 +106,13 @@ public class AzureBlobPositionalIndex  implements Index{
     where a term appears in a given document.
      */
     @Override
-    public List<Posting> getPostings(String term) throws IOException {
+    public List<Posting> getPostings(String term) throws IOException
+    {
 
         // Convert the byte array to a DataInputStream
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(postingsData);
-             DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream)) {
+             DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream))
+        {
 
             // Get the byte position for the term from the database
             PostgresDB database = new PostgresDB(directoryType);
@@ -134,7 +140,9 @@ public class AzureBlobPositionalIndex  implements Index{
 
             return postings;
 
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
 
             throw e; // Re-throwing the exception here
@@ -151,7 +159,7 @@ public class AzureBlobPositionalIndex  implements Index{
         System.out.println("Downloaded postings data. ");
         if (queryMode.equals("ranked"))
         {
-            System.out.println("Shouldnt be in here");
+            System.out.println("Downloading RANKED FILES!!!!!!!");
             documentWeights = client.downloadFile("doc-weights.bin");
             averageTokens = client.downloadFile("average-tokens.bin");
         }
@@ -160,7 +168,8 @@ public class AzureBlobPositionalIndex  implements Index{
 
     @Override
     // Simply returns a list of the unique vocabulary terms found in the corpus
-    public List<String> getVocabulary() {
+    public List<String> getVocabulary()
+    {
         PostgresDB database = new PostgresDB(directoryType);
         database.setTableName("byte_positions");
         return database.retrieveVocabulary();
@@ -168,10 +177,13 @@ public class AzureBlobPositionalIndex  implements Index{
     }
 
 
-    public byte[] getDocumentWeights() {
+    public byte[] getDocumentWeights()
+    {
         return documentWeights;
     }
-    public byte[] getAverageTokens() {
+
+    public byte[] getAverageTokens()
+    {
         return averageTokens;
     }
 }

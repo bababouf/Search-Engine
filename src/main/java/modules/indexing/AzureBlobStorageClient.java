@@ -2,6 +2,7 @@ package modules.indexing;
 
 import com.azure.storage.blob.*;
 import com.azure.storage.blob.models.BlobContainerItem;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -12,7 +13,8 @@ import java.util.List;
  * indexing files. This includes uploading, downloading, and listing the containers associated with the Azure Storage
  * account.
  */
-public class AzureBlobStorageClient {
+public class AzureBlobStorageClient
+{
 
     private final BlobServiceClient serviceClient;
     private BlobContainerClient containerClient;
@@ -38,13 +40,13 @@ public class AzureBlobStorageClient {
         this.serviceClient = new BlobServiceClientBuilder().connectionString(connectionString).buildClient();
 
         this.containerClient = this.serviceClient.getBlobContainerClient(containerName);
-        if(!this.containerClient.exists())
+        if (!this.containerClient.exists())
         {
             this.containerClient = serviceClient.createBlobContainer(containerName);
         }
     }
 
-    
+
     // Returns the container client
     public BlobContainerClient getContainerClient()
     {
@@ -68,7 +70,8 @@ public class AzureBlobStorageClient {
     }
 
     // Lists all the containers associated with the storage account
-    public List<String> listContainers() {
+    public List<String> listContainers()
+    {
         List<String> containerNames = new ArrayList<>();
 
         // Add each container name to a list

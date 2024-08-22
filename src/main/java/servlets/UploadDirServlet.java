@@ -27,13 +27,16 @@ import org.slf4j.LoggerFactory;
 
 @MultipartConfig
 @WebServlet(name = "UploadDirServlet", value = "/upload")
-public class UploadDirServlet extends HttpServlet {
+public class UploadDirServlet extends HttpServlet
+{
 
     private static final Logger logger = LoggerFactory.getLogger(UploadDirServlet.class);
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        try
+        {
             // Create a temporary directory in the project root to hold uploaded files
             String uploadedDirectory = createTemporaryUploadDirectory();
 
@@ -68,7 +71,8 @@ public class UploadDirServlet extends HttpServlet {
     }
 
     // Creates the container name (uniquely identifies a user's uploaded directory)
-    private String setContainerName(HttpServletRequest request) {
+    private String setContainerName(HttpServletRequest request)
+    {
 
         // Get the directory name
         String directoryName = request.getParameter("directoryName");
@@ -99,7 +103,8 @@ public class UploadDirServlet extends HttpServlet {
     }
 
     // Create the temporary upload directory in the root of the project
-    private String createTemporaryUploadDirectory() {
+    private String createTemporaryUploadDirectory()
+    {
         String projectRoot = "C:/Users/agreg/Desktop/CopyOfProject/search-engine";
 
         // Append "uploaded-dir" to the root path
@@ -125,7 +130,8 @@ public class UploadDirServlet extends HttpServlet {
     }
 
     // Retrieves each file from the form data sent in the HTTP request. Each file is store in the temporary upload directory
-    private void handleUploadingFiles(HttpServletRequest request, String uploadedDirectoryPath) throws ServletException, IOException {
+    private int handleUploadingFiles(HttpServletRequest request, String uploadedDirectoryPath) throws ServletException, IOException
+    {
         String directoryName = request.getParameter("directoryName");
         HttpSession session = request.getSession();
         session.setAttribute("directoryName", directoryName);
@@ -137,6 +143,7 @@ public class UploadDirServlet extends HttpServlet {
 
             if (fileName != null && !fileName.isEmpty())
             {
+                count++;
                 String filePath = uploadedDirectoryPath + File.separator + fileName;
                 //String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
                 //ServletContext context = getServletContext();
@@ -155,13 +162,15 @@ public class UploadDirServlet extends HttpServlet {
 
 
         }
+        return count;
     }
 
     /*
     In a form data HTTP request, the content-disposition header contains information about each file (part) this is being
     sent. Documentation on content-disposition header: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
      */
-    private String getFileName(Part part) {
+    private String getFileName(Part part)
+    {
         String contentDisposition = part.getHeader("content-disposition");
         if (contentDisposition == null)
         {
@@ -184,7 +193,8 @@ public class UploadDirServlet extends HttpServlet {
     This method will take the files from the uploaded directory, index them, and store the serialized index and its associated
     meta data blobs in the blob store container with the passed containerName.
      */
-    public void buildAndStoreIndexFiles(String uploadedDirectory, String containerName) throws IOException, SQLException {
+    public void buildAndStoreIndexFiles(String uploadedDirectory, String containerName) throws IOException, SQLException
+    {
 
         // Connects to blob storage client
         AzureBlobStorageClient blobStorageClient = new AzureBlobStorageClient(containerName);
@@ -206,7 +216,9 @@ public class UploadDirServlet extends HttpServlet {
         writeBytePositions(index, "user_directory", bytePositions, containerName);
 
     }
-    private void writeBytePositions(PositionalInvertedIndex index, String databaseName, List<Long> bytePositions, String containerName){
+
+    private void writeBytePositions(PositionalInvertedIndex index, String databaseName, List<Long> bytePositions, String containerName)
+    {
         List<String> vocabulary = index.getVocabulary();
         PostgresDB database = new PostgresDB(databaseName);
         database.setTableName(containerName);
@@ -215,18 +227,22 @@ public class UploadDirServlet extends HttpServlet {
         database.insertTermsBatch(vocabulary, bytePositions);
     }
 
-    private Path zipUploadDirectory(String uploadedDirectory) throws IOException {
+    private Path zipUploadDirectory(String uploadedDirectory) throws IOException
+    {
         Path zippedDirPath = createZipDirectory().resolve("uploadedDirectory.zip");
 
         Path uploadedDirectoryPath = Paths.get(uploadedDirectory).toAbsolutePath();
-        logger.info("Zipping directory: " + uploadedDirectoryPath.toString());
+        logger.info("Zipping directory: " + uploadedDirectoryPath);
 
-        try (ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(zippedDirPath))) {
-            Files.walkFileTree(uploadedDirectoryPath, new SimpleFileVisitor<Path>() {
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(zippedDirPath)))
+        {
+            Files.walkFileTree(uploadedDirectoryPath, new SimpleFileVisitor<Path>()
+            {
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException
+                {
                     Path targetFile = uploadedDirectoryPath.relativize(file);
-                    logger.info("Adding file to zip: " + targetFile.toString());
+                    logger.info("Adding file to zip: " + targetFile);
                     zipOutputStream.putNextEntry(new ZipEntry(targetFile.toString()));
                     Files.copy(file, zipOutputStream);
                     zipOutputStream.closeEntry();
@@ -234,18 +250,22 @@ public class UploadDirServlet extends HttpServlet {
                 }
 
                 @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attributes) throws IOException {
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attributes) throws IOException
+                {
                     Path targetDir = uploadedDirectoryPath.relativize(dir);
-                    if (!targetDir.toString().isEmpty()) {
-                        logger.info("Adding directory to zip: " + targetDir.toString());
-                        zipOutputStream.putNextEntry(new ZipEntry(targetDir.toString() + "/"));
+                    if (!targetDir.toString().isEmpty())
+                    {
+                        logger.info("Adding directory to zip: " + targetDir);
+                        zipOutputStream.putNextEntry(new ZipEntry(targetDir + "/"));
                         zipOutputStream.closeEntry();
                     }
                     return FileVisitResult.CONTINUE;
                 }
             });
             logger.info("Directory zipped successfully.");
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             logger.error("Error zipping directory: ", e);
             throw e;
         }
@@ -253,31 +273,38 @@ public class UploadDirServlet extends HttpServlet {
         return zippedDirPath;
     }
 
-    private Path createZipDirectory() {
+    private Path createZipDirectory()
+    {
         String projectRoot = System.getProperty("java.io.tmpdir"); // Use the system temp directory
         String zippedDirectoryPath = projectRoot + File.separator + "zipped-upload-dir";
         File uploadDir = new File(zippedDirectoryPath);
 
         // If the directory doesn't exist, create it
-        if (!uploadDir.exists()) {
+        if (!uploadDir.exists())
+        {
             boolean created = uploadDir.mkdirs();
-            if (!created) {
+            if (!created)
+            {
                 logger.error("Failed to create directory.");
                 throw new RuntimeException("Failed to create directory.");
             }
-        } else {
+        }
+        else
+        {
             logger.info("Directory already exists.");
         }
 
         return Paths.get(zippedDirectoryPath).toAbsolutePath();
     }
 
-    private void uploadZipDirectory(Path zippedFilePath, String containerName) {
+    private void uploadZipDirectory(Path zippedFilePath, String containerName)
+    {
         AzureBlobStorageClient blobStorageClient = new AzureBlobStorageClient(containerName);
         BlobContainerClient containerClient = blobStorageClient.getContainerClient();
 
         // Ensure containerClient is properly initialized
-        if (containerClient == null) {
+        if (containerClient == null)
+        {
             System.err.println("Container client is null. Check container name and connection.");
             return;
         }
@@ -292,22 +319,27 @@ public class UploadDirServlet extends HttpServlet {
 
         // Check if the file exists
         File file = new File(normalizedFilePath);
-        if (!file.exists()) {
+        if (!file.exists())
+        {
             System.err.println("File does not exist: " + normalizedFilePath);
             return;
         }
 
-        try {
+        try
+        {
             // Upload the file
             blobClient.uploadFromFile(normalizedFilePath, true);
             System.out.println("File uploaded successfully: " + normalizedFilePath);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             System.err.println("Error uploading file: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public void setUserDirectories(HttpServletRequest request){
+    public void setUserDirectories(HttpServletRequest request)
+    {
         HttpSession session = request.getSession();
         String uniqueID = (String) session.getAttribute("uniqueID");
 
@@ -315,13 +347,14 @@ public class UploadDirServlet extends HttpServlet {
         session.setAttribute("userDirectories", userDirectories);
     }
 
-    public void removeTemporaryDirectory(File file) {
+    public void removeTemporaryDirectory(File file)
+    {
         File[] contents = file.listFiles();
         if (contents != null)
         {
             for (File f : contents)
             {
-                if (! Files.isSymbolicLink(f.toPath()))
+                if (!Files.isSymbolicLink(f.toPath()))
                 {
                     removeTemporaryDirectory(f);
                 }

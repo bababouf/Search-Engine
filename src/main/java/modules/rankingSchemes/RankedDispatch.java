@@ -15,33 +15,35 @@ import java.util.Map;
  * In other words, this class will call the appropriate calculate and calculateAccumulatorValue methods depending on
  * the strategy passed.
  */
-public class RankedDispatch {
-
+public class RankedDispatch
+{
+    // Contains the AzureBlobPositionalIndex instance (holding the bytestream representing the index being queried)
     private final AzureBlobPositionalIndex onDiskIndex;
-    private final DirectoryCorpus directoryCorpus;
-    private Map<Integer, Double> ADMap = new HashMap<>();
 
-    public RankedDispatch(AzureBlobPositionalIndex index, DirectoryCorpus corpus){
+    // Contains the DirectoryCorpus instance (allowing access to the content of the documents)
+    private final DirectoryCorpus directoryCorpus;
+
+    // Constructor that will set the index and corpus instances that are passed
+    public RankedDispatch(AzureBlobPositionalIndex index, DirectoryCorpus corpus)
+    {
         onDiskIndex = index;
         directoryCorpus = corpus;
     }
 
-
-    /**
-     * Depending on which ranking scheme is passed (strategy), the appropriate calculate method will be called.
-     */
-    public void calculate(RankingStrategy strategy, String query){
-        //List<QueryComponent> literals = promptUser();
-
+   // Calls the appropriate concrete class' calculate method
+    public List<Entry> calculate(RankingStrategy strategy, String query)
+    {
         RankedQueryParser rankedParser = new RankedQueryParser();
+
+        // Obtain the literals (terms) in the query
         List<QueryComponent> literals = rankedParser.parseQuery(query);
-        ADMap = strategy.calculate(literals, onDiskIndex, directoryCorpus);
+
+        // The ADMap is a hashmap mapping documentIDs to accumulator values (where the values represent relevance of that doc to the query)
+        Map<Integer, Double> ADMap = strategy.calculate(literals, onDiskIndex, directoryCorpus);
+
+        // The hashmap values are normalized (allowing for varying document lengths to be adjusted)
+        return strategy.normalizeAccumulatorValues(ADMap, onDiskIndex);
     }
 
-    /**
-     * This method operates in the same way as above, calling the appropriate calculateAccumulatorValue method.
-     */
-    public List<Entry> calculateAccumulatorValue(RankingStrategy strategy) {
-        return strategy.calculateAccumulatorValue(ADMap, onDiskIndex);
-    }
+
 }

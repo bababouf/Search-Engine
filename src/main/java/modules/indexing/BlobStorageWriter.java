@@ -13,7 +13,8 @@ import java.util.Set;
  * Once the Positional Inverted Index is created in memory, additional information is extracted in the methods below to make
  * the querying process more efficient. Azure Blob Storage is used to store data in binary format for later access.
  */
-public class BlobStorageWriter {
+public class BlobStorageWriter
+{
 
     /**
      * This method converts the given positional inverted index into a byte stream and uploads it to Azure Blob Storage.
@@ -188,8 +189,8 @@ public class BlobStorageWriter {
     {
 
         try (
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream))
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream))
         {
             dataOutputStream.writeDouble(averageTokens);
 

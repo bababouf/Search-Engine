@@ -11,7 +11,8 @@ import static servlets.ServletUtilities.parseRequestBody;
 
 @WebServlet(name = "DirectoryConfigurationServlet", value = "/configure")
 
-public class DirectoryConfigurationServlet extends HttpServlet {
+public class DirectoryConfigurationServlet extends HttpServlet
+{
 
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
