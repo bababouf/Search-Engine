@@ -65,6 +65,7 @@ public class RankedSearchServlet extends HttpServlet
         {
             case "default-ranked" ->
             {
+                System.out.println("In the default ranked. ");
                 DefaultRanked defaultRanked = new DefaultRanked();
                 top10Ranked = rankedAlgorithm.calculate(defaultRanked, query);
             }
@@ -92,6 +93,7 @@ public class RankedSearchServlet extends HttpServlet
             List<Page> pages = new ArrayList<>();
             for (Entry top10Result : top10Ranked)
             {
+                System.out.println("Found top10 result: " + top10Result.getDocID());
                 Document document = corpus.getDocument(top10Result.getDocID());
                 Page page = new Page(document.getTitle(),document.getURL());
                 pages.add(page);

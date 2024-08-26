@@ -33,6 +33,9 @@ public class RankedDispatch
    // Calls the appropriate concrete class' calculate method
     public List<Entry> calculate(RankingStrategy strategy, String query)
     {
+        System.out.println("In the calculate method... ");
+        System.out.println("Query: " + query);
+        System.out.println("Corpus Size: " + directoryCorpus.getCorpusSize());
         RankedQueryParser rankedParser = new RankedQueryParser();
 
         // Obtain the literals (terms) in the query
