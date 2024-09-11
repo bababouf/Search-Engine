@@ -17,7 +17,6 @@ const createHeader = () =>
     headerDiv.innerHTML = `
     <h1 class="site__h1"> Search Engine </h1>
     <ul class="site__hero-anchors">
-        
     </ul>
     
     `;

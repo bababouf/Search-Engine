@@ -1,47 +1,49 @@
 <!DOCTYPE html>
-<html lang="EN-us">
+<html lang="en-US">
 <head>
     <meta charset="UTF-8">
     <link href="/css/baseStyles.css" rel="stylesheet">
     <link href="/css/homepageStyles.css" rel="stylesheet">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="https://fonts.googleapis.com" rel="preconnect">
-    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
           rel="stylesheet">
     <title>Search-engine</title>
 </head>
 <body>
-<header class="homepage__hero-container">
-    <div class="homepage__title-and-overview">
-        <h1 class="homepage__h1"> Search Engine </h1>
+<header class="homepage__hero">
+    <div class="homepage__content-wrapper">
+        <h1 class="homepage__title"> Search Genie </h1>
         <p class="homepage__project-overview">
-            Our web application provides efficient search and indexing, allowing users to explore large corpora with
-            ease.
-            Whether using the default corpus or uploading their own, users enjoy quick access to relevant information
-            through
-            a simple interface.
+            This web application enables efficient search and indexing, offering quick access to large directories through a
+            simple interface.
         </p>
     </div>
 </header>
 <main>
-    <div class="card-container">
-        <div class="card">
-            <h2 class="homepage__h2"> Corpus Selection </h2>
+    <div class="logo__wrapper">
+        <div class="logo-container">
+            <img src="/images/search-genie-logo-transparent.png" class="logo" alt="Search Genie Logo">
+        </div>
+    </div>
+    <div class="homepage__cards">
+        <div class="homepage__card">
+            <h2 class="homepage__subtitle"> Corpus Selection </h2>
             <p>
-                Users have the flexibility to choose between our default corpus or upload their own,
-                catering to diverse research needs and interests
+                Users have the flexibility to choose between the default corpus or upload their own,
+                catering to diverse research needs and interests.
             </p>
         </div>
-        <div class="card">
-            <h2 class="homepage__h2"> Indexing Efficiency </h2>
+        <div class="homepage__card">
+            <h2 class="homepage__subtitle"> Indexing Efficiency </h2>
             <p>
                 Upon selecting a corpus, our application initiates a comprehensive indexing process, optimizing
                 data for rapid retrieval and ensuring minimal latency during subsequent queries.
             </p>
         </div>
-        <div class="card">
-            <h2 class="homepage__h2"> Query Functionality </h2>
+        <div class="homepage__card">
+            <h2 class="homepage__subtitle"> Query Functionality </h2>
             <p>
                 The application supports two distinct query modes to accommodate varying search preferences: <br>
                 1. Boolean Retrieval Mode <br>
@@ -49,9 +51,9 @@
             </p>
         </div>
     </div>
-    <button class="homepage__get-started-button">Get Started!</button>
+    <button id="homepage__button-start">Get Started!</button>
 </main>
-<script src="/scripts/utils/createHomepageListener.js" type="module"></script>
+    <script src="/scripts/utils/createHomepageListener.js" type="module"></script>
 </body>
 </html>
 

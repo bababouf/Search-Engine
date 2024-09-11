@@ -20,6 +20,8 @@ export const attachBackToSearchListener = (mainElement, backButton, endpoint) =>
 {
     backButton.addEventListener('click', event =>
     {
+        const mainElement = document.querySelector('main');
+        mainElement.classList.add('site-content-grid');
         if (endpoint === '/rankedsearch')
         {
             displayRankedSearchPage();

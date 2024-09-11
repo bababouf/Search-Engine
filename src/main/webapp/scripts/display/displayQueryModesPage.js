@@ -1,6 +1,6 @@
 import {removeMainElements} from "../utils/removeMainElements.js";
 import {
-    attachBackToHomeListener,
+
     createBackToHomeButton
 } from "../components/createBackToHomeButton.js";
 import {displayBooleanInstructions} from "./displayBooleanSearchPage.js";
@@ -9,59 +9,46 @@ import {displayRankedInstructions} from "./displayRankedSearchPage.js";
 // Removes all children from the main element and displays the query modes content
 export const displayQueryModesPage = () =>
 {
-    // Remove children from main element
+    // Remove all elements from main
     removeMainElements();
 
-    // Create HTML for query modes
+    // Create and attach query modes content
     createQueryModes();
 
-    // Create the back button (to get back to the profile page)
+    // Create and attach back button
     const backButton = createBackToHomeButton();
-
-    // Append back button to the page
-    const contentDiv = document.querySelector('.center-content');
-    contentDiv.appendChild(backButton);
-
-    // Call methods to attach listeners to the back button / query mode buttons
-    attachBackToHomeListener(backButton);
-    attachModeButtonListeners();
+    const mainElement = document.querySelector('main');
+    mainElement.appendChild(backButton);
 }
 
 // Creates the HTML for the boolean and ranked method selection
 const createQueryModes = () =>
 {
     const mainElement = document.querySelector('main');
-
     mainElement.innerHTML = `
-    <div class="center-content">
-        <h2 class="site__h2">Select Query Mode</h2>
-        <div class = "card-container">
-            <div class="card">
-                <h3 class="site__h3"> Boolean Retrieval Mode </h3>
-                <img src="../../images/venn-diagram-logo.png" height="40" width="40">
-                <p> Configures the program to handle boolean queries. </p>
-                <button class = "query-modes__mode-button" id="boolean-button"> Go! </button>  
-            </div>
-            <div class="card">
-                <h3 class="site__h3"> Ranked Retrieval Mode </h3>
-                <img src="../../images/search-glass.png" height="40" width="40">
-                <p> Configures the program to handle ranked requests. </p>
-                <button class = "query-modes__mode-button" id="ranked-button"> Go! </button>  
-            </div>
-        </div>
         
-    </div>
-    `;
+            <section class="card bg-gradient">
+                <div class="flex-row-center">
+                    <img src="../../images/venn-diagram-logo.png" alt="Boolean Retrieval Mode Icon" class="query-modes__card-icon">
+                    <h3 class="card-title">Boolean Retrieval Mode</h3>
+                </div>
+                <p class="query-modes__card-description">Enables Boolean queries, allowing you to combine keywords with AND and OR operators, or search for exact phrases. This mode helps refine your search for more accurate results.</p>
+                <button id="boolean-button" class="site__button">Go!</button>
+            </section>
+            <section class="card bg-gradient">
+                <div class="flex-row-center">
+                    <img src="../../images/search-glass.png" alt="Ranked Retrieval Mode Icon" class="query-modes__card-icon">
+                    <h3 class="card-title">Ranked Retrieval Mode</h3>
+                </div>
+                <p class="query-modes__card-description">Enables ranked retrieval, using algorithms to assign weights to query terms, document content, and length, providing more relevant and prioritized search results.</p>
+                <button id="ranked-button" class="site__button">Go!</button>
+            </section>
+        
+        `;
 
-}
-
-// Creates listeners to each of the method buttons
-const attachModeButtonListeners = () =>
-{
-    const modeButtons = document.querySelectorAll(".query-modes__mode-button");
-    modeButtons.forEach(button =>
+    mainElement.querySelectorAll('button').forEach(button =>
     {
-        button.addEventListener("click", queryModeDispatch);
+        button.addEventListener('click', queryModeDispatch);
     });
 }
 

@@ -52,6 +52,7 @@ export const setUploadedDirectory = (containerName) =>
         })
         .then(responseText =>
         {
+            console.log("IN THE SET UPLOADED DIRECTORY: " + containerName)
             // Displays the query modes that the user can select from
             displayQueryModesPage();
         })

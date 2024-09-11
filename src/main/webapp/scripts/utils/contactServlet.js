@@ -27,9 +27,6 @@ export const handleCredentialResponse = (response) =>
         })
         .then(responseText =>
         {
-            // Dynamically creates the new site header (hero image and anchor tags)
-            displaySiteHeader();
-
             // Creates and displays the components necessary for the profile page
             displayProfilePage();
         })
@@ -93,6 +90,7 @@ export const sendQueryToServlet = (endpoint, rankedMode) =>
 {
     const value = document.querySelector('#query');
 
+    console.log("Query value: " + value.value);
     fetch(`/search${endpoint}`, {
         method: 'POST',
         body: JSON.stringify(
@@ -135,8 +133,10 @@ export const contactServlet = (endpoint) =>
         })
         .then(responseText =>
         {
+            console.log("removing loading spinner")
             // Remove the loading spinner to display the search page
             const loadingSpinner = document.querySelector("#loading-spinner");
+            console.log("removing loading spinner")
             loadingSpinner.remove();
 
             // Check which endpoint was used and display the appropriate page

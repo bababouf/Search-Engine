@@ -1,5 +1,4 @@
 import {
-    attachBackToHomeListener,
     createBackToHomeButton
 } from "../components/createBackToHomeButton.js";
 import {createSearchBar} from "../components/createSearchBar.js";
@@ -17,16 +16,18 @@ export const displayBooleanInstructions = () =>
     // Remove all children from main element
     removeMainElements();
 
-    // Create and append to main the instructions and loading spinner
+    // Attach instructions content and loading spinner
     const mainElement = document.querySelector('main');
     const instructions = createBooleanInstructions();
     const loadingSpinner = createLoadingSpinner();
-    mainElement.insertBefore(instructions, mainElement.firstChild);
-    mainElement.appendChild(loadingSpinner);
+
+    instructions.appendChild(loadingSpinner);
+    mainElement.appendChild(instructions);
 
     // Allows servlet to download necessary files for the directory the user will be querying
     contactServlet(endpoint);
 }
+
 /*
 The HTML to display the page is created, and an event listener is attached to the "submit query" button. The HTML for
 the page consists of instructions,cards containing acceptable query formats (with examples), a search bar (with a submit
@@ -37,19 +38,18 @@ export const displayBooleanSearchPage = () =>
     // Remove all children from the main element
     removeMainElements();
 
-    // Create and append instructions, query format cards, search bar, and back to home button
+    // Attach instructions, acceptable query formats, search bar, and back button
     const mainElement = document.querySelector('main');
     const booleanSearchDiv = createBooleanInstructions();
     const queryFormats = createAcceptableQueryFormats();
     const searchBar = createSearchBar();
+    const backButton = createBackToHomeButton();
+
     booleanSearchDiv.appendChild(queryFormats);
     booleanSearchDiv.appendChild(searchBar);
-    const backToHomeButton = createBackToHomeButton();
-    booleanSearchDiv.appendChild(backToHomeButton);
+    booleanSearchDiv.appendChild(backButton);
     mainElement.appendChild(booleanSearchDiv);
 
-    // Attach listeners to back button and query submit button
-    attachBackToHomeListener();
     attachQuerySubmitListener();
 
 }
@@ -58,11 +58,10 @@ export const displayBooleanSearchPage = () =>
 const createBooleanInstructions = () =>
 {
     const booleanSearchDiv = document.createElement('div');
-    booleanSearchDiv.classList.add('site__boolean-container');
+    booleanSearchDiv.classList.add('boolean-formats__content-container');
 
     booleanSearchDiv.innerHTML = `
-        <h2 class="site__h2">Instructions</h2>
-        <p class = "site__boolean-instructions"> The program accepts boolean queries that are in disjunctive normal form (DNF), also described as an OR of ANDS. 
+        <p class = "boolean-formats__description"> The program accepts boolean queries that are in disjunctive normal form (DNF), also described as an OR of ANDS. 
         In addition, phrase queries can be entered by enclosing the query in double quotes. Below examples of acceptable form are shown.</p>
     `;
 
@@ -74,33 +73,34 @@ const createBooleanInstructions = () =>
 const createAcceptableQueryFormats = () =>
 {
     const queryFormats = document.createElement('div');
-    queryFormats.classList.add('card-container');
+    queryFormats.classList.add('boolean-formats');
 
     queryFormats.innerHTML = `
-    <div class="card">
-        <h3 class="site__h3"> AND Query </h3>
-        <p> Returns documents containing each of the query terms being AND'd. </p>
-        <p> Example: dogs cats birds </p>
-  
+    
+    <h2 class="boolean-formats__title">Acceptable Query Formats</h2>
+    <div class="boolean-formats__card-container">
+        <div class="card bg-gradient" style="width: 300px">
+            <h3 class="card-title">AND Query</h3>
+            <p class="boolean-formats__card-description">Returns documents containing each of the query terms being AND'd.</p>
+            <p class="boolean-formats__example"><strong>Example:</strong> dogs cats birds</p>
+        </div>
+        <div class="card bg-gradient" style="width: 300px">
+            <h3 class="card-title">OR Query</h3>
+            <p class="boolean-formats__card-description">Returns documents containing at least one of the terms being OR'd.</p>
+            <p class="boolean-formats__example"><strong>Example:</strong> dogs + cats + birds</p>
+        </div>
+        <div class="card bg-gradient" style="width: 300px">
+            <h3 class="card-title">OR of ANDs</h3>
+            <p class="boolean-formats__card-description">One or more terms can be AND'd together, and two or more of these groups can then be OR'd.</p>
+            <p class="boolean-formats__example"><strong>Example:</strong> dogs cats + birds walruses</p>
+        </div>
+        <div class="card bg-gradient" style="width: 300px">
+            <h3 class="card-title">Phrase Query</h3>
+            <p class="boolean-formats__card-description">Returns documents that contain the queried phrase.</p>
+            <p class="boolean-formats__example"><strong>Example:</strong> "fires in yosemite"</p>
+        </div>
     </div>
-    <div class="card">
-        <h3 class="site__h3"> OR Query </h3>
-        <p> Returns documents containing at least one of the terms being OR'd. </p>
-        <p> Example: dogs + cats + birds </p>
-         
-    </div>
-    <div class="card">
-        <h3 class="site__h3"> OR of ANDs </h3>
-        <p> One or more terms can be AND'd together, and two or more of these groups can then be OR'd. </p>
-        <p> Example: dogs cats + birds walruses
-         
-    </div>
-    <div class="card">
-        <h3 class="site__h3"> Phrase Query </h3>
-        <p> Returns documents that contain the queried phrase. </p>
-        <p> Example: "fires in yosemite" </p>
-        
-    </div>
+    
     `;
 
     return queryFormats;

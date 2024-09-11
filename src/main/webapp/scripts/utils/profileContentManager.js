@@ -15,6 +15,11 @@ export const setInitialContent = (content) =>
 export const getInitialContent = () =>
 {
 
+    const instructions = document.querySelector('.site-header__instructions');
+    if (instructions)
+    {
+        instructions.style.display = 'block';
+    }
     return initialContent
 }
 

@@ -1,5 +1,4 @@
 import {captureMainContent} from "../utils/profileContentManager.js";
-import {attachHeaderAnchorListeners, createHeaderAnchorElements} from "../utils/handleHeaderAnchors.js";
 import {createLoadingSpinner} from "../components/createLoadingSpinner.js";
 import {convertToFormData} from "../utils/convertToFormData.js";
 import {setDefaultDirectory, setUploadedDirectory} from "../utils/configureServlet.js";
@@ -12,18 +11,15 @@ This file handles all the necessary actions to display the user's profile page. 
 from the servlet (through an HTTP GET request), dynamically creating the HTML to display the elements on the page, attaching
 listeners to the clickable buttons, verifying the files uploaded by the user, among other actions.
  */
-let numberOfDirectores = 0;
+let numberOfDirectories = 0;
 export const displayProfilePage = () =>
 {
     removeMainElements();
-    createHeaderAnchorElements();
-    attachHeaderAnchorListeners();
     getProfileInformation()
         .then(profile =>
         {
-
             createProfileInformation(profile);
-            numberOfDirectores = profile.directories;
+            numberOfDirectories = profile.directories;
             populateDirectoryList();
             attachProfileListeners();
             captureMainContent();
@@ -42,66 +38,74 @@ using another method.
  */
 const createProfileInformation = (profile) =>
 {
-    let mainElement = document.querySelector('main');
+    let bodyElement = document.querySelector('body');
 
-    mainElement.innerHTML = `
-    <div class="center-content">
-        <h2 class="site__h2"> ${profile.firstname}'s Profile </h2>
-        <img src= ${profile.url} class="site__profile-logo" alt="User Profile">
-        <div class = "card-container">
-            <div class ="card">
-                <h3 class="site__h3"> Current Directories </h3>
-                <div class="site__user-directories"></div>
-            </div>
-            <div class="card site__upload-div">
-                <h3 class="site__h3"> Upload Directory </h3> 
-                <form id="folderForm" enctype="multipart/form-data">
-                    <p> Directory must contain all .TXT files, or all .JSON files. Directory must be < 50 MB. </p>
-                    <input type="file" id="folderInput" name="folderInput" webkitdirectory = 'true'>
-                    <button type="submit">Submit</button>
-                </form>
-            </div>
-            <div class="card">
-                <h3 class="site__h3"> Use Default Directory </h3> 
-                <p>This directory contains 30,000 NPS.org webpages and can be used to test the various query modes this application has to offer. </p>
-                <button class="site__default-directory-button" type="submit"> Go! </button>
-            </div>
-        
+    bodyElement.innerHTML = `
+    <div class="site-page">
+    <header class="site-header__container">
+        <h1 class="site-header__title"> Search Genie </h1>
+        <div class="logo-container">
+            <img src="../../images/search-genie-logo-transparent.png" class="logo" alt="Search Genie Logo">
         </div>
-    </div>
+        <h2 class="site-header__welcome-user"> Welcome, ${profile.firstname} </h2>
+        <p class="site-header__instructions"> Choose a directory from your filesystem or test out the querying modes on the default corpus! After uploading a 
+        directory, it will show up under the 'Current Directories' card. 
+        </p>
+        <img src="${profile.url}" class="site-header__profile-picture" alt="${profile.firstname}'s profile picture">
+    </header>
+    <main class="site-content-grid">
+        <section class="card profile-directories bg-gradient">
+            <h3 class="card-title">Current Directories</h3>
+            <ul class="profile__user-dir-list"></ul>
+        </section>
+        <section class="card profile-upload bg-gradient">
+            <h3 class="card-title">Upload Directory</h3> 
+            <form enctype="multipart/form-data">
+                <p class="profile__upload-dir-note">Directory must contain all .TXT files, or all .JSON files. Directory must be < 50 MB.</p>
+                <input type="file" id="folderInput" name="folderInput" webkitdirectory='true' class="profile__upload-dir-input">
+                <button id="profile__upload-button" class="site__button" type="submit">Submit</button>
+            </form>
+        </section>
+        <section class="card profile-default-directory bg-gradient">
+            <h3 class="card-title">Use Default Directory</h3> 
+            <p class="profile__default-dir-note">This directory contains 30,000 NPS.org webpages and can be used to test the various query modes this application has to offer.</p>
+            <button id="profile__default-button" class="site__button" type="submit">Go!</button>
+        </section>  
+    </main>
+</div>  
     `;
-
 
 }
 
 // Dynamically creates HTML for displaying user directories
 const populateDirectoryList = () =>
 {
-    let directoryDiv = document.querySelector(".site__user-directories");
+    let userDirectoryList = document.querySelector(".profile__user-dir-list");
 
-    // Creates and displays text under the 'Uploaded Directories' card to show no directories have been uploaded
-    if (numberOfDirectores.length === 0)
+    // Clear any existing content
+    userDirectoryList.innerHTML = '';
+
+    // No directories associated with user
+    if (numberOfDirectories.length === 0)
     {
         let noDirectoriesFound = document.createElement('p');
         noDirectoriesFound.textContent = "No directories found.";
-        directoryDiv.appendChild(noDirectoriesFound);
+        userDirectoryList.appendChild(noDirectoriesFound);
     }
-    // One or more directories were found
+    // One or more directories associated with user
     else
     {
-        let directoryUL = document.createElement('ul');
-
-        // Create a paragraph element for each directory found
-        numberOfDirectores.forEach(directory =>
+        // Loop through each directory name and create a li anchor element
+        numberOfDirectories.forEach(directory =>
         {
             let directoryItem = document.createElement('li');
+            directoryItem.className = 'profile__user-dir-item';
             directoryItem.innerHTML = `
-            <a id="${directory.containerName}" class="site__user-directory" href="#"> ${directory.name} </a>
+                <a id="${directory.containerName}" class="profile__user-dir-link" href="#">${directory.name}</a>
             `;
-
-            directoryUL.appendChild(directoryItem);
+            userDirectoryList.appendChild(directoryItem);
         });
-        directoryDiv.appendChild(directoryUL);
+
     }
 }
 
@@ -115,17 +119,13 @@ this method also attaches listeners. When one of these buttons is clicked, a dis
  */
 export const attachProfileListeners = () =>
 {
-
     // Create the listeners for each of the uploaded directories
-    const directoryLinks = document.querySelectorAll('.site__user-directory');
+    const directoryLinks = document.querySelectorAll('.profile__user-dir-list');
     directoryLinks.forEach(link =>
     {
         link.addEventListener('click', event =>
         {
-            // Get the container name for the uploaded directory
             const directoryID = event.target.id;
-
-            // Contact servlet to set the directory that will be queried
             setUploadedDirectory(directoryID);
         });
     });
@@ -133,68 +133,68 @@ export const attachProfileListeners = () =>
     const profileButtons = document.querySelectorAll('button');
     profileButtons.forEach(button => button.addEventListener('click', event =>
     {
-        // Handles the rest once a button is clicked
-        dispatchDirectoryButtonClick(event);
+        if (event.target.id === 'profile__default-button')
+        {
+            setDefaultDirectory();
+        }
+        else
+        {
+            event.preventDefault();
+            handleUploadDirectory();
+        }
+
     }));
 
 }
 
 
 // Handles the default directory button click, as well as the submit button for the upload directory form
-const dispatchDirectoryButtonClick = (event) =>
+const handleUploadDirectory = () =>
 {
-    if (event.target.classList.contains('site__default-directory-button'))
+
+    // Obtain the files that the user chose from the upload directory form
+    const files = document.querySelector('#folderInput').files;
+
+    // Ensures that the files are appropriate (size, file extension, within the allowed limit of directories uploaded)
+    const verificationResponse = verifyUploadedDirectory(files);
+    const uploadDiv = document.querySelector(".profile-upload");
+
+
+    // Clear the uploadDiv content
+
+
+
+    // Create and display loading spinner, and upload directory title
+    //const uploadDirText = document.createElement("h3");
+    //uploadDirText.classList.add('profile__card-title');
+    //uploadDirText.textContent = "Upload Directory";
+
+
+
+    if (verificationResponse === "Valid")
     {
-        // Contact servlet to set the default directory to be queried
-        setDefaultDirectory();
+        const loadingSpinner = createLoadingSpinner();
+        uploadDiv.append(loadingSpinner);
+        // Convert files to form data and send to servlet
+        const formData = convertToFormData(files);
+        sendFormDataToServlet(formData);
     }
     else
     {
-        event.preventDefault();
+        // Display error message if verification failed
+        let errorMessageElement = document.querySelector("#error-message");
 
-        // Obtain the files that the user chose from the upload directory form
-        const files = document.querySelector('#folderInput').files;
-
-        // Ensures that the files are appropriate (size, file extension, within the allowed limit of directories uploaded)
-        let verificationResponse = verifyUploadedDirectory(files);
-
-        // Create and display loading spinner, convert files to form data, send to servlet
-        if (verificationResponse === "Valid")
+        // Check if the error message already exists (user has previously attempted to upload invalid directory)
+        if (!errorMessageElement)
         {
-            const uploadDiv = document.querySelector(".site__upload-div");
-            const uploadDirText = document.createElement("h3");
-            uploadDirText.textContent = "Upload Directory";
-            const loadingSpinner = createLoadingSpinner();
-            uploadDiv.innerHTML = '';
-            uploadDiv.appendChild(uploadDirText);
-            uploadDiv.appendChild(loadingSpinner);
-
-            // Converts files to form data so that they can be sent to the servlet
-            const formData = convertToFormData(files);
-
-            // Contacts servlet with the files that will be uploaded and indexed
-            sendFormDataToServlet(formData);
+            errorMessageElement = createErrorMessage(verificationResponse);
         }
-        // Files cannot be uploaded (verification failed)
         else
         {
-            const uploadDiv = document.querySelector(".site__upload-div");
-            let errorMessageElement = document.querySelector("#error-message");
-
-            // Display error message if it isn't already displayed
-            if (errorMessageElement === null)
-            {
-                errorMessageElement = createErrorMessage(verificationResponse);
-            }
-            else
-            {
-                errorMessageElement.textContent = `${verificationResponse}`;
-            }
-
-            uploadDiv.appendChild(errorMessageElement);
-
+            errorMessageElement.textContent = verificationResponse;
         }
 
+        uploadDiv.appendChild(errorMessageElement);
     }
 }
 
@@ -204,38 +204,25 @@ Checks the uploaded files and ensures the file extensions are all .TXT or all .J
 50MB. Checks that the user has < 3 directories uploaded. Based on these constraints, a string is returned to indicate
 the files are valid or an error has occurred.
  */
-const verifyUploadedDirectory = (files) =>
-{
-
+const verifyUploadedDirectory = (files) => {
     const arrayOfFiles = [...files];
     const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+    const maxDirectories = 3;
 
-    const validFileTypes = arrayOfFiles.every(file => file.name.endsWith(".json") || file.name.endsWith(".txt"));
-    if (numberOfDirectores >= 3)
-    {
-        return "Maximum 3 directories limit reached. Please delete a directory to upload a new one. "
-    }
-    else if (validFileTypes && arrayOfFiles.length > 0)
-    {
-        // Calculate the total size of the uploaded files
-        const totalSize = arrayOfFiles.reduce((acc, file) => acc + file.size, 0);
+    const validFileTypes = arrayOfFiles.every(file =>
+        file.name.endsWith(".json") || file.name.endsWith(".txt")
+    );
 
-        // Check if the total size is within the limit
-        if (totalSize <= maxSize)
-        {
-            return "Valid";
-        }
-        else
-        {
-            console.log("Directory size exceeds the maximum limit.");
-            return "Directory exceeds 50 MB. ";
-        }
+    if (numberOfDirectories >= maxDirectories) {
+        return `Maximum ${maxDirectories} directories limit reached. Please delete a directory to upload a new one.`;
     }
-    else
-    {
-        console.log("Invalid file types.");
+
+    if (!validFileTypes || arrayOfFiles.length === 0) {
         return "Directory contains invalid file types.";
     }
 
-}
+    const totalSize = arrayOfFiles.reduce((acc, file) => acc + file.size, 0);
+
+    return totalSize <= maxSize ? "Valid" : `Directory exceeds ${maxSize / (1024 * 1024)} MB.`;
+};
 

@@ -11,7 +11,7 @@ const initializeHomePageEventListeners = () =>
 {
 
     // Clicking the "get started" button loads the login.html page
-    const nextButton = document.querySelector('.homepage__get-started-button');
+    const nextButton = document.querySelector('#homepage__button-start');
     nextButton.addEventListener('click', event =>
     {
         // Displays the Google login prompt page
