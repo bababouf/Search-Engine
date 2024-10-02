@@ -1,13 +1,7 @@
 import {displayProfilePage} from "../display/displayProfilePage.js";
 import {displayQueryResultsPage} from "../display/displayQueryResultsPage.js";
-import {displaySiteHeader} from "../display/displaySiteHeader.js";
 import {displayBooleanSearchPage} from "../display/displayBooleanSearchPage.js";
 import {displayRankedSearchPage} from "../display/displayRankedSearchPage.js";
-
-/*
-This file contains all the methods that contact the backend servlets (excluding those that are used to configure the
-servlet for indexing a directory -- these are held in a separate file).
- */
 
 // Sends the Google unique id token to the servlet for verification
 export const handleCredentialResponse = (response) =>
@@ -50,6 +44,8 @@ export const getProfileInformation = () =>
         .then(profileInfo =>
         {
             // Convert from JSON string back into JS object
+            console.log("In the contact servlet get profile info promise. ")
+
             return JSON.parse(profileInfo);
         })
         .catch(error =>
@@ -77,6 +73,8 @@ export const sendFormDataToServlet = (formData) =>
         .then(responseText =>
         {
             // Create and display the profile page
+            //const uploadform = document.querySelector('#upload-dir-form');
+            //uploadform.classList.remove('hidden');
             displayProfilePage();
         })
         .catch(error =>
@@ -155,4 +153,58 @@ export const contactServlet = (endpoint) =>
         {
             console.error('There was a problem with the fetch operation:', error);
         });
+}
+
+// Contacts the servlet to handle deleting a directory, passing the containerName
+export const deleteUserDirectory = (directoryID) =>
+{
+    fetch(`/deleteDirectory`, {
+        method: 'POST',
+        body: JSON.stringify(
+            {containerName: directoryID})
+    })
+        .then(response =>
+        {
+            if (!response.ok)
+            {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(responseText =>
+        {
+            console.log("Successfully deleted the container. ");
+            displayProfilePage();
+
+        })
+        .catch(error =>
+        {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+
+// Makes a POST request to the servlet to handle scraping (passing baseURL and depth)
+export const scrapeWebsite = (baseurl, depth) =>
+{
+    fetch('/scrapeWebsite', {
+        method: 'POST',
+        body: JSON.stringify(
+            {baseURL: baseurl, depth: depth}),
+    })
+        .then(response =>
+        {
+            if (!response.ok)
+            {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(responseText =>
+        {
+            // Remove spinner and display the profile page
+            const loadingSpinner = document.querySelector("#loading-spinner");
+            loadingSpinner.remove();
+            displayProfilePage();
+        })
+        .catch(error => console.error('There was a problem with the fetch operation:', error));
 }
