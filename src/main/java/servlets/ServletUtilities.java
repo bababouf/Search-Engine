@@ -215,39 +215,38 @@ public class ServletUtilities
         }
         return corpus;
     }
-    public static String createTemporaryUploadDirectory(String containerName)
-    {
+    public static String createTemporaryUploadDirectory(String containerName) throws IOException {
 
-        String projectRoot = System.getenv("TEMP_UPLOAD_DIR");
-        String uploadedDirectoryPath = "";
-        if (projectRoot == null)
-        {
-            uploadedDirectoryPath = "C:/Users/agreg/Desktop/CopyOfProject/search-engine" + File.separator + containerName;
-        }
-        else
-        {
-            uploadedDirectoryPath = projectRoot + File.separator + containerName;
-        }
+        // Check if the environment variable is set
+        String tempUploadDir = System.getenv("TEMP_UPLOAD_DIR");
+        Path uploadDirPath;
 
-        File uploadDir = new File(uploadedDirectoryPath);
+        // If the environment variable is not set, use Java's temporary directory
+        if (tempUploadDir == null) {
+            // Create a temporary directory in the default temp directory (or use the containerName to create a subdirectory)
+            Path tempDir = Files.createTempDirectory(containerName);
+            uploadDirPath = tempDir;
+            System.out.println("Using system temporary directory: " + tempDir.toString());
+        } else {
+            // If the environment variable is set, use that directory
+            uploadDirPath = Paths.get(tempUploadDir, containerName);
+            File uploadDir = new File(uploadDirPath.toString());
 
-
-        System.out.println("Creating directory at path: " + uploadedDirectoryPath);
-        // If the directory doesn't exist, create it
-        if (!uploadDir.exists())
-        {
-            boolean created = uploadDir.mkdirs();
-            if (!created)
-            {
-                System.err.println("Failed to create directory.");
+            // If the directory doesn't exist, create it
+            if (!uploadDir.exists()) {
+                boolean created = uploadDir.mkdirs();
+                if (!created) {
+                    System.err.println("Failed to create directory.");
+                } else {
+                    System.out.println("Created directory at path: " + uploadDirPath.toString());
+                }
+            } else {
+                System.out.println("Directory already exists at path: " + uploadDirPath.toString());
             }
         }
-        else
-        {
-            System.out.println("Directory already exists.");
-        }
 
-        return uploadedDirectoryPath.replace("\\", "/");
+        // Return the directory path as a string, with forward slashes
+        return uploadDirPath.toString().replace("\\", "/");
     }
     public static void handleUploadingFiles(HttpServletRequest request, String uploadedDirectoryPath, ServletContext context) throws ServletException, IOException
     {
