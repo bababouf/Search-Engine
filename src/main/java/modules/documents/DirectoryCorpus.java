@@ -9,6 +9,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -20,7 +21,7 @@ public class DirectoryCorpus implements DocumentCorpus
     // A hashmap that maps documentIDs to Document objects
     private HashMap<Integer, Document> documents;
 
-    // A hashmap that maps fileExtensions to their corresponding methods (.JSON extensions -> loadJsonFileDocument() )
+    // A hashmap that maps fileExtensions to their corresponding methods (.JSON extensions -> loadDefaultJsonFileDocument() )
     private final HashMap<String, FileDocumentFactory> factories = new HashMap<>();
 
     // A filtering function for identifying documents that should get loaded.
@@ -29,13 +30,15 @@ public class DirectoryCorpus implements DocumentCorpus
     // The path to the directory
     private final Path directoryPath;
 
+    private String JSONType;
+
     /**
      * Constructs a corpus over an absolute path
      */
     public DirectoryCorpus(Path directoryPath)
     {
-
         this(directoryPath, s -> true);
+        JSONType = "None";
     }
 
     /**
@@ -65,15 +68,28 @@ public class DirectoryCorpus implements DocumentCorpus
     /**
      * Constructs a corpus over a directory of JSON documents
      */
+    public static DirectoryCorpus loadDefaultJsonDirectory(Path absolutePath, String fileExtension)
+    {
+
+        System.out.println("In the correct load default json dir method. ");
+        DirectoryCorpus corpus = new DirectoryCorpus(absolutePath);
+
+        // Registers the fileExtension (.JSON) to the "loadDefaultJsonFileDocument" method
+        corpus.registerFileDocumentFactory(fileExtension, DefaultJSONFileDocument::loadDefaultJsonFileDocument);
+        return corpus;
+    }
+    /*
     public static DirectoryCorpus loadJsonDirectory(Path absolutePath, String fileExtension)
     {
 
         DirectoryCorpus corpus = new DirectoryCorpus(absolutePath);
 
-        // Registers the fileExtension (.JSON) to the "loadJsonFileDocument" method
+        // Registers the fileExtension (.JSON) to the "loadDefaultJsonFileDocument" method
         corpus.registerFileDocumentFactory(fileExtension, JSONFileDocument::loadJsonFileDocument);
         return corpus;
     }
+
+     */
 
     /**
      * The load<FILETYPE>Directory methods above will call this method before any other methods are called. Initially,
@@ -98,8 +114,18 @@ public class DirectoryCorpus implements DocumentCorpus
 
         for (Path file : allFiles)
         {
-            result.put(nextId, factories.get(getFileExtension(file)).createFileDocument(file, nextId));
-            nextId++;
+            if(Objects.equals(JSONType, "body"))
+            {
+                System.out.println("We should also be in HERE HERE HERE");
+                result.put(nextId, factories.get(getFileExtension(file)).createFileDocument(file, nextId, "body"));
+                nextId++;
+            }
+            else
+            {
+                result.put(nextId, factories.get(getFileExtension(file)).createFileDocument(file, nextId, JSONType));
+                nextId++;
+            }
+
         }
         return result;
     }
@@ -193,6 +219,10 @@ public class DirectoryCorpus implements DocumentCorpus
         return documents.size();
     }
 
+    public void setJSONType(String jsonType){
+        JSONType = jsonType;
+    }
+
     /**
      * Returns the Document object associated with the passed documentID
      */
@@ -203,3 +233,5 @@ public class DirectoryCorpus implements DocumentCorpus
     }
 
 }
+
+

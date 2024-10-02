@@ -48,7 +48,7 @@ public class BooleanQueryParser
      */
     public QueryComponent parseQuery(String query)
     {
-
+        query = query.toLowerCase();
         // Start at index 0
         int start = 0;
 

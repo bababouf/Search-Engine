@@ -54,7 +54,7 @@ public class AzureBlobPositionalIndexer
     {
         try
         {
-            DirectoryCorpus corpus = DirectoryCorpus.loadJsonDirectory(absolutePathToCorpus, ".json");
+            DirectoryCorpus corpus = DirectoryCorpus.loadDefaultJsonDirectory(absolutePathToCorpus, ".json");
             AzureBlobStorageClient blobStorageClient = new AzureBlobStorageClient(containerName);
 
 

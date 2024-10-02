@@ -13,19 +13,22 @@ import java.nio.file.Path;
  * Represents a document saved as a json file
  */
 
-public class JSONFileDocument implements FileDocument
+public class DefaultJSONFileDocument implements FileDocument
 {
     private final int documentID;
     private final Path filePath;
+    private final String key;
 
     /**
      * Constructs a JSONFileDocument with a given document ID representing the file at the given absoluteFilePath
      */
-    public JSONFileDocument(int id, Path absoluteFilePath)
+    public DefaultJSONFileDocument(int id, Path absoluteFilePath, String contentKey)
     {
         documentID = id;
         filePath = absoluteFilePath;
+        key = contentKey;
     }
+
 
     /**
      * Returns the absolute file path
@@ -52,6 +55,8 @@ public class JSONFileDocument implements FileDocument
     public Reader getContent()
     {
 
+        System.out.println("In the get content method." );
+        System.out.println("The key is: " + key);
         JSONParser parser = new JSONParser();
         String path = filePath.toString();
 
@@ -59,7 +64,7 @@ public class JSONFileDocument implements FileDocument
         {
             Object obj = parser.parse(new FileReader(path));
             JSONObject jsonObject = (JSONObject) obj;
-            String body = (String) jsonObject.get("body");
+            String body = (String) jsonObject.get(key);
             return new StringReader(body);
         }
         catch (ParseException | IOException e)
@@ -113,8 +118,9 @@ public class JSONFileDocument implements FileDocument
     /**
      * This method returns a JSONFileDocument
      */
-    public static FileDocument loadJsonFileDocument(Path absolutePath, int documentId)
+    public static FileDocument loadDefaultJsonFileDocument(Path absolutePath, int documentId, String contentKey)
     {
-        return new JSONFileDocument(documentId, absolutePath);
+        System.out.println("Surely this is being called right");
+        return new DefaultJSONFileDocument(documentId, absolutePath, contentKey);
     }
 }

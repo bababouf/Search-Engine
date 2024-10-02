@@ -120,6 +120,7 @@ public class PositionalInvertedIndex implements Index
             // Creates a stream of tokens from the associated Reader for a document
             EnglishTokenStream documentTokenStream = new EnglishTokenStream(document.getContent());
 
+
             // Converts stream of tokens to iterable of strings
             Iterable<String> tokens = documentTokenStream.getTokens();
 

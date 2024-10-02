@@ -62,8 +62,13 @@ public class AzureBlobPositionalIndex implements Index
         {
 
             // Get the byte position for the term from the database
+
             PostgresDB database = new PostgresDB(directoryType);
-            database.setTableName(tableName);
+            if(directoryType.equals("user_directory"))
+            {
+                database.setTableName(tableName);
+            }
+            //database.setTableName(tableName);
             Long bytePosition = database.selectTerm(term);
 
             // Skip to the byte position of the term's postings
@@ -114,9 +119,13 @@ public class AzureBlobPositionalIndex implements Index
              DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream))
         {
 
-            // Get the byte position for the term from the database
+            System.out.println("Directory type in the get postings: " + directoryType);
             PostgresDB database = new PostgresDB(directoryType);
-            database.setTableName(tableName);
+            if(directoryType.equals("user_directory"))
+            {
+                database.setTableName(tableName);
+            }
+            //database.setTableName(tableName);
             Long bytePosition = database.selectTerm(term);
             List<Posting> postings = new ArrayList<>();
 
@@ -171,7 +180,7 @@ public class AzureBlobPositionalIndex implements Index
     public List<String> getVocabulary()
     {
         PostgresDB database = new PostgresDB(directoryType);
-        database.setTableName("byte_positions");
+        //database.setTableName("byte_positions");
         return database.retrieveVocabulary();
 
     }

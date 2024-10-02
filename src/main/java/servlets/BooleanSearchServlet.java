@@ -16,7 +16,9 @@ import jakarta.servlet.annotation.*;
 import modules.queries.BooleanQueryParser;
 import modules.queries.PhraseLiteral;
 import modules.queries.QueryComponent;
-import servlets.ServletUtilities.Page;
+import servlets.ServletUtilities.FileResult;
+
+import static servlets.ServletUtilities.createFileResult;
 
 
 @WebServlet(name = "BooleanSearchServlet", value = "/search/booleansearch")
@@ -42,6 +44,7 @@ public class BooleanSearchServlet extends HttpServlet
 
         // Create directory corpus
         corpus = ServletUtilities.createCorpus(context);
+        System.out.println("Corpus size: " + corpus.getCorpusSize());
     }
 
     /*
@@ -53,9 +56,11 @@ public class BooleanSearchServlet extends HttpServlet
         // Parses the HTTP request and obtains the query entered in the searchbar by the user
         JsonObject jsonBody = ServletUtilities.parseRequestBody(request);
         String query = jsonBody.get("query").getAsString();
+        System.out.println("Query: " + query);
 
         // Calls a method that will obtain the documents that satisfy the user's query
         List<Posting> queryPostings = processBooleanQuery(query, index);
+        System.out.println("After process boolean query. " );
 
         // Converts the list of postings into JSON string to be sent to the browser
         String results = setupResults(queryPostings, corpus);
@@ -95,20 +100,29 @@ public class BooleanSearchServlet extends HttpServlet
      */
     public String setupResults(List<Posting> queryPostings, DirectoryCorpus corpus)
     {
+        System.out.println("In the setup results. ");
+        //ServletContext context = getServletContext();
+        List<FileResult> results = new ArrayList<>();
 
-        List<Page> pages = new ArrayList<>();
+        System.out.println("before the caomparator");
+        queryPostings.sort(Comparator.comparing(Posting::getTermFrequency).reversed());
+        System.out.println("after the caomparator");
+        System.out.println("queryPostings size: " + queryPostings.size());
 
-        // Traverse through each posting returned in the results (query postings)
         for (Posting queryPosting : queryPostings)
         {
+            System.out.println("in the for loop");
             Document document = corpus.getDocument(queryPosting.getDocumentId());
-            Page page = new Page(document.getTitle(), document.getURL());
-            pages.add(page);
+
+            System.out.println("Creating File Result: ");
+            FileResult file = createFileResult(document);
+            results.add(file);
         }
+
 
         // Converts the list of "pages" into JSON
         Gson gson = new Gson();
-        return gson.toJson(pages);
+        return gson.toJson(results);
     }
 
 

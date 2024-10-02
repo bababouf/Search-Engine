@@ -22,7 +22,7 @@ public class PostgresDB
         directory = databaseName;
         if (databaseName.equals("default_directory"))
         {
-            setTableName("se-indexing-files");
+            setTableName("byte_positions");
         }
 
         conn = connect(); // Pass directory to the connect method

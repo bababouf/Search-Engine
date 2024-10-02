@@ -11,10 +11,12 @@ import modules.documents.Document;
 import modules.indexing.AzureBlobPositionalIndex;
 import modules.misc.Entry;
 import modules.rankingSchemes.*;
-import servlets.ServletUtilities.Page;
+import servlets.ServletUtilities.FileResult;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static servlets.ServletUtilities.createFileResult;
 
 @WebServlet(name = "RankedSearchServlet", value = "/search/rankedsearch")
 public class RankedSearchServlet extends HttpServlet
@@ -33,6 +35,7 @@ public class RankedSearchServlet extends HttpServlet
 
         // Create directory corpus
         corpus = ServletUtilities.createCorpus(context);
+        System.out.println("Corpus Size in the GET: " + corpus.getCorpusSize());
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException
@@ -90,13 +93,13 @@ public class RankedSearchServlet extends HttpServlet
         // Convert list of entries to pages, and then convert pages to JSON string to be sent to browser
         if (top10Ranked != null)
         {
-            List<Page> pages = new ArrayList<>();
+            List<FileResult> pages = new ArrayList<>();
             for (Entry top10Result : top10Ranked)
             {
                 System.out.println("Found top10 result: " + top10Result.getDocID());
                 Document document = corpus.getDocument(top10Result.getDocID());
-                Page page = new Page(document.getTitle(),document.getURL());
-                pages.add(page);
+                FileResult result = createFileResult(document);
+                pages.add(result);
             }
 
             // Convert pages to JSON string

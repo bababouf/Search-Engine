@@ -69,7 +69,13 @@ public class AndQuery implements QueryComponent
             // If the documentIDs match, add to results list
             if (currentDocL1 == currentDocL2)
             {
+
+                int l1Frequency = listOne.get(l1Index).getTermFrequency();
+                int l2Frequency = listTwo.get(l2Index).getTermFrequency();
+                int combinedFrequency = l1Frequency + l2Frequency;
+                listOne.get(l1Index).setTermFrequency(combinedFrequency);
                 resultsList.add(listOne.get(l1Index));
+
                 l1Index++;
                 l2Index++;
             }

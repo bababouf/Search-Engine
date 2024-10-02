@@ -66,6 +66,7 @@ public class OrQuery implements QueryComponent
             // If the end of listOne is reached, continue to add documents and increment listTwo
             if (l1Index == listOne.size())
             {
+
                 result.add(listTwo.get(l2Index));
                 l2Index++;
             }
@@ -85,6 +86,11 @@ public class OrQuery implements QueryComponent
                 // If the documents match, add the ID to the resultsList and increment both lists
                 if (currentDocL1 == currentDocL2)
                 {
+                    int l1Frequency = listOne.get(l1Index).getTermFrequency();
+                    int l2Frequency = listTwo.get(l2Index).getTermFrequency();
+                    int combinedFrequency = l1Frequency + l2Frequency;
+                    listOne.get(l1Index).setTermFrequency(combinedFrequency);
+
                     result.add(listOne.get(l1Index));
                     l1Index++;
                     l2Index++;

@@ -83,34 +83,35 @@ public class PhraseLiteral implements QueryComponent
     public List<Posting> MergeLists(List<Posting> literal, List<Posting> nextLiteral, int termsApart)
     {
         List<Posting> result = new ArrayList<>();
-        int j = 0;
-        int k = 0;
+        int l1Index = 0;
+        int l2Index = 0;
 
-        while (j < literal.size() && k < nextLiteral.size())
+        while (l1Index < literal.size() && l2Index < nextLiteral.size())
         {
-            int docId1 = literal.get(j).getDocumentId();
-            int docId2 = nextLiteral.get(k).getDocumentId();
+            int currentDocL1 = literal.get(l1Index).getDocumentId();
+            int currentDocL2 = nextLiteral.get(l2Index).getDocumentId();
 
             // Matching documents found
-            if (docId1 == docId2)
+            if (currentDocL1 == currentDocL2)
             {
-                Posting mergedPosting = checkPostingPositions(literal.get(j), nextLiteral.get(k), termsApart);
+                Posting mergedPosting = checkPostingPositions(literal.get(l1Index), nextLiteral.get(l2Index), termsApart);
                 if (mergedPosting != null)
                 {
+                    mergedPosting.setTermFrequency(1);
                     result.add(mergedPosting);
                 }
-                j++;
-                k++;
+                l1Index++;
+                l2Index++;
             }
             // Advance in the first list
-            else if (docId1 < docId2)
+            else if (currentDocL1 < currentDocL2)
             {
-                j++;
+                l1Index++;
             }
             // Advance in the second list
             else
             {
-                k++;
+                l2Index++;
             }
         }
 
@@ -122,35 +123,35 @@ public class PhraseLiteral implements QueryComponent
      */
     public Posting checkPostingPositions(Posting p, Posting d, int sup)
     {
-        List<Integer> firstList = p.getPositions();
-        List<Integer> secondList = d.getPositions();
-        List<Integer> positions = new ArrayList<>();
+        List<Integer> l1Positions = p.getPositions();
+        List<Integer> l2Positions = d.getPositions();
+        List<Integer> resultsPositions = new ArrayList<>();
 
-        int l = 0;
-        int k = 0;
+        int l1Index = 0;
+        int l2Index = 0;
 
-        while (l < firstList.size() && k < secondList.size())
+        while (l1Index < l1Positions.size() && l2Index < l2Positions.size())
         {
-            int pos1 = firstList.get(l);
-            int pos2 = secondList.get(k);
+            int pos1 = l1Positions.get(l1Index);
+            int pos2 = l2Positions.get(l2Index);
 
             if (pos1 + sup == pos2)
             { // Appropriate positions found
-                positions.add(pos1);
-                l++;
-                k++;
+                resultsPositions.add(pos1);
+                l1Index++;
+                l2Index++;
             }
             else if (pos1 + sup < pos2)
             { // Move forward in the first list
-                l++;
+                l1Index++;
             }
             else
             { // Move forward in the second list
-                k++;
+                l2Index++;
             }
         }
 
-        return positions.isEmpty() ? null : new Posting(p.getDocumentId(), positions);
+        return resultsPositions.isEmpty() ? null : new Posting(p.getDocumentId(), resultsPositions);
     }
 
     @Override

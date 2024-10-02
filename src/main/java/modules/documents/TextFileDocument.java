@@ -78,7 +78,7 @@ public class TextFileDocument implements FileDocument
     /**
      * Returns a TextFileDocument
      */
-    public static FileDocument loadTextFileDocument(Path absolutePath, int documentId)
+    public static FileDocument loadTextFileDocument(Path absolutePath, int documentId, String contentKey)
     {
         return new TextFileDocument(documentId, absolutePath);
     }

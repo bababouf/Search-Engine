@@ -34,8 +34,8 @@ public class RetrieveProfile extends HttpServlet
         String firstName = (String) session.getAttribute("firstName");
         String profileURL = (String) session.getAttribute("profileURL");
         String uniqueID = (String) session.getAttribute("uniqueID");
-        List<ServletUtilities.Directory> userDirectories = (List<ServletUtilities.Directory>) session.getAttribute("userDirectories");
-
+        //List<ServletUtilities.Directory> userDirectories = (List<ServletUtilities.Directory>) session.getAttribute("userDirectories");
+        List<ServletUtilities.Directory> userDirectories = ServletUtilities.getUserDirectories(uniqueID);
         //List<String> directoryNames = getDirectoryNames(userDirectories);
 
         // Store all of this information in a Profile object

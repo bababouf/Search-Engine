@@ -3,6 +3,7 @@ package modules.indexing;
 import modules.database.PostgresDB;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -203,6 +204,19 @@ public class BlobStorageWriter
             e.printStackTrace();
             return new byte[0];
         }
+    }
+
+    public static void uploadSelectedKey(AzureBlobStorageClient blobStorageClient, String selectedKey) throws IOException {
+        // Specify the name of the file where the selected key will be stored
+        String selectedKeyFileName = "selectedKey.txt";
+
+        // Convert the selectedKey string to bytes
+        byte[] keyData = selectedKey.getBytes(StandardCharsets.UTF_8);
+
+        // Upload the file to Azure Blob Storage
+        blobStorageClient.uploadFile(selectedKeyFileName, keyData);
+
+        System.out.println("Upload of selectedKey.txt to Azure Blob Storage complete.");
     }
 
 }
