@@ -1,22 +1,20 @@
-// Initialize event listener for the "get-started" button when the page loads
+import {captureHomepageContent, setHomepageContent} from "./homepageContentManager.js";
+
+// Ensure the content is loaded before capturing the content on the page and initializing listeners
 window.addEventListener('DOMContentLoaded', () =>
 {
+    captureHomepageContent();
     initializeHomePageEventListeners();
 });
 
-/*
-Creates an event listener for the documentation anchor and the "get started" button.
- */
-const initializeHomePageEventListeners = () =>
+// Initializes listeners for the documentation anchor and the "get started" button
+export const initializeHomePageEventListeners = () =>
 {
-
-    // Clicking the "get started" button loads the login.html page
+    // Load the login.html page when the "get started" button is clicked
     const nextButton = document.querySelector('#homepage__button-start');
     nextButton.addEventListener('click', event =>
     {
-        // Displays the Google login prompt page
         window.location.href = '../../html/login.html'
-
     });
 };
 

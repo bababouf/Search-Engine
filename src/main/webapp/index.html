@@ -13,8 +13,11 @@
 </head>
 <body>
 <header class="homepage__hero">
-    <div class="homepage__content-wrapper">
+    <div class="homepage__header-wrapper">
         <h1 class="homepage__title"> Search Genie </h1>
+        <div class="homepage__doc-container">
+            <a href="https://github.com/bababouf/Search-Engine" class="homepage__github-anchor"> Github Repo </a>
+        </div>
         <p class="homepage__project-overview">
             This web application enables efficient search and indexing, offering quick access to large directories through a
             simple interface.
@@ -22,36 +25,38 @@
     </div>
 </header>
 <main>
-    <div class="logo__wrapper">
-        <div class="logo-container">
-            <img src="/images/search-genie-logo-transparent.png" class="logo" alt="Search Genie Logo">
+    <div class="homepage__content-wrapper">
+        <div class="logo__wrapper">
+            <div class="logo-container">
+                <img src="/images/search-genie-logo-transparent.png" class="logo" alt="Search Genie Logo">
+            </div>
         </div>
+        <div class="homepage__cards">
+            <div class="homepage__card">
+                <h2 class="homepage__subtitle"> Corpus Selection </h2>
+                <p>
+                    Users have the flexibility to choose between the default corpus or upload their own,
+                    catering to diverse research needs and interests.
+                </p>
+            </div>
+            <div class="homepage__card">
+                <h2 class="homepage__subtitle"> Indexing Efficiency </h2>
+                <p>
+                    Upon selecting a corpus, our application initiates a comprehensive indexing process, optimizing
+                    data for rapid retrieval and ensuring minimal latency during subsequent queries.
+                </p>
+            </div>
+            <div class="homepage__card">
+                <h2 class="homepage__subtitle"> Query Functionality </h2>
+                <p>
+                    The application supports two distinct query modes to accommodate varying search preferences: <br>
+                    1. Boolean Retrieval Mode <br>
+                    2. Ranked Retrieval Mode
+                </p>
+            </div>
+        </div>
+        <button id="homepage__button-start">Get Started!</button>
     </div>
-    <div class="homepage__cards">
-        <div class="homepage__card">
-            <h2 class="homepage__subtitle"> Corpus Selection </h2>
-            <p>
-                Users have the flexibility to choose between the default corpus or upload their own,
-                catering to diverse research needs and interests.
-            </p>
-        </div>
-        <div class="homepage__card">
-            <h2 class="homepage__subtitle"> Indexing Efficiency </h2>
-            <p>
-                Upon selecting a corpus, our application initiates a comprehensive indexing process, optimizing
-                data for rapid retrieval and ensuring minimal latency during subsequent queries.
-            </p>
-        </div>
-        <div class="homepage__card">
-            <h2 class="homepage__subtitle"> Query Functionality </h2>
-            <p>
-                The application supports two distinct query modes to accommodate varying search preferences: <br>
-                1. Boolean Retrieval Mode <br>
-                2. Ranked Retrieval Mode
-            </p>
-        </div>
-    </div>
-    <button id="homepage__button-start">Get Started!</button>
 </main>
     <script src="/scripts/utils/createHomepageListener.js" type="module"></script>
 </body>

@@ -1,10 +1,10 @@
 /* SITE GRID + PAGE CONTAINER */
 .site-content-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, auto)); /* Adjust minmax */
+    grid-template-columns: repeat(auto-fit, minmax(400px, auto)); /* Adjust minmax */
     gap: 2rem;
     width: 100%;
-    max-width: 1400px;
+    max-width: 1700px;
     justify-content: center; /* Centers the grid itself */
     justify-items: center; /* Centers the grid items in their respective columns */
     margin: 1rem;
@@ -32,6 +32,7 @@
     color: var(--primary-color);
     margin-bottom: 0;
     line-height: 1.1;
+    margin-top: 0;
 }
 
 .site-header__welcome-user {
@@ -46,13 +47,11 @@
 .site-header__instructions{
     min-width: 300px;
     max-width: 800px;
-    font-size: 1.2rem;
-    line-height: 1.6;
     color: white;
     background-color: rgba(240, 248, 255, 0.1);
-    border: 3px solid lightsteelblue;
+    border: 3px solid #1c1c1c;
     padding: 1.5rem;
-    border-radius: 10px;
+    border-radius: 150px;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
@@ -104,7 +103,16 @@
 /* -------------------------------------------------------------------------------------------------------------------*/
 /* PROFILE STYLES */
 
-.profile__upload-dir-note, .profile__default-dir-note {
+.profile__upload-restrictions-note{
+    text-align: left;
+    color: black;
+
+    border-radius: 10px;
+    font-size: .9rem;
+    font-weight: bold;
+
+}
+.profile__upload-dir-note, .profile__default-dir-note, .profile__upload-website-note {
     margin-bottom: 1rem;
     color: black;
 }
@@ -118,40 +126,205 @@
     align-items: center;
 }
 
-.profile__user-dir-item{
-    margin-bottom: 1rem;
+.profile__user-dir-item {
+
+    padding-top: .3rem;
+    width: 100%; /* Adjust width to fit the parent container */
+    max-width: 400px; /* Max width to prevent it from stretching too far */
+
+    transition: box-shadow 0.3s ease;
 }
 
-.profile__user-dir-link{
+.profile__user-dir-link {
     text-decoration: none;
     color: black;
     font-size: 1.4rem;
     font-family: monospace;
+    display: block;
+    margin-bottom: 1rem;
+    cursor: default;
 }
 
-.profile__user-dir-link:hover {
+.profile__user-dir-item:hover {
+    .profile__user-dir-link{
+        color:white;
+    }
+
+}
+
+.user-dir-btn{
+    opacity: 0;
+    margin: 0 1rem;
+    padding: 1rem;
+    height: 30px;
+    min-width: 80px;
+    transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: none;
+    background-color: transparent; /* Transparent background initially */
+    display: flex; /* Center text */
+    align-items: center; /* Center text vertically */
+    justify-content: center; /* Center text horizontally */
+
+}
+.delete-btn{
+    border: 2px solid #ff3c3c; /* Use border instead of box-shadow for borders */
+    color: #ff3c3c;
+
+}
+.query-btn{
+    border: 2px solid limegreen; /* Use border instead of box-shadow for borders */
+    color: limegreen;
+}
+
+.delete-btn:hover{
+    box-shadow: none;
+    border: 2px solid #ff3c3c;
+    background-color: #ff3c3c;
     color: white;
-    text-shadow: 0 1px 2px black;
-    cursor: pointer;
+}
+
+.query-btn:hover{
+    box-shadow: none;
+    border: 2px solid limegreen;
+    background-color: limegreen;
+    color: white;
+}
+
+.profile__user-dir-item:hover{
+    .delete-btn{
+        opacity: 100%;
+        transition: opacity .7s ease-in-out;
+    }
+    .query-btn{
+        opacity: 100%;
+        transition: opacity .7s ease-in-out;
+    }
+}
+/* Show buttons when hovering over the list item */
+.profile__user-dir-item:hover .flex-row-center {
+    display: flex; /* Show the buttons on hover */
 }
 
 .profile__upload-dir-input,
 #profile__upload-button {
     display: block; /* Ensure they are block-level elements */
-    margin: 27px auto; /* Center horizontally with margin */
+    /* Center horizontally with margin */
+    margin: 27px auto 1rem;
 }
 
-#error-message {
-    color: red;
-    background-color: aliceblue;
-    border: 2px solid red;
-    padding: 10px;
-    border-radius: 4px;
-    margin-top: 10px;
-    font-size: 16px;
-    line-height: 1.4;
-    display: block;
+.profile-upload__key-container{
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
 }
+
+.profile-directories{
+
+    max-height: fit-content;
+    align-self: start;
+    min-height: 389px;
+}
+
+.profile-upload{
+    max-height: fit-content;
+    align-self: start;
+    min-height: 389px;
+}
+
+.profile-scrape{
+    max-height: fit-content;
+    align-self: start;
+    min-height: 389px;
+}
+
+.profile-default-directory{
+    max-height: fit-content;
+    align-self: start;
+    min-height: 389px;
+}
+#error-message {
+    color: #c30000; /* Keep the red for error visibility */
+    background-color: black; /* Slight white background for contrast */
+    padding: 0.5rem; /* Add some padding for spacing around the text */
+    margin: 0.5rem 0 0 0; /* Add margin for separation from other elements */
+    border-radius: 4px; /* Soften the edges */
+    font-weight: bold; /* Make the text stand out */
+    font-size: 1rem; /* Ensure the text is legible */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Add a subtle border for definition */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow to make the error pop */
+    display: none;
+}
+
+.key-selection-instructions{
+    color: black;
+
+}
+
+.directory__key-item{
+    color: black;
+    box-shadow: none;
+    border: 2px solid black;
+    min-width: 80px;
+    margin: .7rem;
+    border-radius: 12px;
+}
+.directory__key-item:hover{
+    background-color: white;
+    box-shadow: none;
+    border: 2px solid black;
+}
+
+.select-button{
+
+}
+
+/* -------------------------------------------------------------------------------------------------------------------*/
+/* SCRAPE PAGE */
+/* General form styling */
+.scrape-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Adds spacing between form elements */
+}
+
+/* Form group to group label and input */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Label styling */
+.form-label {
+    font-size: 14px;
+    color: #000000;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Input field styling */
+.form-input,
+.form-select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-input:focus,
+.form-select:focus {
+    border-color: #007BFF; /* Blue border on focus */
+    outline: none;
+}
+
+.grid-config{
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+
 /* -------------------------------------------------------------------------------------------------------------------*/
 /* QUERY MODES */
 
@@ -168,13 +341,32 @@
 /* -------------------------------------------------------------------------------------------------------------------*/
 /* BOOLEAN PAGE */
 
+.boolean-formats{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 .boolean-formats__description{
-    padding: 0;
+    padding: 1.5rem;
+    min-width: 300px;
+    max-width: 800px;
+    color: white;
+    background-color: rgba(240, 248, 255, 0.1);
+    border: 3px solid #1c1c1c;
+    border-radius: 150px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 .boolean-formats__title {
     font-size: 1.8rem;
     color: var(--secondary-color);
     margin-bottom: 2rem;
+}
+
+.boolean-formats__content-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .boolean-formats__card-container {
@@ -185,22 +377,25 @@
 }
 
 .boolean-formats__card-description {
-    font-size: 1rem;
     color: black;
     margin-bottom: 1rem;
     padding: 0;
 }
 
 .boolean-formats__example {
-    font-size: 0.9rem;
-    color: white;
+    font-size: 1.1rem;
+    color: azure;
     font-style: italic;
     padding: 0;
 }
 
 /* -------------------------------------------------------------------------------------------------------------------*/
 /* RANKED  PAGE */
-
+.ranking-schemes{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 .ranking-schemes__card-container{
     display: flex;
     justify-content: center;
@@ -217,6 +412,21 @@
 .ranking-schemes__description{
     min-width: 300px;
     max-width: 800px;
+    color: white;
+    background-color: rgba(240, 248, 255, 0.1);
+    border: 3px solid #1c1c1c;
+    padding: 2rem;
+    border-radius: 150px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.ranking-schemes__formula-img{
+    height: 150px;
+    width: 250px;
+    display: block;
+    border-radius: 25px;
+    margin: auto;
 }
 
 /* -------------------------------------------------------------------------------------------------------------------*/
@@ -259,58 +469,6 @@
     text-decoration: underline;
 }
 
-/* -------------------------------------------------------------------------------------------------------------------*/
-/* DOCUMENTATION */
-
-.active{
-    color: #fff;
-    background-color: black;
-}
-
-.sidebar {
-    background-color: rgb(30, 30, 30);
-    padding-top: 20px;
-    position: fixed;
-    height: 100vh;
-    width: 200px;
-}
-
-.sidebar a {
-    padding: 15px 25px;
-    text-decoration: none;
-    font-size: 18px;
-    color: white;
-    display: block;
-}
-
-.sidebar a:hover {
-    background-color: #575757;
-}
-
-.documentation{
-    margin-left: 200px;
-    text-align: left;
-    padding: 0rem 4rem;
-}
-
-.documentation p{
-    text-align: left;
-    overflow: hidden;
-}
-
-.arch-diagram{
-    margin: 0px 100px;
-}
-
-.section {
-    scroll-margin-top: 200px; /* Adjust this value to the height of your fixed header */
-    margin: 2rem 0rem;
-
-}
-
-.ranked{
-    margin: 0px 200px;
-}
 
 #google-login{
     padding: 1rem;
@@ -321,7 +479,6 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-
     grid-column: 1 / 3;
 }
 

@@ -10,7 +10,7 @@ export const createSearchBar = () =>
 
     searchDiv.innerHTML = `
     <form id ="search-form" name="search">
-            <input id="query" type="text" class="search-box" name="txt" autocomplete="off">  
+            <input id="query" placeholder="Search" type="text" class="search-box" name="txt" autocomplete="off">  
     </form>
     
     `;

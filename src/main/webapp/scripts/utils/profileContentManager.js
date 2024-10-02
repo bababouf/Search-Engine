@@ -4,6 +4,7 @@ back to the profile page.
  */
 
 let initialContent = '';
+let headerInstructionsText = '';
 
 // Sets the "initialContent" global variable to the parameter passed
 export const setInitialContent = (content) =>
@@ -19,6 +20,7 @@ export const getInitialContent = () =>
     if (instructions)
     {
         instructions.style.display = 'block';
+        instructions.textContent = headerInstructionsText;
     }
     return initialContent
 }
@@ -28,4 +30,6 @@ export const captureMainContent = () =>
 {
     const mainElement = document.querySelector('main');
     setInitialContent(mainElement.innerHTML);
+
+    headerInstructionsText = document.querySelector('.site-header__instructions').textContent;
 };

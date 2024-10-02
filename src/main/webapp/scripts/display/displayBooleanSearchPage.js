@@ -19,13 +19,26 @@ export const displayBooleanInstructions = () =>
     // Attach instructions content and loading spinner
     const mainElement = document.querySelector('main');
     const instructions = createBooleanInstructions();
-    const loadingSpinner = createLoadingSpinner();
 
-    instructions.appendChild(loadingSpinner);
+
     mainElement.appendChild(instructions);
 
-    // Allows servlet to download necessary files for the directory the user will be querying
-    contactServlet(endpoint);
+    // Attach listener to the next button
+    const nextButton = document.querySelector('#next-button');
+    nextButton.addEventListener('click', () =>
+    {
+        // Remove the next button
+        const nextButton = document.querySelector('#next-button');
+        nextButton.remove();
+
+        // Create and attach loading spinner
+        const loadingSpinner = createLoadingSpinner();
+        instructions.appendChild(loadingSpinner);
+
+        // Contact servlet to prep the server for the index (and ranking mode) that will be queried
+        contactServlet(endpoint)
+    });
+
 }
 
 /*
@@ -40,15 +53,14 @@ export const displayBooleanSearchPage = () =>
 
     // Attach instructions, acceptable query formats, search bar, and back button
     const mainElement = document.querySelector('main');
-    const booleanSearchDiv = createBooleanInstructions();
+
     const queryFormats = createAcceptableQueryFormats();
     const searchBar = createSearchBar();
     const backButton = createBackToHomeButton();
 
-    booleanSearchDiv.appendChild(queryFormats);
-    booleanSearchDiv.appendChild(searchBar);
-    booleanSearchDiv.appendChild(backButton);
-    mainElement.appendChild(booleanSearchDiv);
+    queryFormats.appendChild(searchBar);
+    queryFormats.appendChild(backButton);
+    mainElement.appendChild(queryFormats);
 
     attachQuerySubmitListener();
 
@@ -61,9 +73,12 @@ const createBooleanInstructions = () =>
     booleanSearchDiv.classList.add('boolean-formats__content-container');
 
     booleanSearchDiv.innerHTML = `
-        <p class = "boolean-formats__description"> The program accepts boolean queries that are in disjunctive normal form (DNF), also described as an OR of ANDS. 
-        In addition, phrase queries can be entered by enclosing the query in double quotes. Below examples of acceptable form are shown.</p>
-    `;
+        <p class = "boolean-formats__description"> 
+        The program accepts boolean queries that are in disjunctive normal form (DNF), also described as an OR of ANDS. 
+        In addition, phrase queries can be entered by enclosing the query in double quotes.
+        </p>
+        <button id="next-button">Next</button>    
+`;
 
     return booleanSearchDiv;
 }
@@ -77,7 +92,8 @@ const createAcceptableQueryFormats = () =>
 
     queryFormats.innerHTML = `
     
-    <h2 class="boolean-formats__title">Acceptable Query Formats</h2>
+    <p class="boolean-formats__description"> Below are the acceptable formats for boolean queries. Simply type a query in the search box below
+    and press enter. </p>
     <div class="boolean-formats__card-container">
         <div class="card bg-gradient" style="width: 300px">
             <h3 class="card-title">AND Query</h3>

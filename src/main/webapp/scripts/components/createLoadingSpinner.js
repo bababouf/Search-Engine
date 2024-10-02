@@ -5,7 +5,7 @@ export const createLoadingSpinner = () =>
     loadingDiv.id = "loading-spinner";
     loadingDiv.innerHTML = `
             <span class="loading-spinner"></span>
-            <p>Indexing...</p>
+            <p id="loading-spinner-text">Indexing...</p>
             `
     return loadingDiv;
 

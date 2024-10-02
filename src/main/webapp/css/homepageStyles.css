@@ -17,12 +17,34 @@
     line-height: 1.1;
 }
 
+.homepage__doc-container{
+    margin: 1rem;
+}
+.homepage__github-anchor {
+    /* General styles */
+    font-style: italic;
+    font-family: monospace;
+    font-size: 20px;          /* Adjust the size of the text */
+    font-weight: bold;        /* Make the text bold */
+    color: lightgray;           /* Use a nice blue color (you can change this to match your theme) */
+
+    text-decoration: none;
+    display: inline-block;     /* Ensures padding and margin are applied as expected */
+
+    /* Styling on hover */
+    transition: color 0.3s ease, background-color 0.3s ease; /* Smooth hover transitions */
+}
+.homepage__doc-anchor:hover {
+    color: white;           /* Darken the text color on hover */
+    cursor: pointer;
+}
 .homepage__project-overview{
     padding: 0;
+    margin-top:1rem;
 }
 
 .homepage__hero {
-    background-image: url(../images/oside.png);
+    background-image: url(../images/oceanside.png);
     background-size: cover;
     background-position: center;
     min-height: 40vh;
@@ -33,16 +55,18 @@
     border-bottom: 3px solid var(--background-color);
 }
 
-.homepage__content-wrapper {
-    background-color: rgba(128, 128, 128, 0.9);
+.homepage__header-wrapper {
+    background-color: rgba(128, 128, 128, 0.7);
     border-radius: 100%;
-    padding: 2rem;
+    padding: 2.5rem;
     width: 700px;
     color: white;
     margin: auto;
 }
 
-/* Cards */
+.homepage__content-wrapper{
+    padding: 1rem;
+}
 .homepage__cards {
     display: flex;
     flex-wrap: wrap;
@@ -54,7 +78,8 @@
 
 .homepage__card {
     width: 100%;
-    max-width: 500px;
+    max-width: 550px;
+    min-width: 400px;
     flex: 1;
     box-sizing: border-box;
 }
@@ -84,3 +109,15 @@
     }
 }
 
+#google-login{
+    padding: 1rem;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+    grid-column: 1 / 3;
+}

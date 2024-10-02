@@ -51,12 +51,10 @@ const createRankedInstructions = () =>
 
     rankedSearchDiv.innerHTML = `
         <p class="ranking-schemes__description" > 
-        
         Ranked queries treat each query as a "bag of words," meaning they don’t have a fixed structure. For example, a query like 
         "dogs" will rank documents with various forms of "dog" highly. However, this approach falters with queries like "the dogs," 
         where a document might contain "the" frequently but lack "dog" variations. Thus, document ranking is based on a combination 
-        of the query term's weight and its weight within each document. The program offers four different ranking algorithms, each 
-        extending this basic approach. Here are the available algorithms:
+        of the query term's weight and its weight within each document.
         </p>
         <button id="next-button">Next</button>
         
@@ -93,23 +91,31 @@ const createRankedModes = () =>
     rankingSchemes.classList.add('ranking-schemes');
 
     rankingSchemes.innerHTML = `
-    <h2 class="ranking-schemes__title"> Select a Ranking Scheme </h2>
+    <p class="ranking-schemes__description"> 
+    Each ranking scheme offers a slightly different approach in how documents are ranked. Each formula calculates three 
+    variables used in the ranking: weight of query term (WQT), weight of document term (WDT), and LD (normalizing factor to 
+    account for varying document lengths). 
+     </p>
     <div class="ranking-schemes__card-container">
     <div class="card bg-gradient" style="width: 300px">
         <h3 class="card-title"> Default </h3>
+        
         <button id ="default-ranked" class="ranked-button site__button"> Select </button>
   
     </div>
     <div class="card bg-gradient" style="width: 300px">
         <h3 class="card-title"> TFIDF </h3>
+        
         <button id ="tfidf-ranked" class="ranked-button site__button"> Select </button>
     </div>
     <div class="card bg-gradient" style="width: 300px">
         <h3 class="card-title"> Okapi BM25 </h3>
+        
         <button id ="okapi-ranked" class="ranked-button site__button"> Select </button>
     </div>
     <div class="card bg-gradient" style="width: 300px">
         <h3 class="card-title"> Wacky </h3>
+        
         <button id ="wacky-ranked" class="ranked-button site__button"> Select </button>
     </div>
     </div>
@@ -164,8 +170,8 @@ const createErrorMessage = () =>
     const errorMsg = document.createElement('p');
     errorMsg.textContent = 'Please select a ranked mode before submitting a query. ';
     errorMsg.style.color = '#880808';
-    const searchbar = document.querySelector('.search-div');
-    const box = document.querySelector('.box');
-    searchbar.insertBefore(errorMsg, box);
+    const searchContainer = document.querySelector('.search-container');
+    const rankingSchemes = document.querySelector('.ranking-schemes');
+    rankingSchemes.insertBefore(errorMsg, searchContainer);
 }
 

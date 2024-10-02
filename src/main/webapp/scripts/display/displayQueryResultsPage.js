@@ -27,12 +27,10 @@ const createResultsPage = (response, endpoint) =>
     const listOfResults = JSON.parse(response);
     let resultsDiv;
 
-    // Handle no results
     if (listOfResults?.length === 0 ?? null)
     {
         resultsDiv = handleNoResults();
     }
-    // More than one result to display
     else
     {
         resultsDiv = displayResults(listOfResults);
@@ -45,14 +43,11 @@ const createResultsPage = (response, endpoint) =>
         <h3 class="site__h3"> Displaying ${listOfResults.length} results for query. </h3>
     `;
 
-    // Attach back to search button to the results header
     const backToSearchButton = createBackToSearchButton();
     resultsHeaderDiv.appendChild(backToSearchButton);
     mainElement.appendChild(resultsHeaderDiv);
-
     attachBackToSearchListener(mainElement, backToSearchButton, endpoint);
     mainElement.appendChild(resultsDiv);
-
 }
 
 // Creates HTML to be displayed when no results are found
@@ -68,29 +63,71 @@ const handleNoResults = () =>
     return resultsDiv;
 }
 
-/*
-Creates HTML for displaying the results. Results are displayed in rows, where each result is contained in a card (which
-contains the title and link).
- */
 const displayResults = (listOfResults) =>
 {
     const resultsDiv = document.createElement('div');
     resultsDiv.classList.add('query-results__container');
 
-    // Create card that contains title and URL of the results web page
-    listOfResults.forEach(result =>
+    listOfResults.forEach((result, index) =>
     {
-        const card = document.createElement('div');
-        card.classList.add('query-results__card');
-        card.innerHTML = `
-        <p>${result.title}</p>
-        <a class = "result-link" href = "${result.url}">URL</a>
-        `
+        const card = createResultCard(result, index, listOfResults);
         resultsDiv.appendChild(card);
-
     });
 
     return resultsDiv;
+};
 
-}
+// Helper function to create result cards
+const createResultCard = (result, index, listOfResults) =>
+{
+    const card = document.createElement('div');
+    card.classList.add('query-results__card');
+
+    if (!result.content)
+    {
+        card.innerHTML = `
+            <p>${result.title}</p>
+            <a class="result-link" href="${result.url}">URL</a>
+        `;
+    }
+    else
+    {
+        card.innerHTML = `
+            <p>${result.title}</p>
+            <button class="query-results__button" id="result-${index}">Display File</button>
+        `;
+        const button = card.querySelector('.query-results__button');
+        button.addEventListener('click', () => displayFile(result, index));
+    }
+
+    return card;
+};
+
+// Helper function to display the file
+const displayFile = (result, index) =>
+{
+    const displayResultDiv = document.createElement('div');
+    displayResultDiv.id = "display-results-container";
+    displayResultDiv.classList.add('flex-row-center');
+    displayResultDiv.innerHTML = `
+        <div class="card bg-gradient">
+            <h3>${result.title}</h3>
+            <p>${result.content}</p>
+            <button id="back-to-results-button">Back to Results</button>
+        </div>
+    `;
+
+    const resultsContainer = document.querySelector('.query-results__container');
+    resultsContainer.style.display = 'none';
+
+    const mainElement = document.querySelector('main');
+    mainElement.appendChild(displayResultDiv);
+
+    const backButton = document.querySelector('#back-to-results-button');
+    backButton.addEventListener('click', () =>
+    {
+        displayResultDiv.remove();
+        resultsContainer.style.display = 'flex';
+    });
+};
 

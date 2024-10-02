@@ -2,7 +2,7 @@
     --primary-color: lightsteelblue;
     --secondary-color: azure;
     --background-color: #101010;
-    --font-family: 'Montserrat', sans-serif;
+    --font-family: 'Roboto', sans-serif;
 }
 
 html, body {
@@ -18,11 +18,13 @@ body{
     text-align: center;
     background-color: #101010;
     color: white;
+    overflow-x: hidden;
 }
 
 p{
-    font-size: 1.1rem;
-    line-height: 1.5; /* Adjusted for better readability */
+    font-size: 1.3rem;
+    font-weight: 300;
+    line-height: 1.3; /* Adjusted for better readability */
     text-align: center;
     padding: 0 1.5rem;
     color: white;
@@ -67,8 +69,8 @@ button:hover{
 .site__button{
     color: black;
     box-shadow: inset 0 0 0 2px black;
-    margin-top: 1rem;
     transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 1rem;
 }
 
 .site__button:hover{
@@ -149,6 +151,9 @@ button:hover{
     transition: transform 0.1s cubic-bezier(0.52, 0.59, 1, 0.54);
     backface-visibility: hidden;
     transform: translateZ(0);
+    border: 3px solid #1c1c1c;
+    max-width: 520px;
+
 }
 
 .card:hover{
@@ -162,10 +167,10 @@ button:hover{
 }
 
 .loading-spinner {
-    margin-top: 2rem;
+    margin-top: 1rem;
     width: 48px;
     height: 48px;
-    border: 5px solid lightsteelblue;
+    border: 5px solid dodgerblue;
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;
@@ -187,9 +192,9 @@ button:hover{
 }
 
 .search-container:hover .search-box {
-    width: 450px; /* Expanded width */
+
     background: azure;
-    border-radius: 10px;
+
 }
 
 @media (max-width: 480px) {
@@ -200,17 +205,38 @@ button:hover{
 
 .search-box {
     padding: 10px;
-    width: 80px;
+    width: 450px;
     height: 80px;
-    border: 4px solid lightsteelblue;
-    border-radius: 50px;
+    border: 4px solid #1c1c1c;
+    border-radius: 10px;
     box-sizing: border-box;
     font-size: 26px;
     color: black;
     outline: none;
-    transition: width 0.5s ease, background 0.5s ease;
+
 }
 
+input:focus::placeholder {
+    color: transparent;
+}
+
+.active{
+    color: #fff;
+    background-color: black;
+}
+
+.key-select-active{
+
+    background-color: white;
+}
+
+.hidden{
+    display: none;
+}
+
+.show{
+    display: block;
+}
 
 
 
