@@ -123,7 +123,7 @@ public class ScrapeWebsiteServlet extends HttpServlet
         return host.replace(".", "");
     }
 
-    private void savePageContents(List<WebCrawler.PageContent> pageContents)
+    private void savePageContents(List<WebCrawler.PageContent> pageContents) throws IOException
     {
         Gson gson = new Gson();
         File outputDir = createOutputDirectory();
@@ -135,9 +135,11 @@ public class ScrapeWebsiteServlet extends HttpServlet
         }
     }
 
-    private File createOutputDirectory()
+    private File createOutputDirectory() throws IOException
     {
 
+        Path tempDir = Files.createTempDirectory("uploaded-dir-scraped");
+        OUTPUT_DIR = tempDir.toString();
         File outputDir = new File(OUTPUT_DIR);
         if (!outputDir.exists())
         {
