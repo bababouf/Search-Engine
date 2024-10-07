@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -26,7 +27,7 @@ import java.util.List;
 @WebServlet(name = "ScrapeWebsiteServlet", value = "/scrapeWebsite")
 public class ScrapeWebsiteServlet extends HttpServlet
 {
-    private static final String OUTPUT_DIR = "C:\\Users\\agreg\\Desktop\\CopyOfProject\\search-engine\\uploaded_dir_scraped";
+    private static String OUTPUT_DIR = "C:\\Users\\agreg\\Desktop\\CopyOfProject\\search-engine\\uploaded_dir_scraped";
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -37,6 +38,7 @@ public class ScrapeWebsiteServlet extends HttpServlet
 
         // Setup proxy authentication
         configureProxyAuthentication();
+
 
         WebCrawler crawler = initializeCrawler(baseURL, maxDepth);
 
@@ -84,6 +86,9 @@ public class ScrapeWebsiteServlet extends HttpServlet
         context.setAttribute("fileExtension", "json");
 
         savePageContents(pageContents);
+        Path tempDir = Files.createTempDirectory("uploaded-dir-scraped");
+        OUTPUT_DIR = tempDir.toString();
+
         Path zippedDir = ServletUtilities.zipUploadDirectory(OUTPUT_DIR);
         ServletUtilities.uploadZipDirectory(zippedDir, containerName);
         ServletUtilities.buildAndStoreIndexFiles(OUTPUT_DIR, containerName, request, context);
@@ -132,6 +137,7 @@ public class ScrapeWebsiteServlet extends HttpServlet
 
     private File createOutputDirectory()
     {
+
         File outputDir = new File(OUTPUT_DIR);
         if (!outputDir.exists())
         {

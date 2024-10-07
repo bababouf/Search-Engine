@@ -341,6 +341,8 @@ public class ServletUtilities
 
     public static Path createZipDirectory()
     {
+
+
         String projectRoot = System.getProperty("java.io.tmpdir"); // Use the system temp directory
         String zippedDirectoryPath = projectRoot + File.separator + "zipped-upload-dir";
         File uploadDir = new File(zippedDirectoryPath);
