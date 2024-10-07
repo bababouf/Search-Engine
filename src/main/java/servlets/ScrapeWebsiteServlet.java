@@ -86,8 +86,6 @@ public class ScrapeWebsiteServlet extends HttpServlet
         context.setAttribute("fileExtension", "json");
 
         savePageContents(pageContents);
-        Path tempDir = Files.createTempDirectory("uploaded-dir-scraped");
-        OUTPUT_DIR = tempDir.toString();
 
         Path zippedDir = ServletUtilities.zipUploadDirectory(OUTPUT_DIR);
         ServletUtilities.uploadZipDirectory(zippedDir, containerName);
