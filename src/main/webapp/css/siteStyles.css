@@ -33,6 +33,7 @@
     margin-bottom: 0;
     line-height: 1.1;
     margin-top: 0;
+    font-family: serif;
 }
 
 .site-header__welcome-user {
@@ -106,10 +107,9 @@
 .profile__upload-restrictions-note{
     text-align: left;
     color: black;
-
-    border-radius: 10px;
-    font-size: .9rem;
-    font-weight: bold;
+    font-size: 1rem;
+    font-style: italic;
+    list-style-type: disclosure-closed;
 
 }
 .profile__upload-dir-note, .profile__default-dir-note, .profile__upload-website-note {

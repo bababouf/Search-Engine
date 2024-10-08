@@ -49,8 +49,8 @@ const generateHeader = (profile) => `
     </div>
     <h2 class="site-header__welcome-user"> Welcome, ${profile.firstname} </h2>
     <p class="site-header__instructions">
-        Choose a directory from your filesystem or test out the querying modes on the default corpus! After uploading a
-        directory, it will show up under the 'Current Directories' card.
+        Choose a directory from your filesystem, enter a homepage URL to scrape webpages into a directory, or test out the querying modes on the default corpus! After uploading a
+        directory or choosing a URL to scrape, the directory will show up under the 'Current Directories' card.
     </p>
     <img src="${profile.url}" class="site-header__profile-picture" alt="${profile.firstname}'s profile picture">
 `;

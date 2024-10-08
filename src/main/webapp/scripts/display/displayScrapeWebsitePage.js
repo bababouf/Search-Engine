@@ -60,7 +60,7 @@ const setHeaderInstructions = () =>
 {
     const headerInstructions = document.querySelector('.site-header__instructions');
     headerInstructions.style.display = 'block';
-    headerInstructions.textContent = 'Enter the base URL for the webpage you would like to have scraped (i.e https://wikipedia.org). Depth indicates how thorough the scrape is; a depth of 1 collects all of the links on the homepage of the site, and a depth of 2 collects all links that are 2 links from the homepage. ';
+    headerInstructions.textContent = 'Enter the base URL for the webpage you would like to have scraped (i.e https://wikipedia.org). Depth indicates how thorough the scrape is; a depth of 1 collects all of the links on the homepage of the site, a depth of 2 collects all links that are 2 links from the homepage, etc. ';
 }
 
 // Attach event listener to the form submit button
