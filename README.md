@@ -2,113 +2,26 @@
 ![](https://i.gyazo.com/69e159c6d36ceb9455631a0359058b15.png)
 ## _Overview_
 
-Written in Java, this search engine program has two main functionalities: building an in-memory index from a corpus of documents, and querying that index. The index allows for fast execution of queries, in exchange for additional time
-to do the indexing. If the documents the index is built on are static, the index only needs to be built once.
+Search Genie is a web application that allows a user to submit queries on .TXT or .JSON directories, as well as directories compiled from the web scraping functionality. For testing purposes, a pre-loaded directory has been built that can be queried. The application offers two modes for querying: a ranked retrieval mode (offering four ranking schemes) and a boolean retrieval mode (AND, OR, or a combination of the two). 
 
-## _Building the Index_
+## _Technology Stack_
+The web application has been fully deployed using Microsoft Azure's App Service and utilizes Github Actions for continuous integration and deployment. This allows for all changes that are pushed to this repository to be updated in the production application efficiently without having to manually redeploy the application. 
 
-**_1: Creating the in-memory positional index (PositionalInvertedIndexer.indexCorpus())_**  
+### Back-end 
+Written in Java, the backend contains all of the files that are used for indexing directories, processing queries, communication with the browser, communication with Azure Blob Storage, and CRUD actions involving the PostgresDB. 
 
-The most important part of the indexing process is creating the in-memory index. The in-memory positional index that is created is a hashmap of terms to their corresponding *posting* lists. For every unique term found in the corpus,
-a posting list will contain the documentID, as well as positions (integers starting from 0 at the beginning of the document) where that term is found. Some terms will contain long posting lists, as they show up in many documents, whereas others may contain very short posting lists, as they only appear in few documents. The *indexCorpus* method found in the PositionalInvertedIndexer class is responsible for creating this in-memory positional index. Creating this index takes care of all the needs for boolean queries, but in order to achieve functionality for ranked queries, additional information must be taken from the documents during indexing time. To accomplish this, a binary file within the corpus directory is populated with this information (i.e *all-nps-sites-extracted/index/docWeights.bin*)  
+Communication with the browser is carried out using Java's Jakarta EE Jersey Server implementation, which uses servlets mapped to specific endpoints that handle each HTTP request. This application uses 7 separate servlets to handle the different functionality that the web applications offers, which include servlets to handle deleting and uploading directories, logging in a user through google authentication API, retrieving profile information, server configuration (for handling a user-selected directory to query), and a separate servlet for processing boolean and ranked queries. 
 
-**_2: Creating the on-disk index (DiskIndexWriter.writeIndex())_**  
+Microsoft's Azure Blob Storage is used to store the necessary files that are created during the indexing process. A PostgresDB is used to efficiently lookup terms during querying time. 
 
-Once the in-memory index is created, it is then moved to disk (i.e *all-nps-sites-extracted/index/postings.bin*). Each term is stored in the following manner:  
-  
-documentFrequency -> docID_First -> position1 -> position2 -> ... -> positionZ -> docID_Next -> position1 -> position2 -> ... -> positionZ  
+### Front-end 
+Written in vanilla Javascript, CSS, and HTML the front-end offers a simple but responsive user interface for the user. Media queries are used to enhance the viewing experience for users on varying devices. 
 
-DocumentFrequency contains the number of documents the term appears in. This is followed by the first documentID, and the integer positions where the term is found in that specific document. Position 0 would correspond to the first term in a document.  This pattern continues for the rest of the documents that the term is found in.  
+## _Indexing Process_
+This section will discuss the steps involved in the indexing process, a process which every uploaded directory will undergo to acheive the lowest possible latency between a user's query and the results displayed. 
 
-**_3: Creating SQLite database to store byte positions of terms (SQLiteDB class)_**  
+During indexing, each document in the directory that is uploaded will be traversed term by term. Each term is stemmed, which allows for terms like run, running, and ran to all map to the same base term. These terms are first stored in a hashmap which maps unique terms to their corresponding posting lists. A posting is a structure that contains a document ID and a list of positions within that document where the term appears. In this way, the hashmap knows exactly which terms appear in which documents and where they appear. 
 
-The last stage of the indexing process is to store the bytePositions within the on-disk index file (*postings.bin*) where each term starts. To do this efficiently, a local SQLite database consisting of two columns, one for the *string term* and one for the *long bytePosition* is used. In this way, when a term is found in a query, the bytePosition where it is found in the on-disk index can be found efficiently. 
+As documents are being traversed, additional meta data is collected that is necessary for implementing the ranked retrieval modes. Meta data for each document includes the number of tokens (terms) and the number of bytes. This allows for normalization of documents so that longer documents do not always overshadow shorter documents in ranked retrieval results. A third meta data file contains the average tokens value which gives the average number of documents across the directory. 
 
-
-
-## _Querying the Index_
-
-### _Boolean Queries_
-The program is able to process boolean queries that are in normal disjunctive form (one of more AND queries joined with ORs). Quotes around the query are used to indicate phrase queries, where the user is looking
-for specific phrases that appear in a document. 
-Below are some examples of what this looks like:  
-
-Single Term: dogs  
-
-*AND* Query: dogs cats  
-
-*OR* Query: dogs + cats  
-
-*Phrase* Query: "fires in yosemite" (needs quotes around query)  
-
-*Mixed* Query: dogs cats + elephants yaks turkeys
-
-### _Basic Ranked Retrieval_  
-
-In ranked retrieval, the documents of a corpus are ranked based on their suspected relevance to a given query. A basic ranking scheme may look to term frequency as an indicator for relevant documents. For example if a user entered "dogs", intuitively, 
-it might make sense to rank the documents where dog appears frequently higher than those in which it doesn't. However, it soon becomes apparent that not all terms in the query are equal. If the query was instead "the dogs", a document with frequent use of "the" (and no mention of dogs) might rank higher than a document actually talking about dogs. Thus, for each of the schemes below, weights are given for both the terms in the query and the terms in each document.  
-
-In addition to these weights, the length of the document must be accounted for. Without an attempt to normalize document lengths, longer documents would almost always rank higher than shorter documents.
-
-
-1. Default
-   
-   ![](https://i.gyazo.com/eb608bfd40a7f0f1879603e38d58698d.png)
-   
-   
-3. TF-IDF
-   
-   ![](https://i.gyazo.com/f569b3ec39a67f492e2b1bb4541e82bf.png)  
-4. Okapi BM25
-
-   ![](https://i.gyazo.com/6fbc53ea9cb1ee932c012e239e50f55b.png)
-   
-5. Waky
-   
-   ![](https://i.gyazo.com/1b5cba7ac18f70b414f53987528c9131.png)  
-   
-### _Querying Details_  
-Depending on the mode selection that the user chooses, data will flow through one of two paths. Below the most important methods for each of the flows are named and described.
-
-**_Flow 1: Parsing and Processing Boolean Queries_**  
-The data flow for boolean queries first starts with processing the query, which is done using the BooleanQueryParser.parseQuery() method. This method will always return a list of QueryComponents. A QueryComponent is an interface
-class that several other classes implement; for example, if a phrase is entered by the user, the parseQuery() method will return a list comprised of one PhraseLiteral component. However, this list returned by parseQuery() can include several
-different QueryComponents (ANDQuery, ORQuery, Literal). Depending on the components of the query, one of two functions will be called; getPostingsWithPositions() is only neededfor phrase queries, while all other components do not need positions 
-and simply use getPostings(). The final list returned will hold the appropriate postings that were merged. Below are the main classes responsible for handling/processing boolean queries:
-
-**_Main Classes:_**  
-&emsp;**BooleanQueryParser.ParseQuery()**  
-&emsp;**QueryComponent.getPostings()**  
-&emsp;**QueryComponent.getPostingsWithPositions()**  
-&emsp;**DiskPositionalIndexer.printResults()**  
-
-
-**_Flow 2: Parsing and Processing Ranked Queries_**  
-The data flow for ranked queries begins with the RankedQuery.parseQuery() method. The parseQuery() method does not deal with QueryComponents in the same way the boolean parser does. Instead, it creates a TermLiteral for each of the space-separated terms in the query. 
-Regardless of the ranking scheme used, each of the terms in the query will be given a weight. In addition, when getPostings() is called on each of the literals, documents where the term is found are given a weight. The weight for each term and each document that 
-term is found in are multiplied together, and this result is known as the accumulator value. If a document contains multiple terms found in the query, the accumulator value will continue to grow. For example, assume the query is "fires in yosemite". Each of the literals ("fires", "in", "yosemite") will be given a weight. Again, each ranking scheme will handle this differently, but for the most part, terms that show up in the majority of documents (a, the, be, I) will be given a lower weight than terms which are infrequent. 
-The program will proceed to go term by term in the query and find the documents where it appears. If "fires" appears in document 1 (docID = 1), the weight for that term in the document (given by the specific ranking scheme) and the weight for that term in the query will be multiplied, creating the accumulator value for that document. Additional query terms found in document 1 will grow this value (give it a higher ranking). Once all query terms and documents are traversed, the documents with the highest accumulator values will be returned.  
-
-  
-As mentioned above, there are four different ranking schemes, each with their own unique way of calculating the weight of a term in the query, and the weight of a term in a document. In addition, several of the schemes differ in how the length of the document is taken into account. The user is able to select the ranking scheme that will be used, and depending on this selection, the proper calculate method must be called. To do this, RankingStrategy is an interface class that contains the two methods calculate() and calculateAccumulatorValue(). Calculate(), as explained, will calculate the weights for the query term and the term in each document. CalculateAccumulatorValue() will account for the length of the document, and return the highest ranking documents. Each of the ranking schemes are derived from the RankingStrategy class, and have their own calculate() and calculateAccumulatorValue() methods. A RankedDispatch class is used to call the calculate method from the proper derived class. 
-  
-**_Main Classes:_**  
-&emsp;**RankedQueryParser.parseQuery()**  
-&emsp;**RankingStrategy.calculate()**  
-&emsp;**RankedDispatch.calculate()**  
-&emsp;**DiskPositionalIndexer.printTop10Ranked()**  
-
-
-### _Testing Details_  
-The testing module (**src/SearchEngineFoundation/tests**) contains unit tests for the most important methods invovled in the project. The BuildIndexTest class contains tests that ensure the index is properly built, and the QueryIndexTest contains tests 
-to ensure boolean and ranked queries are properly calculated and the result is as expected.  
-
-**_src/SearchEngineFoundation/tests/BuildIndexTest.java_**  
-
-This class contains tests that ensure the path entered is properly read in, and that the system mode rejects input that assumes the wrong format. The most important test, however, is the buildIndexAndTestDocumentWeights() test. This ensure that for each of the 5 test
-documents, the weights that are being calculated are as expected. For this test, weights for each of the documents were manually calculated and checked against the weights returned by the method being tested.  
-
-**_src/SearchEngineFoundation/tests/QueryIndexTest.java_**  
-
-This class contains unit tests for both boolean and ranked queries. For boolean queries, unit tests have been created for all different types of queries that the user might enter: single term queries, ANDQuery, ORQuery, a mix of AND/OR, and a test for terms not found in the corpus. For each of the ranking schemes, unit tests have been created for single terms, multiple terms, and common terms.  
-
+Once the hashmap is created, along with the three meta data files, each is serialized into binary and stored inside an Azure Blob Storage container (for which the container name is built using a hash of the user's unique google ID and the directory name that was uploaded). This allows for a unique identifier for each user uploaded directory. Once all of this is done, the last step in the indexing process creates a PostgresDB table for the directory. This table consists of two columns, one which contains every term in the serialized hashmap, and the other column contains the specific byte position where that terms posting list information can be found. This allows for efficient lookup of the hashmap information during querying time. 
