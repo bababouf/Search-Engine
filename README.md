@@ -39,4 +39,5 @@ This method is used to parse a boolean query into its individual components. The
 4. Finally, build an OR query that consists of all the the built AND subqueries.
 
 ## _Ranked Retrieval_
+Contrary to the boolean retrieval mode, ranked retrieval does not require a specific form for a query and instead treats each query as a "bag of words" (the style seen in internet browsers). Ranking schemes 
 ## _Web Scraper_
