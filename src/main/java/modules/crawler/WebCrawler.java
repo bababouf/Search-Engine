@@ -186,22 +186,6 @@ public class WebCrawler {
         return new ArrayList<>(pageContents);
     }
 
-    /*
-    private boolean isValidContentType(Connection.Response response) {
-        // Get the Content-Type header from the response
-        String contentType = response.header("Content-Type");
-
-        // Check if the Content-Type is in the accepted categories
-        if (contentType != null) {
-            // Match against required content types
-            return contentType.startsWith("text/") ||
-                    contentType.equals("application/xml") ||
-                    contentType.startsWith("application/") && contentType.endsWith("+xml");
-        }
-        // Return false if Content-Type is null
-        return false;
-    }
-*/
     private long calculateRandomDelay() {
         // Random delay between 1000 ms (1 second) and 5000 ms (5 seconds)
         return ThreadLocalRandom.current().nextLong(500, 6000);
@@ -291,10 +275,7 @@ public class WebCrawler {
                 }
 
             } catch (IOException | InterruptedException e) {
-            /*
-            System.err.printf("Error crawling %s: %s. Attempt %d of %d%n",
-                    url, e.getMessage(), attempt + 1, MAX_RETRIES);
-            */
+
                 try {
                     Thread.sleep(RETRY_DELAY);
                 } catch (InterruptedException ie) {

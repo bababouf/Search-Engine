@@ -44,7 +44,6 @@ public class BooleanSearchServlet extends HttpServlet
 
         // Create directory corpus
         corpus = ServletUtilities.createCorpus(context);
-        System.out.println("Corpus size: " + corpus.getCorpusSize());
     }
 
     /*
@@ -56,11 +55,9 @@ public class BooleanSearchServlet extends HttpServlet
         // Parses the HTTP request and obtains the query entered in the searchbar by the user
         JsonObject jsonBody = ServletUtilities.parseRequestBody(request);
         String query = jsonBody.get("query").getAsString();
-        System.out.println("Query: " + query);
 
         // Calls a method that will obtain the documents that satisfy the user's query
         List<Posting> queryPostings = processBooleanQuery(query, index);
-        System.out.println("After process boolean query. " );
 
         // Converts the list of postings into JSON string to be sent to the browser
         String results = setupResults(queryPostings, corpus);
@@ -100,21 +97,13 @@ public class BooleanSearchServlet extends HttpServlet
      */
     public String setupResults(List<Posting> queryPostings, DirectoryCorpus corpus)
     {
-        System.out.println("In the setup results. ");
         //ServletContext context = getServletContext();
         List<FileResult> results = new ArrayList<>();
-
-        System.out.println("before the caomparator");
         queryPostings.sort(Comparator.comparing(Posting::getTermFrequency).reversed());
-        System.out.println("after the caomparator");
-        System.out.println("queryPostings size: " + queryPostings.size());
 
         for (Posting queryPosting : queryPostings)
         {
-            System.out.println("in the for loop");
             Document document = corpus.getDocument(queryPosting.getDocumentId());
-
-            System.out.println("Creating File Result: ");
             FileResult file = createFileResult(document);
             results.add(file);
         }

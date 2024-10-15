@@ -120,7 +120,6 @@ public class DefaultJSONFileDocument implements FileDocument
      */
     public static FileDocument loadDefaultJsonFileDocument(Path absolutePath, int documentId, String contentKey)
     {
-        System.out.println("Surely this is being called right");
         return new DefaultJSONFileDocument(documentId, absolutePath, contentKey);
     }
 }

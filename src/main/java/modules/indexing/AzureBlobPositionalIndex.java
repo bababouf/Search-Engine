@@ -161,14 +161,11 @@ public class AzureBlobPositionalIndex implements Index
     public void downloadFiles(String queryMode, String containerName) throws IOException
     {
 
-        System.out.println("In the download files. ");
-        System.out.println("ContainerName: " + containerName);
         AzureBlobStorageClient client = new AzureBlobStorageClient(containerName);
         postingsData = client.downloadFile("postings.bin");
         System.out.println("Downloaded postings data. ");
         if (queryMode.equals("ranked"))
         {
-            System.out.println("Downloading RANKED FILES!!!!!!!");
             documentWeights = client.downloadFile("doc-weights.bin");
             averageTokens = client.downloadFile("average-tokens.bin");
         }
