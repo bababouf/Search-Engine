@@ -1,40 +1,11 @@
-# _Search Engine_
+# _Search Genie_
 ![](https://i.gyazo.com/69e159c6d36ceb9455631a0359058b15.png)
 ## _Overview_
 
 Written in Java, this search engine program has two main functionalities: building an in-memory index from a corpus of documents, and querying that index. The index allows for fast execution of queries, in exchange for additional time
 to do the indexing. If the documents the index is built on are static, the index only needs to be built once.
 
-## _How To Run_  
-**Due to size restrictions, Github only allowed part of "all-nps-sites-extracted" corpus to be uploaded. The full corpus can be downloaded here: https://drive.google.com/file/d/12OQfhkPfKQlFVVnWSR3ozbQfRni51dlH/view?usp=sharing**
-
-1. Clone the repository to local filesystem: **git clone https://github.com/bababouf/Search-Engine.git**
-2. Navigate to the root of the cloned repository
-3. Use Maven command to build project: **mvn clean install**
-4. Once the full corpus is downloaded from the google drive link above, unzip the file and replace the "all-nps-sites-extracted" partial corpus with the full one
-5. Run the driver class: (Open project in an IDE and run the driver class below)
-
-
-Driver Class: **src/SearchEngineFoundation/drivers/DiskPositionalIndexer.java**  
-
-Don't have Maven? Download it here: **https://maven.apache.org/download.cgi**  
-Linux and MacOS should choose the *tar.gz archive*, and windows should choose *zip archive*.  
-For installation instructions, follow: **https://maven.apache.org/install.html**
-
 ## _Building the Index_
-Running the *DiskPositionalIndex* driver will first prompt the user to select to either build or query an index.  
-
-  
-![](https://i.gyazo.com/82d1d6efbede43f9aaf5866699fc791e.png)  
-
-Selecting choice 1 will prompt the user to enter the directory for which the index will be built from. Currently the program only knows how to deal with .JSON and .TXT documents; the directory specified needs to be all of one or the other.
-The corpus of documents that is in this respository (truncated to 1000 documents) is located at *all-nps-sites-extracted*. 
-
-![](https://i.gyazo.com/87698dfae883724b711a521902de1a6c.png)  
-
-The relative path for this directory can be entered when prompted, as shown above. However, if another corpus is constructed (.JSON or .TXT files) it can be placed in the root of this project and will be indexed in the same manner.
-### _Indexing Details_
-The indexing process can be broken up into three main stages:
 
 **_1: Creating the in-memory positional index (PositionalInvertedIndexer.indexCorpus())_**  
 
@@ -55,30 +26,12 @@ The last stage of the indexing process is to store the bytePositions within the 
 
 
 
-
 ## _Querying the Index_
-As stated above, running the *DiskPositionalIndex* driver will first prompt the user to select to either build or query an index.  
-
-  
-![](https://i.gyazo.com/82d1d6efbede43f9aaf5866699fc791e.png)  
-
-Selecting choice 2 will allow the user to query an index. The user will be prompted to select a mode for querying:  
-
-
-![](https://i.gyazo.com/8988043619d45852e693e4de8342fa7e.png)  
-
-And enter a valid corpus directory:  
-
-![](https://i.gyazo.com/87698dfae883724b711a521902de1a6c.png)  
-
-Once a valid directory is entered, the user will either be prompted to enter a query (if boolean query mode was selected) or to select a ranking scheme (if ranked query mode was selected).  
-
 
 ### _Boolean Queries_
 The program is able to process boolean queries that are in normal disjunctive form (one of more AND queries joined with ORs). Quotes around the query are used to indicate phrase queries, where the user is looking
 for specific phrases that appear in a document. 
 Below are some examples of what this looks like:  
-
 
 Single Term: dogs  
 
