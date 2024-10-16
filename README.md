@@ -39,7 +39,13 @@ This method is used to parse a boolean query into its individual components. The
 4. Finally, build an OR query that consists of all the the built AND subqueries.
 
 ## _Ranked Retrieval_
-Contrary to the boolean retrieval mode, ranked retrieval does not require a specific form for a query and instead treats each query as a "bag of words" (the style seen in internet browsers). Four different ranking schemes can be chosen, each giving a slightly different algorithm for calculating which documents are relevant to a query. 
+Contrary to the boolean retrieval mode, ranked retrieval does not require a specific form for a query and instead treats each query as a "bag of words" (the style seen in internet browsers). Below I will briefly discuss some issues that are present in basic ranked retrieval. 
+
+In developing a basic ranking algorithm to rank documents based on a search query, it might initially appear that the fequency of the term in the query is most important. Simply rank documents based on the combined frequency of the query words that appear in the document. The downfall of a simple algorithm like this presents itself when common words appear in the query. Since there is no specific form for ranked queries, the user can enter whatever they wish, and as a result common words might appear often. As an example, a user query of "fires in yosemite" using only term frequency will give equal weight to each of the terms. As a result, documents that heavily contain "in" might rank higher than those that contain the more relevant words "fire" and "yosemite". 
+
+As a remedy to the above situation, weights are given to each of the terms in the query based on their inverse document frequency. In this way, common terms that appear in the majority of documents across the corpus will have a higher inverse document frequency, which decreases the weight of that term in the query. 
+
+Although term frequency combined with inverse document frequency solves several problems, it still does not account for varying document lengths. Assume a situation where two documents are present within a vast corpus; one document gives 3 paragraphs talking about giraffes, and another document contains the entire book that the paragraphs are contained in. In this situation, if the user was searching for "giraffes" both documents would be ranked the same, even though one document is clearly far more focused on the subject. In this way, the length of documents must be taken into account. 
 
 Below are the four ranking schemes:
 1. Default 
