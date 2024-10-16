@@ -7,6 +7,8 @@ Search Genie is a web application that allows a user to submit queries on .TXT o
 ## _Technology Stack_
 The web application has been fully deployed using Microsoft Azure's App Service and utilizes Github Actions for continuous integration and deployment. This allows for all changes that are pushed to this repository to be updated in the production application efficiently without having to manually redeploy the application. 
 
+![](https://gyazo.com/52a3d4e99b68325981d2b64a16d94634.png)
+
 ### Back-end 
 Written in Java, the backend contains all of the files that are used for indexing directories, processing queries, communication with the browser, communication with Azure Blob Storage, and CRUD actions involving the PostgresDB. 
 
