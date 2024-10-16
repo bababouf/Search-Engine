@@ -22,6 +22,9 @@ Written in vanilla Javascript, CSS, and HTML the front-end offers a simple but r
 ## _Indexing Process_
 This section will discuss the steps involved in the indexing process, a process which every uploaded directory will undergo to acheive the lowest possible latency between a user's query and the results displayed. 
 
+![](https://gyazo.com/079f35d36d770e8c7791c8d709806424.png)
+
+
 During indexing, each document in the directory that is uploaded will be traversed term by term. Each term is stemmed, which allows for terms like run, running, and ran to all map to the same base term. These terms are first stored in a hashmap which maps unique terms to their corresponding posting lists. A posting is a structure that contains a document ID and a list of positions within that document where the term appears. In this way, the hashmap knows exactly which terms appear in which documents and where they appear. 
 
 As documents are being traversed, additional meta data is collected that is necessary for implementing the ranked retrieval modes. Meta data for each document includes the number of tokens (terms) and the number of bytes. This allows for normalization of documents so that longer documents do not always overshadow shorter documents in ranked retrieval results. A third meta data file contains the average tokens value which gives the average number of documents across the directory. 
