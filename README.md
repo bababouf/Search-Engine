@@ -47,11 +47,33 @@ As a remedy to the above situation, weights are given to each of the terms in th
 
 Although term frequency combined with inverse document frequency solves several problems, it still does not account for varying document lengths. Assume a situation where two documents are present within a vast corpus; one document gives 3 paragraphs talking about giraffes, and another document contains the entire book that the paragraphs are contained in. In this situation, if the user was searching for "giraffes" both documents would be ranked the same, even though one document is clearly far more focused on the subject. In this way, the length of documents must be taken into account. 
 
-Below are the four ranking schemes:
-1. Default 
-2. TF-IDF
-3. Okapi BM25
-4. Wacky
+Below I show each of the formulas for the four ranking schemes that the application offers. Each formula uniquely determines weights for the query terms (WQT), the documents (WDT), and takes into account the length of the document (LD). 
+1. Default
+   
+   ![](https://i.gyazo.com/eb608bfd40a7f0f1879603e38d58698d.png)
+   
+   WQT:
+   - N/dft represents the inverse document frequency for that term (the ratio of documents in the corpus that contain that term)
+   - 1 is added to the inverse document frequency to prevent dividing by zero (if the term is found in no documents), and a term being given zero weight (term appears in all documents)
+   - The log function is used to scale down the effect of document frequency. Without this, rare terms would dominate and common terms would have very minimal impact.
+   
+   WTD:
+   - TFtd is the number of times a term appears in the document
+   - The log function, again, scales down the effect of term frequency.
+     
+   LD :
+  - LD is calculated by taking the square root of the sum of a documents TFtd squared. In other words, the term frequency for each unique term in a document is squared and added together. 
+   
+3. TF-IDF
+   
+   ![](https://i.gyazo.com/f569b3ec39a67f492e2b1bb4541e82bf.png)  
+4. Okapi BM25
+
+   ![](https://i.gyazo.com/6fbc53ea9cb1ee932c012e239e50f55b.png)
+   
+5. Waky
+   
+   ![](https://i.gyazo.com/1b5cba7ac18f70b414f53987528c9131.png) 
 
 
 
