@@ -39,5 +39,18 @@ This method is used to parse a boolean query into its individual components. The
 4. Finally, build an OR query that consists of all the the built AND subqueries.
 
 ## _Ranked Retrieval_
-Contrary to the boolean retrieval mode, ranked retrieval does not require a specific form for a query and instead treats each query as a "bag of words" (the style seen in internet browsers). Ranking schemes 
+Contrary to the boolean retrieval mode, ranked retrieval does not require a specific form for a query and instead treats each query as a "bag of words" (the style seen in internet browsers). Four different ranking schemes can be chosen, each giving a slightly different algorithm for calculating which documents are relevant to a query. 
+
+Below are the four ranking schemes:
+1. Default 
+2. TF-IDF
+3. Okapi BM25
+4. Wacky
+
+
+
+
+
+
+
 ## _Web Scraper_
