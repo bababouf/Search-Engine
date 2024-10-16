@@ -48,6 +48,24 @@ As a remedy to the above situation, weights are given to each of the terms in th
 Although term frequency combined with inverse document frequency solves several problems, it still does not account for varying document lengths. Assume a situation where two documents are present within a vast corpus; one document gives 3 paragraphs talking about giraffes, and another document contains the entire book that the paragraphs are contained in. In this situation, if the user was searching for "giraffes" both documents would be ranked the same, even though one document is clearly far more focused on the subject. In this way, the length of documents must be taken into account. 
 
 Below I show each of the formulas for the four ranking schemes that the application offers. Each formula uniquely determines weights for the query terms (WQT), the documents (WDT), and takes into account the length of the document (LD). 
+
+Each ranking scheme uses the following logic for determining which documents will be in the results set: 
+
+For each term t in the query,
+   1. Calculate WQT
+   2. For each document d in term t's posting list:
+      
+      i. Aquire an accumulator value AD.
+      
+      ii. Calculate WDT
+      
+      iii. Increase AD by WQT * WDT
+      
+   4. Once all documents have been traversed, for each nonzero AD value, divide AD by LD.
+   5. Return the top 10 documents with the highest AD values
+
+Below are the formulas and brief explanations for calculating WQT, WDT, and LD for each of the ranking schemes. 
+
 1. Default
    
    ![](https://i.gyazo.com/eb608bfd40a7f0f1879603e38d58698d.png)
@@ -62,19 +80,48 @@ Below I show each of the formulas for the four ranking schemes that the applicat
    - The log function, again, scales down the effect of term frequency.
      
    LD :
-  - LD is calculated by taking the square root of the sum of a documents TFtd squared. In other words, the term frequency for each unique term in a document is squared and added together. 
+   
+  - Docweights is calculated as the square root of the summation of TFTD terms squared
+    
    
 3. TF-IDF
    
-   ![](https://i.gyazo.com/f569b3ec39a67f492e2b1bb4541e82bf.png)  
-4. Okapi BM25
+   ![](https://i.gyazo.com/f569b3ec39a67f492e2b1bb4541e82bf.png)
+
+   WQT:
+   - Exactly as the default calculation, except 1 is not added to the inverse document frequency. Terms that appear in all documents are given 0 weight. 
+   
+   WTD:
+   - Simply uses TFtd as the weight for a term in the document (number of times a term appears in a document).
+     
+   LD :
+   
+  - Same as default calculation: docweights is calculated as the square root of the summation of TFTD terms squared.
+5. Okapi BM25
 
    ![](https://i.gyazo.com/6fbc53ea9cb1ee932c012e239e50f55b.png)
+
+   - Developed in the 1980s, used throughout 1990s; designed for short catalog records and abstracts of fairly consistent length
+   WQT, WDT:
+   - A derivative of the above formulas that uses scientifically devised constants to modify the aformentioned default and TF-IDF formulas
+     
+   LD :
    
-5. Waky
+  - Set to a constant value of 1. Again, this formula was designed for a retrieval system on documents with relatively similar lengths
+   
+6. Waky
    
    ![](https://i.gyazo.com/1b5cba7ac18f70b414f53987528c9131.png) 
 
+   WQT:
+   - The maximum value is taken between 0 or the natural log of the number of documents a term appears in
+   
+   WTD:
+   - Calculated as 1 plus the natural log of the TFtd over 1 plus the natural log of the average TFtd (average number of terms in each document)
+     
+   LD :
+   
+  - Calculated as the square root of the byte size of the document
 
 
 
