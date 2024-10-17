@@ -1,5 +1,8 @@
-# _Search Genie_
-![](https://i.gyazo.com/69e159c6d36ceb9455631a0359058b15.png)
+<h1 align = "center"> Search Genie </h1>
+<p align="center">
+  <img width="150" height="150" src="https://gyazo.com/d772b4d0dcea61f5d37abbad23918e6f.png">
+</p>
+
 ## _Overview_
 
 Search Genie is a web application that allows users to upload and query their own .TXT or .JSON directories, as well as directories generated via web scraping. For testing, a pre-loaded directory is also available. The application supports two query modes: ranked retrieval with four ranking schemes, and boolean retrieval using AND, OR, or combinations of both.
@@ -60,16 +63,17 @@ The application uses four ranking schemes, each with unique formulas for determi
 4. Return the top 10 documents with the highest AD values.
 Below are the formulas used for WQT, WDT, and LD in each ranking scheme.
 
-1. Default
+## Ranking Scheme Formulas
+
    
    ![](https://i.gyazo.com/eb608bfd40a7f0f1879603e38d58698d.png)
    
-   WQT:
+   Wqt:
    - N/dft represents the inverse document frequency for that term (the ratio of documents in the corpus that contain that term)
    - 1 is added to the inverse document frequency to prevent dividing by zero (if the term is found in no documents), and a term being given zero weight (term appears in all documents)
    - The log function is used to scale down the effect of document frequency. Without this, rare terms would dominate and common terms would have very minimal impact.
    
-   WTD:
+   Wdt:
    - TFtd is the number of times a term appears in the document
    - The log function, again, scales down the effect of term frequency.
      
@@ -78,39 +82,39 @@ Below are the formulas used for WQT, WDT, and LD in each ranking scheme.
   - Docweights is calculated as the square root of the summation of TFTD terms squared
     
    
-3. TF-IDF
+
    
    ![](https://i.gyazo.com/f569b3ec39a67f492e2b1bb4541e82bf.png)
 
-   WQT:
+   Wqt:
    - Exactly as the default calculation, except 1 is not added to the inverse document frequency. Terms that appear in all documents are given 0 weight. 
    
-   WTD:
+   Wdt:
    - Simply uses TFtd as the weight for a term in the document (number of times a term appears in a document).
      
    LD :
    
   - Same as default calculation: docweights is calculated as the square root of the summation of TFTD terms squared.
-5. Okapi BM25
+
 
    ![](https://i.gyazo.com/6fbc53ea9cb1ee932c012e239e50f55b.png)
 
    - Developed in the 1980s, used throughout 1990s; designed for short catalog records and abstracts of fairly consistent length
-   WQT, WDT:
+   Wqt, Wdt:
    - A derivative of the above formulas that uses scientifically devised constants to modify the aformentioned default and TF-IDF formulas
      
    LD :
    
   - Set to a constant value of 1. Again, this formula was designed for a retrieval system on documents with relatively similar lengths
-   
-6. Waky
+
+
    
    ![](https://i.gyazo.com/1b5cba7ac18f70b414f53987528c9131.png) 
 
-   WQT:
+   Wqt:
    - The maximum value is taken between 0 or the natural log of the number of documents a term appears in
    
-   WTD:
+   Wdt:
    - Calculated as 1 plus the natural log of the TFtd over 1 plus the natural log of the average TFtd (average number of terms in each document)
      
    LD :
