@@ -133,3 +133,40 @@ A web scraper is a tool designed to automate the process of extracting data from
 Before discussing the methods employed in this application's web scraper, it’s crucial to address the legal and ethical considerations surrounding web scraping. One key aspect of this is the robots.txt file, which websites use to communicate with web crawlers about which parts of the site can be accessed. While a robots.txt file is not legally binding, it reflects the website owner's preferences and intentions. Respecting these directives is considered a best practice in ethical web scraping, as failing to do so could lead to unauthorized access claims.
 
 Consequently, this application prioritizes the directives specified in a website's robots.txt file. Some websites explicitly restrict scraping, whether for specific sections or the entire site. This application adheres to these preferences, ensuring compliance with the guidelines outlined in the robots.txt file.
+
+## Scraping Strategies and Methods
+
+### Concurrency Management
+ExecutorService: The crawler uses a fixed thread pool (with MAX_THREADS set to 5), which allows it to process multiple pages simultaneously while preventing system overload. The activeThreads counter ensures that the program can track and manage how many threads are running at a given time, which prevents oversaturation of resources.
+Concurrent Collections: Both the visitedUrls and pageContents are concurrent data structures. visitedUrls is a synchronized set to track which URLs have been crawled, preventing redundant work. pageContents is a ConcurrentLinkedQueue to safely collect crawled page data from multiple threads.
+
+### Politeness and Backoff Strategy
+Exponential Backoff: The crawler implements a backoff mechanism using the currentDelay and BACKOFF_FACTOR to progressively increase delays between requests in case of certain status codes like 403 Forbidden, which may indicate the site is blocking requests. This helps prevent overwhelming the server with repeated requests.
+Random Delays: Each request introduces a random delay (calculateRandomDelay) between 1 to 5 seconds to mimic human-like browsing behavior, reducing the chance of being detected or blocked by anti-bot mechanisms.
+Respecting robots.txt: The crawler integrates a RobotsTxtParser, which ensures that it only crawls URLs allowed by the site's robots.txt rules, adhering to ethical web scraping practices.
+
+### Proxy Rotation and Smart Proxy Use
+Proxy Rotation: The crawler employs a SmartProxyRotator to rotate through different proxy IP addresses, ensuring that requests come from different sources, helping evade IP bans or rate limits set by the target websites.
+Proxy Authentication: The crawler also supports authenticated proxies by setting up BasicCredentialsProvider for the proxies, helping in cases where smart proxies require login credentials to access their services.
+
+### Retry and Fault Tolerance
+Retry Logic: In case of network failures or unsuccessful responses, the crawler retries the request up to MAX_RETRIES (set to 10). It waits for a RETRY_DELAY of 5 seconds between retries, preventing the crawler from failing due to temporary network issues or server hiccups.
+Graceful Thread Management: Even if a crawl attempt fails, the thread handling that task will decrement the activeThreads counter, ensuring that the overall execution flow is unaffected by failures in individual tasks.
+
+### SSL and Connection Management
+Custom SSL Configuration: The crawler builds an HttpClient with custom SSL settings, including setting up an SSLContext that trusts all certificates. This ensures that the crawler can access sites using various SSL configurations without issues.
+Timeout Settings: To avoid indefinitely hanging on unresponsive servers, the crawler sets connection and socket timeouts (CONNECTION_TIMEOUT and READ_TIMEOUT) to 5 seconds each, ensuring it can quickly move on if a server doesn't respond promptly.
+
+### Randomized User-Agent Strings
+User-Agent Rotation: To avoid detection as a bot, the crawler randomizes its User-Agent string from a predefined set of common User-Agent headers that mimic different browsers and devices (e.g., Windows, Mac, iPhone). This reduces the likelihood of being blocked by websites filtering out crawlers based on User-Agent patterns.
+Custom Request Headers: Besides the User-Agent, other headers like Accept-Language and Accept-Encoding are randomized to resemble a variety of browser configurations and help bypass anti-bot protections.
+
+### Content Decompression and Handling
+Support for Various Encodings: The crawler can handle compressed responses with encodings like Gzip, Deflate, and Brotli. It checks the Content-Encoding header of the response and decompresses the data accordingly. This allows the crawler to process pages that serve compressed content more efficiently.
+Content Parsing: The HTML content is parsed using Jsoup, which extracts the page's text, title, and links for further processing. This allows the crawler to capture structured data from each page and identify further links to crawl.
+
+### Domain-Specific Crawling
+Base Domain Restriction: The crawler is restricted to crawling within a specific domain by checking if each link belongs to the same domain as the baseUrl. This helps focus the crawl on a single website and avoid crawling unrelated domains.
+
+### Handling of HTML Links
+Link Extraction and Recursive Crawling: After processing each page's content, the crawler uses Jsoup to extract all the hyperlinks (<a> tags). If these links have not already been visited and are within the allowed domain, they are added to the crawl queue for further exploration, allowing for depth-limited recursive crawling.
