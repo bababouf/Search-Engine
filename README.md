@@ -127,3 +127,9 @@ Below are the formulas used for WQT, WDT, and LD in each ranking scheme.
 
 
 ## _Web Scraper_
+
+A web scraper is a tool designed to automate the process of extracting data from websites. It simulates human interaction by sending requests to web servers, retrieving the HTML of the pages, and parsing that content to extract specific data such as text, links, or images. In this application, users can provide a homepage URL and set a depth parameter that determines how extensively the site will be crawled. The scraper will then navigate through the pages found within that depth, extracting and saving their content as .JSON files. Once completed, the final directory containing these files will be indexed, following the process described in the indexing section above.
+
+Before discussing the methods employed in this application's web scraper, it’s crucial to address the legal and ethical considerations surrounding web scraping. One key aspect of this is the robots.txt file, which websites use to communicate with web crawlers about which parts of the site can be accessed. While a robots.txt file is not legally binding, it reflects the website owner's preferences and intentions. Respecting these directives is considered a best practice in ethical web scraping, as failing to do so could lead to unauthorized access claims.
+
+Consequently, this application prioritizes the directives specified in a website's robots.txt file. Some websites explicitly restrict scraping, whether for specific sections or the entire site. This application adheres to these preferences, ensuring compliance with the guidelines outlined in the robots.txt file.
