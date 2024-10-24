@@ -19,7 +19,7 @@ class SmartProxyRotator {
 
     public HttpHost getHttpHost() {
         long count = requestCount.incrementAndGet();
-        return new HttpHost(PROXY_HOST, PROXY_PORT + (int)(count % 1000));
+        return new HttpHost(PROXY_HOST, PROXY_PORT);
     }
 
     public String getUsername() {

@@ -87,9 +87,19 @@ public class WebCrawler {
         this.httpClient = createHttpClient();
     }
 
-    private CloseableHttpClient createHttpClient() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException
-    {
+    private CloseableHttpClient createHttpClient() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+        // Set up the credentials provider for proxy authentication
+        /*
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(
+                new AuthScope(proxyRotator.PROXY_HOST, proxyRotator.PROXY_PORT),
+                new UsernamePasswordCredentials(proxyRotator.getUsername(), proxyRotator.getPassword())
+        );
+
+         */
+
+
+        BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(
                 new AuthScope(proxyRotator.PROXY_HOST, proxyRotator.PROXY_PORT),
                 new UsernamePasswordCredentials(proxyRotator.getUsername(), proxyRotator.getPassword())
@@ -97,23 +107,17 @@ public class WebCrawler {
 
         // Create a custom SSL context
         SSLContext sslContext = new SSLContextBuilder()
-                .loadTrustMaterial(null, (chain, authType) -> true)
+                .loadTrustMaterial(null, (chain, authType) -> true) // Trust all certificates
                 .build();
 
-        // Define the cipher suites to use (matching common browser configurations)
+        // Define the cipher suites to use
         String[] browserCipherSuites = {
                 "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-
                 "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-
                 "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-
                 "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-
                 "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
-
                 "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
-
         };
 
         // Create a custom SSLConnectionSocketFactory
@@ -121,10 +125,10 @@ public class WebCrawler {
                 sslContext,
                 new String[]{"TLSv1.2", "TLSv1.3"}, // Protocols
                 browserCipherSuites,
-                NoopHostnameVerifier.INSTANCE
+                NoopHostnameVerifier.INSTANCE // Disable hostname verification
         );
 
-        // Build the HttpClient with the custom SSL configuration
+        // Build the HttpClient with the custom SSL configuration and credentials provider
         return HttpClients.custom()
                 .setDefaultCredentialsProvider(credentialsProvider)
                 .setSSLSocketFactory(sslConnectionSocketFactory)
