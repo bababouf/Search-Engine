@@ -1,161 +1,172 @@
-# _Search Engine_
-![](https://i.gyazo.com/69e159c6d36ceb9455631a0359058b15.png)
+<h1 align = "center"> Search Genie </h1>
+<p align="center">
+  <img width="150" height="150" src="https://gyazo.com/d772b4d0dcea61f5d37abbad23918e6f.png">
+</p>
+
 ## _Overview_
 
-Written in Java, this search engine program has two main functionalities: building an in-memory index from a corpus of documents, and querying that index. The index allows for fast execution of queries, in exchange for additional time
-to do the indexing. If the documents the index is built on are static, the index only needs to be built once.
+Search Genie is a web application that allows users to upload and query their own .TXT or .JSON directories, as well as directories generated via web scraping. For testing, a pre-loaded directory is also available. The application supports two query modes: ranked retrieval with four ranking schemes, and boolean retrieval using AND, OR, or combinations of both.
 
-## _How To Run_  
-**Due to size restrictions, Github only allowed part of "all-nps-sites-extracted" corpus to be uploaded. The full corpus can be downloaded here: https://drive.google.com/file/d/12OQfhkPfKQlFVVnWSR3ozbQfRni51dlH/view?usp=sharing**
+## _Technology Stack_
+The web application is fully deployed using Microsoft Azure's App Service and integrates with GitHub Actions for seamless continuous integration and deployment. This ensures that any changes pushed to the repository are automatically reflected in the production environment without requiring manual redeployment.
 
-1. Clone the repository to local filesystem: **git clone https://github.com/bababouf/Search-Engine.git**
-2. Navigate to the root of the cloned repository
-3. Use Maven command to build project: **mvn clean install**
-4. Once the full corpus is downloaded from the google drive link above, unzip the file and replace the "all-nps-sites-extracted" partial corpus with the full one
-5. Run the driver class: (Open project in an IDE and run the driver class below)
+The diagram below shows the main components of the application.
 
 
-Driver Class: **src/SearchEngineFoundation/drivers/DiskPositionalIndexer.java**  
+![](https://gyazo.com/52a3d4e99b68325981d2b64a16d94634.png)
 
-Don't have Maven? Download it here: **https://maven.apache.org/download.cgi**  
-Linux and MacOS should choose the *tar.gz archive*, and windows should choose *zip archive*.  
-For installation instructions, follow: **https://maven.apache.org/install.html**
+### Back-end 
+The backend, written in Java, handles indexing directories, processing queries, managing Azure Blob Storage, and performing CRUD operations on PostgresDB. It also facilitates communication with the browser through Java's Jakarta EE Jersey Server implementation. This setup uses seven servlets mapped to specific endpoints, each responsible for different tasks, such as directory uploads/deletions, user authentication via Google API, profile retrieval, configuration of user-selected directories, and handling both boolean and ranked queries.
 
-## _Building the Index_
-Running the *DiskPositionalIndex* driver will first prompt the user to select to either build or query an index.  
+Azure Blob Storage stores all files created during the indexing process, while PostgresDB enables efficient term lookups during queries.
 
-  
-![](https://i.gyazo.com/82d1d6efbede43f9aaf5866699fc791e.png)  
+### Front-end 
+Written in vanilla Javascript, CSS, and HTML the front-end offers a simple but responsive user interface for the user. Media queries are used to enhance the viewing experience for users on varying devices. 
 
-Selecting choice 1 will prompt the user to enter the directory for which the index will be built from. Currently the program only knows how to deal with .JSON and .TXT documents; the directory specified needs to be all of one or the other.
-The corpus of documents that is in this respository (truncated to 1000 documents) is located at *all-nps-sites-extracted*. 
+## _Indexing Process_
+This section will discuss the steps involved in the indexing process, a process which every uploaded directory will undergo to acheive the lowest possible latency between a user's query and the results displayed. 
 
-![](https://i.gyazo.com/87698dfae883724b711a521902de1a6c.png)  
-
-The relative path for this directory can be entered when prompted, as shown above. However, if another corpus is constructed (.JSON or .TXT files) it can be placed in the root of this project and will be indexed in the same manner.
-### _Indexing Details_
-The indexing process can be broken up into three main stages:
-
-**_1: Creating the in-memory positional index (PositionalInvertedIndexer.indexCorpus())_**  
-
-The most important part of the indexing process is creating the in-memory index. The in-memory positional index that is created is a hashmap of terms to their corresponding *posting* lists. For every unique term found in the corpus,
-a posting list will contain the documentID, as well as positions (integers starting from 0 at the beginning of the document) where that term is found. Some terms will contain long posting lists, as they show up in many documents, whereas others may contain very short posting lists, as they only appear in few documents. The *indexCorpus* method found in the PositionalInvertedIndexer class is responsible for creating this in-memory positional index. Creating this index takes care of all the needs for boolean queries, but in order to achieve functionality for ranked queries, additional information must be taken from the documents during indexing time. To accomplish this, a binary file within the corpus directory is populated with this information (i.e *all-nps-sites-extracted/index/docWeights.bin*)  
-
-**_2: Creating the on-disk index (DiskIndexWriter.writeIndex())_**  
-
-Once the in-memory index is created, it is then moved to disk (i.e *all-nps-sites-extracted/index/postings.bin*). Each term is stored in the following manner:  
-  
-documentFrequency -> docID_First -> position1 -> position2 -> ... -> positionZ -> docID_Next -> position1 -> position2 -> ... -> positionZ  
-
-DocumentFrequency contains the number of documents the term appears in. This is followed by the first documentID, and the integer positions where the term is found in that specific document. Position 0 would correspond to the first term in a document.  This pattern continues for the rest of the documents that the term is found in.  
-
-**_3: Creating SQLite database to store byte positions of terms (SQLiteDB class)_**  
-
-The last stage of the indexing process is to store the bytePositions within the on-disk index file (*postings.bin*) where each term starts. To do this efficiently, a local SQLite database consisting of two columns, one for the *string term* and one for the *long bytePosition* is used. In this way, when a term is found in a query, the bytePosition where it is found in the on-disk index can be found efficiently. 
+![](https://gyazo.com/079f35d36d770e8c7791c8d709806424.png)
 
 
+During indexing, each document within the uploaded directory is processed term by term. Terms are stemmed to reduce variations like "run," "running," and "ran" to their root form, ensuring consistent mapping. These terms are stored in a hashmap, where each unique term is linked to a posting list—a structure containing the document ID and a list of positions where the term appears within the document. This allows the hashmap to efficiently track which terms appear in which documents and their exact locations.
 
+In addition to term indexing, essential metadata is collected for ranked retrieval modes, including the number of tokens (terms) and the byte size of each document. This metadata enables document normalization, preventing longer documents from disproportionately dominating ranked retrieval results. An additional file stores the average token count across all documents.
 
-## _Querying the Index_
-As stated above, running the *DiskPositionalIndex* driver will first prompt the user to select to either build or query an index.  
+Once indexing is complete, the hashmap and metadata files are serialized into binary and stored in Azure Blob Storage. Each user's uploaded directory is uniquely identified by a hash of their Google ID and directory name. The final step creates a PostgresDB table for the directory, containing two columns: one for the term and another for the byte position of the term’s posting list in the serialized hashmap. This ensures efficient lookups during querying.
 
-  
-![](https://i.gyazo.com/82d1d6efbede43f9aaf5866699fc791e.png)  
+## _Boolean Retrieval_
+The boolean retrieval mode in this application allows users to form queries using AND and OR operators. By default, terms separated by spaces are treated as if they are ANDed together, while terms separated by a "+" are treated as ORed.
 
-Selecting choice 2 will allow the user to query an index. The user will be prompted to select a mode for querying:  
+When terms are ANDed together, the application finds the intersection of their posting lists. For terms ORed together, it computes the union of their posting lists. The query parsing routine processes combined AND/OR queries as follows:
 
+- Loop through the query and collect each term (literal) into a list.
+- When encountering a "+", process the preceding terms as an AND query.
+- Repeat this for every segment separated by "+" signs.
+- Finally, process the entire query by combining all AND results into a single OR query.
 
-![](https://i.gyazo.com/8988043619d45852e693e4de8342fa7e.png)  
+## _Ranked Retrieval_
+Unlike boolean retrieval, ranked retrieval treats each query as a "bag of words," similar to how search engines operate. This means there is no strict query structure required, but this can lead to issues when using a basic ranking algorithm based solely on term frequency.
 
-And enter a valid corpus directory:  
+A simplistic approach would rank documents based on how frequently the query terms appear in them. However, this can result in irrelevant rankings when common words (like "in" or "the") are present in the query. For example, in the query "fires in Yosemite," ranking only by term frequency might give too much weight to "in" rather than focusing on the more relevant terms "fires" and "Yosemite."
 
-![](https://i.gyazo.com/87698dfae883724b711a521902de1a6c.png)  
+To address this, each term is weighted using inverse document frequency (IDF), which reduces the importance of common words. Despite this, document length still poses a challenge. For example, a short article and an entire book on the same topic might be ranked equally, even though one is more focused on the subject. To handle this, document length normalization is used, ensuring that shorter, more focused documents are not overshadowed by longer ones.
 
-Once a valid directory is entered, the user will either be prompted to enter a query (if boolean query mode was selected) or to select a ranking scheme (if ranked query mode was selected).  
+The application uses four ranking schemes, each with unique formulas for determining term weights (WQT), document weights (WDT), and adjusting for document length (LD). The general ranking logic is as follows:
 
+1. For each query term, calculate WQT.
+2. For each document containing that term:
+      - Retrieve an accumulator value (AD).
+      - Calculate WDT.
+      - Update AD by multiplying WQT and WDT.
+3. After processing all terms, divide each nonzero AD by LD.
+4. Return the top 10 documents with the highest AD values.
+Below are the formulas used for WQT, WDT, and LD in each ranking scheme.
 
-### _Boolean Queries_
-The program is able to process boolean queries that are in normal disjunctive form (one of more AND queries joined with ORs). Quotes around the query are used to indicate phrase queries, where the user is looking
-for specific phrases that appear in a document. 
-Below are some examples of what this looks like:  
+## Ranking Scheme Formulas
 
-
-Single Term: dogs  
-
-*AND* Query: dogs cats  
-
-*OR* Query: dogs + cats  
-
-*Phrase* Query: "fires in yosemite" (needs quotes around query)  
-
-*Mixed* Query: dogs cats + elephants yaks turkeys
-
-### _Basic Ranked Retrieval_  
-
-In ranked retrieval, the documents of a corpus are ranked based on their suspected relevance to a given query. A basic ranking scheme may look to term frequency as an indicator for relevant documents. For example if a user entered "dogs", intuitively, 
-it might make sense to rank the documents where dog appears frequently higher than those in which it doesn't. However, it soon becomes apparent that not all terms in the query are equal. If the query was instead "the dogs", a document with frequent use of "the" (and no mention of dogs) might rank higher than a document actually talking about dogs. Thus, for each of the schemes below, weights are given for both the terms in the query and the terms in each document.  
-
-In addition to these weights, the length of the document must be accounted for. Without an attempt to normalize document lengths, longer documents would almost always rank higher than shorter documents.
-
-
-1. Default
    
    ![](https://i.gyazo.com/eb608bfd40a7f0f1879603e38d58698d.png)
    
+   Wqt:
+   - N/dft represents the inverse document frequency for that term (the ratio of documents in the corpus that contain that term)
+   - 1 is added to the inverse document frequency to prevent dividing by zero (if the term is found in no documents), and a term being given zero weight (term appears in all documents)
+   - The log function is used to scale down the effect of document frequency. Without this, rare terms would dominate and common terms would have very minimal impact.
    
-3. TF-IDF
+   Wdt:
+   - TFtd is the number of times a term appears in the document
+   - The log function, again, scales down the effect of term frequency.
+     
+   LD :
    
-   ![](https://i.gyazo.com/f569b3ec39a67f492e2b1bb4541e82bf.png)  
-4. Okapi BM25
+  - Docweights is calculated as the square root of the summation of TFTD terms squared
+    
+   
+
+   
+   ![](https://i.gyazo.com/f569b3ec39a67f492e2b1bb4541e82bf.png)
+
+   Wqt:
+   - Exactly as the default calculation, except 1 is not added to the inverse document frequency. Terms that appear in all documents are given 0 weight. 
+   
+   Wdt:
+   - Simply uses TFtd as the weight for a term in the document (number of times a term appears in a document).
+     
+   LD :
+   
+  - Same as default calculation: docweights is calculated as the square root of the summation of TFTD terms squared.
+
 
    ![](https://i.gyazo.com/6fbc53ea9cb1ee932c012e239e50f55b.png)
+
+   - Developed in the 1980s, used throughout 1990s; designed for short catalog records and abstracts of fairly consistent length
+   Wqt, Wdt:
+   - A derivative of the above formulas that uses scientifically devised constants to modify the aformentioned default and TF-IDF formulas
+     
+   LD :
    
-5. Waky
+  - Set to a constant value of 1. Again, this formula was designed for a retrieval system on documents with relatively similar lengths
+
+
    
-   ![](https://i.gyazo.com/1b5cba7ac18f70b414f53987528c9131.png)  
+   ![](https://i.gyazo.com/1b5cba7ac18f70b414f53987528c9131.png) 
+
+   Wqt:
+   - The maximum value is taken between 0 or the natural log of the number of documents a term appears in
    
-### _Querying Details_  
-Depending on the mode selection that the user chooses, data will flow through one of two paths. Below the most important methods for each of the flows are named and described.
-
-**_Flow 1: Parsing and Processing Boolean Queries_**  
-The data flow for boolean queries first starts with processing the query, which is done using the BooleanQueryParser.parseQuery() method. This method will always return a list of QueryComponents. A QueryComponent is an interface
-class that several other classes implement; for example, if a phrase is entered by the user, the parseQuery() method will return a list comprised of one PhraseLiteral component. However, this list returned by parseQuery() can include several
-different QueryComponents (ANDQuery, ORQuery, Literal). Depending on the components of the query, one of two functions will be called; getPostingsWithPositions() is only neededfor phrase queries, while all other components do not need positions 
-and simply use getPostings(). The final list returned will hold the appropriate postings that were merged. Below are the main classes responsible for handling/processing boolean queries:
-
-**_Main Classes:_**  
-&emsp;**BooleanQueryParser.ParseQuery()**  
-&emsp;**QueryComponent.getPostings()**  
-&emsp;**QueryComponent.getPostingsWithPositions()**  
-&emsp;**DiskPositionalIndexer.printResults()**  
+   Wdt:
+   - Calculated as 1 plus the natural log of the TFtd over 1 plus the natural log of the average TFtd (average number of terms in each document)
+     
+   LD :
+   
+  - Calculated as the square root of the byte size of the document
 
 
-**_Flow 2: Parsing and Processing Ranked Queries_**  
-The data flow for ranked queries begins with the RankedQuery.parseQuery() method. The parseQuery() method does not deal with QueryComponents in the same way the boolean parser does. Instead, it creates a TermLiteral for each of the space-separated terms in the query. 
-Regardless of the ranking scheme used, each of the terms in the query will be given a weight. In addition, when getPostings() is called on each of the literals, documents where the term is found are given a weight. The weight for each term and each document that 
-term is found in are multiplied together, and this result is known as the accumulator value. If a document contains multiple terms found in the query, the accumulator value will continue to grow. For example, assume the query is "fires in yosemite". Each of the literals ("fires", "in", "yosemite") will be given a weight. Again, each ranking scheme will handle this differently, but for the most part, terms that show up in the majority of documents (a, the, be, I) will be given a lower weight than terms which are infrequent. 
-The program will proceed to go term by term in the query and find the documents where it appears. If "fires" appears in document 1 (docID = 1), the weight for that term in the document (given by the specific ranking scheme) and the weight for that term in the query will be multiplied, creating the accumulator value for that document. Additional query terms found in document 1 will grow this value (give it a higher ranking). Once all query terms and documents are traversed, the documents with the highest accumulator values will be returned.  
-
-  
-As mentioned above, there are four different ranking schemes, each with their own unique way of calculating the weight of a term in the query, and the weight of a term in a document. In addition, several of the schemes differ in how the length of the document is taken into account. The user is able to select the ranking scheme that will be used, and depending on this selection, the proper calculate method must be called. To do this, RankingStrategy is an interface class that contains the two methods calculate() and calculateAccumulatorValue(). Calculate(), as explained, will calculate the weights for the query term and the term in each document. CalculateAccumulatorValue() will account for the length of the document, and return the highest ranking documents. Each of the ranking schemes are derived from the RankingStrategy class, and have their own calculate() and calculateAccumulatorValue() methods. A RankedDispatch class is used to call the calculate method from the proper derived class. 
-  
-**_Main Classes:_**  
-&emsp;**RankedQueryParser.parseQuery()**  
-&emsp;**RankingStrategy.calculate()**  
-&emsp;**RankedDispatch.calculate()**  
-&emsp;**DiskPositionalIndexer.printTop10Ranked()**  
 
 
-### _Testing Details_  
-The testing module (**src/SearchEngineFoundation/tests**) contains unit tests for the most important methods invovled in the project. The BuildIndexTest class contains tests that ensure the index is properly built, and the QueryIndexTest contains tests 
-to ensure boolean and ranked queries are properly calculated and the result is as expected.  
 
-**_src/SearchEngineFoundation/tests/BuildIndexTest.java_**  
 
-This class contains tests that ensure the path entered is properly read in, and that the system mode rejects input that assumes the wrong format. The most important test, however, is the buildIndexAndTestDocumentWeights() test. This ensure that for each of the 5 test
-documents, the weights that are being calculated are as expected. For this test, weights for each of the documents were manually calculated and checked against the weights returned by the method being tested.  
+## _Web Scraper_
 
-**_src/SearchEngineFoundation/tests/QueryIndexTest.java_**  
+A web scraper is a tool designed to automate the process of extracting data from websites. It simulates human interaction by sending requests to web servers, retrieving the HTML of the pages, and parsing that content to extract specific data such as text, links, or images. In this application, users can provide a homepage URL and set a depth parameter that determines how extensively the site will be crawled. The scraper will then navigate through the pages found within that depth, extracting and saving their content as .JSON files. Once completed, the final directory containing these files will be indexed, following the process described in the indexing section above.
 
-This class contains unit tests for both boolean and ranked queries. For boolean queries, unit tests have been created for all different types of queries that the user might enter: single term queries, ANDQuery, ORQuery, a mix of AND/OR, and a test for terms not found in the corpus. For each of the ranking schemes, unit tests have been created for single terms, multiple terms, and common terms.  
+Before discussing the methods employed in this application's web scraper, it’s crucial to address the legal and ethical considerations surrounding web scraping. One key aspect of this is the robots.txt file, which websites use to communicate with web crawlers about which parts of the site can be accessed. While a robots.txt file is not legally binding, it reflects the website owner's preferences and intentions. Respecting these directives is considered a best practice in ethical web scraping, as failing to do so could lead to unauthorized access claims.
 
+Consequently, this application prioritizes the directives specified in a website's robots.txt file. Some websites explicitly restrict scraping, whether for specific sections or the entire site. This application adheres to these preferences, ensuring compliance with the guidelines outlined in the robots.txt file.
+
+## Scraping Strategies and Methods
+
+### Concurrency Management
+ExecutorService: The crawler uses a fixed thread pool (with MAX_THREADS set to 5), which allows it to process multiple pages simultaneously while preventing system overload. The activeThreads counter ensures that the program can track and manage how many threads are running at a given time, which prevents oversaturation of resources.
+Concurrent Collections: Both the visitedUrls and pageContents are concurrent data structures. visitedUrls is a synchronized set to track which URLs have been crawled, preventing redundant work. pageContents is a ConcurrentLinkedQueue to safely collect crawled page data from multiple threads.
+
+### Politeness and Backoff Strategy
+Exponential Backoff: The crawler implements a backoff mechanism using the currentDelay and BACKOFF_FACTOR to progressively increase delays between requests in case of certain status codes like 403 Forbidden, which may indicate the site is blocking requests. This helps prevent overwhelming the server with repeated requests.
+Random Delays: Each request introduces a random delay (calculateRandomDelay) between 1 to 5 seconds to mimic human-like browsing behavior, reducing the chance of being detected or blocked by anti-bot mechanisms.
+Respecting robots.txt: The crawler integrates a RobotsTxtParser, which ensures that it only crawls URLs allowed by the site's robots.txt rules, adhering to ethical web scraping practices.
+
+### Proxy Rotation and Smart Proxy Use
+Proxy Rotation: The crawler employs a SmartProxyRotator to rotate through different proxy IP addresses, ensuring that requests come from different sources, helping evade IP bans or rate limits set by the target websites.
+Proxy Authentication: The crawler also supports authenticated proxies by setting up BasicCredentialsProvider for the proxies, helping in cases where smart proxies require login credentials to access their services.
+
+### Retry and Fault Tolerance
+Retry Logic: In case of network failures or unsuccessful responses, the crawler retries the request up to MAX_RETRIES (set to 10). It waits for a RETRY_DELAY of 5 seconds between retries, preventing the crawler from failing due to temporary network issues or server hiccups.
+Graceful Thread Management: Even if a crawl attempt fails, the thread handling that task will decrement the activeThreads counter, ensuring that the overall execution flow is unaffected by failures in individual tasks.
+
+### SSL and Connection Management
+Custom SSL Configuration: The crawler builds an HttpClient with custom SSL settings, including setting up an SSLContext that trusts all certificates. This ensures that the crawler can access sites using various SSL configurations without issues.
+Timeout Settings: To avoid indefinitely hanging on unresponsive servers, the crawler sets connection and socket timeouts (CONNECTION_TIMEOUT and READ_TIMEOUT) to 5 seconds each, ensuring it can quickly move on if a server doesn't respond promptly.
+
+### Randomized User-Agent Strings
+User-Agent Rotation: To avoid detection as a bot, the crawler randomizes its User-Agent string from a predefined set of common User-Agent headers that mimic different browsers and devices (e.g., Windows, Mac, iPhone). This reduces the likelihood of being blocked by websites filtering out crawlers based on User-Agent patterns.
+Custom Request Headers: Besides the User-Agent, other headers like Accept-Language and Accept-Encoding are randomized to resemble a variety of browser configurations and help bypass anti-bot protections.
+
+### Content Decompression and Handling
+Support for Various Encodings: The crawler can handle compressed responses with encodings like Gzip, Deflate, and Brotli. It checks the Content-Encoding header of the response and decompresses the data accordingly. This allows the crawler to process pages that serve compressed content more efficiently.
+Content Parsing: The HTML content is parsed using Jsoup, which extracts the page's text, title, and links for further processing. This allows the crawler to capture structured data from each page and identify further links to crawl.
+
+### Domain-Specific Crawling
+Base Domain Restriction: The crawler is restricted to crawling within a specific domain by checking if each link belongs to the same domain as the baseUrl. This helps focus the crawl on a single website and avoid crawling unrelated domains.
+
+### Handling of HTML Links
+Link Extraction and Recursive Crawling: After processing each page's content, the crawler uses Jsoup to extract all the hyperlinks (<a> tags). If these links have not already been visited and are within the allowed domain, they are added to the crawl queue for further exploration, allowing for depth-limited recursive crawling.
