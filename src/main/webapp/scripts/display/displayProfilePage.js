@@ -52,8 +52,8 @@ const generateHeader = (profile) => `
     </div>
     <h2 class="site-header__welcome-user"> Welcome, ${profile.firstname} </h2>
     <p class="site-header__instructions">
-        Choose a directory from your filesystem, enter a homepage URL to scrape webpages into a directory, or test out the querying modes on the default corpus! After uploading a
-        directory or choosing a URL to scrape, the directory will show up under the 'Current Directories' card.
+        Select a directory from your file system, input a homepage URL to scrape webpages into a directory, or try querying 
+        the default corpus. Once you upload a directory or scrape a URL, it will appear under the 'Current Directories' section.
     </p>
     <img src="${profile.url}" class="site-header__profile-picture" alt="${profile.firstname}'s profile picture">
 `;
@@ -99,9 +99,8 @@ const generateScrapeWebsiteCard = () =>
     <h3 class="card-title"> Scrape Website </h3>
     <p class="profile__upload-website-note"> Scrape a website's pages into .JSON files.  </p>
     <ul class="profile__upload-restrictions-note"> 
-            <li> Accepts the homepage URL of a website </li>
-            <li> .JSON files will be saved into a directory that can be queried </li>
-            <li> Certain sites cannot be scraped due to strict security policies </li>
+            <li> Enables users to enter a URL of the website to be scraped </li>
+            <li> Webpages will be scraped into a directory that can be queried </li>
         </ul>
     <button id="profile__scrape-button" class="site__button" type="submit"> Go! </button>
     `;
@@ -113,7 +112,6 @@ const generateDefaultDirectoryCard = () =>
         <p class="profile__default-dir-note"> Test the application on a default directory of 30,000 .JSON files scraped from NPS.gov! </p>
         <ul class="profile__upload-restrictions-note"> 
             <li> Query the directory using the boolean retrieval mode, or using ranked retrieval </li>
-            <li> Some results may provide broken links due to the website updating its pages </li>
         </ul>
         <button id="profile__default-button" class="site__button">Go!</button>
     `;

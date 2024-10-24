@@ -80,16 +80,24 @@ public class ScrapeWebsiteServlet extends HttpServlet
 
     private void processResults(HttpServletRequest request, String baseURL, List<WebCrawler.PageContent> pageContents) throws IOException, SQLException
     {
-        String containerName = createContainerName(baseURL, request);
+        if(pageContents.isEmpty())
+        {
+            return;
+        }
+        else
+        {
+            String containerName = createContainerName(baseURL, request);
 
-        ServletContext context = getServletContext();
-        context.setAttribute("fileExtension", "json");
+            ServletContext context = getServletContext();
+            context.setAttribute("fileExtension", "json");
 
-        savePageContents(pageContents);
+            savePageContents(pageContents);
 
-        Path zippedDir = ServletUtilities.zipUploadDirectory(OUTPUT_DIR);
-        ServletUtilities.uploadZipDirectory(zippedDir, containerName);
-        ServletUtilities.buildAndStoreIndexFiles(OUTPUT_DIR, containerName, request, context);
+            Path zippedDir = ServletUtilities.zipUploadDirectory(OUTPUT_DIR);
+            ServletUtilities.uploadZipDirectory(zippedDir, containerName);
+            ServletUtilities.buildAndStoreIndexFiles(OUTPUT_DIR, containerName, request, context);
+        }
+
     }
 
     private String createContainerName(String baseURL, HttpServletRequest request) throws MalformedURLException
@@ -166,6 +174,7 @@ public class ScrapeWebsiteServlet extends HttpServlet
 
     private void sendCrawlCompletionResponse(HttpServletResponse response, int pageCount) throws IOException {
         response.setContentType("application/json");
-        response.getWriter().write("{\"message\":\"Crawling completed. " + pageCount + " pages processed.\"}");
+        String jsonResponse = "{\"message\":\"Crawling completed.\", \"pageCount\":" + pageCount + "}";
+        response.getWriter().write(jsonResponse);
     }
 }

@@ -73,7 +73,7 @@ const createBooleanInstructions = () =>
     booleanSearchDiv.classList.add('boolean-formats__content-container');
 
     booleanSearchDiv.innerHTML = `
-        <p class = "boolean-formats__description"> 
+        <p class = "site-header__instructions"> 
         The program accepts boolean queries that are in disjunctive normal form (DNF), also described as an OR of ANDS. 
         In addition, phrase queries can be entered by enclosing the query in double quotes.
         </p>
@@ -92,7 +92,7 @@ const createAcceptableQueryFormats = () =>
 
     queryFormats.innerHTML = `
     
-    <p class="boolean-formats__description"> Below are the acceptable formats for boolean queries. Simply type a query in the search box below
+    <p class="site-header__instructions"> Below are the acceptable formats for boolean queries. Simply type a query in the search box below
     and press enter. </p>
     <div class="boolean-formats__card-container">
         <div class="card bg-gradient" style="width: 300px">

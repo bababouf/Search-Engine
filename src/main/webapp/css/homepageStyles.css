@@ -1,9 +1,9 @@
 /* Typography */
 .homepage__title{
-    font-size: 3.5rem;
+    font-size: 3rem;
     color: lightsteelblue;
     margin-bottom: 0;
-    line-height: 1.1;
+    line-height: 1.5;
 
     text-decoration: underline;
     text-underline-position: under;
@@ -55,28 +55,29 @@
     position: relative;
     display: flex;
     padding: 20px;
-    border-bottom: 2px solid azure;
+    border-bottom: 2px solid #3e3e3e;
 
 }
 
 .homepage__header-wrapper {
-    background-color: #101010db;
-    border-radius: 50%;
-    padding: 3rem;
-    width: 650px;
+    background-color: #212121ed;
+    border-radius: 20px;
+    padding: 1.5rem;
+    width: 550px;
     color: white;
     margin: auto;
 }
 
 .homepage__content-wrapper{
-    padding: 1rem;
+    margin-top:2rem;
+
 }
 .homepage__cards {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 2rem;
-    margin: 1rem 2rem 0 2rem;
+    margin: 2rem 1rem 0 1rem;
     overflow: visible;
 }
 

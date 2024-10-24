@@ -243,11 +243,6 @@ public class WebCrawler {
 
                     currentDelay = INITIAL_DELAY;
 
-                    // Print out headers for 200 responses
-                    System.out.println("Response Headers:");
-                    for (Header header : response.getAllHeaders()) {
-                        System.out.printf("%s: %s%n", header.getName(), header.getValue());
-                    }
 
                     // Handle response based on content encoding
                     String encoding = response.getFirstHeader("Content-Encoding") != null ?

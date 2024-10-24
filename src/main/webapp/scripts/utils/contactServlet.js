@@ -2,6 +2,7 @@ import {displayProfilePage} from "../display/displayProfilePage.js";
 import {displayQueryResultsPage} from "../display/displayQueryResultsPage.js";
 import {displayBooleanSearchPage} from "../display/displayBooleanSearchPage.js";
 import {displayRankedSearchPage} from "../display/displayRankedSearchPage.js";
+import {createScrapingResponseInformation} from "../components/createScrapingResponseInformation.js";
 
 // Sends the Google unique id token to the servlet for verification
 export const handleCredentialResponse = (response) =>
@@ -197,14 +198,18 @@ export const scrapeWebsite = (baseurl, depth) =>
             {
                 throw new Error('Network response was not ok');
             }
-            return response.text();
+            return response.json();
         })
         .then(responseText =>
         {
             // Remove spinner and display the profile page
             const loadingSpinner = document.querySelector("#loading-spinner");
             loadingSpinner.remove();
-            displayProfilePage();
+            console.log(responseText.message);
+            console.log(responseText.pageCount);
+
+            createScrapingResponseInformation(responseText);
+            //displayProfilePage();
         })
         .catch(error => console.error('There was a problem with the fetch operation:', error));
 }

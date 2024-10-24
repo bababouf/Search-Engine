@@ -50,7 +50,7 @@ const createRankedInstructions = () =>
     rankedSearchDiv.classList.add('flex-column');
 
     rankedSearchDiv.innerHTML = `
-        <p class="ranking-schemes__description" > 
+        <p class="site-header__instructions" > 
         Ranked queries treat each query as a "bag of words," meaning they don’t have a fixed structure. For example, a query like 
         "dogs" will rank documents with various forms of "dog" highly. However, this approach falters with queries like "the dogs," 
         where a document might contain "the" frequently but lack "dog" variations. Thus, document ranking is based on a combination 
@@ -91,7 +91,7 @@ const createRankedModes = () =>
     rankingSchemes.classList.add('ranking-schemes');
 
     rankingSchemes.innerHTML = `
-    <p class="ranking-schemes__description"> 
+    <p class="site-header__instructions"> 
     Each ranking scheme offers a slightly different approach in how documents are ranked. Each formula calculates three 
     variables used in the ranking: weight of query term (WQT), weight of document term (WDT), and LD (normalizing factor to 
     account for varying document lengths). 
